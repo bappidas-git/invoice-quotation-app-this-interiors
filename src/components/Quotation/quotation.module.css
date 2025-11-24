@@ -1,0 +1,403 @@
+/* Common Styles */
+.quotationList,
+.createQuotation,
+.viewQuotation,
+.paymentUpdate {
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title {
+  font-weight: 600 !important;
+  color: #1a1a1a;
+  margin-bottom: 4px !important;
+}
+
+.subtitle {
+  color: #666;
+}
+
+.createButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+.createButton:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+/* Statistics Cards */
+.statistics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.7) 100%
+  ) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15) !important;
+}
+
+/* Filter Card */
+.filterCard {
+  margin-bottom: 24px;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.filterContainer {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchField {
+  flex: 1;
+  min-width: 250px;
+}
+
+.filterSelect {
+  min-width: 150px;
+}
+
+.dateFilterGroup {
+  display: flex;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px !important;
+}
+
+.dateFilterGroup button {
+  padding: 6px 16px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.activeFilter {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+}
+
+.datePickerContainer {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Table Styles */
+.tableContainer {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.tableRow {
+  transition: all 0.3s ease;
+}
+
+.tableRow:hover {
+  background: rgba(102, 126, 234, 0.05) !important;
+}
+
+.expandCell {
+  padding: 0 !important;
+}
+
+.expandedContent {
+  padding: 20px;
+  background: rgba(245, 245, 247, 0.5);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.notes {
+  margin-top: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+/* Create/Edit Quotation Styles */
+.formCard {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.formSection {
+  margin-bottom: 32px;
+}
+
+.formSection:last-child {
+  margin-bottom: 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.clientField {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.itemsTable {
+  margin-top: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.tableField {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.totalSection {
+  text-align: right;
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+  border-radius: 8px;
+}
+
+.divider {
+  margin: 24px 0 !important;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.statusSelect {
+  min-width: 150px;
+}
+
+.saveButtons {
+  display: flex;
+  gap: 12px;
+}
+
+/* Dialog Styles */
+.dialogForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+  min-width: 400px;
+}
+
+/* View Quotation Styles */
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.detailsCard,
+.clientCard,
+.itemsCard,
+.notesCard,
+.paymentsCard {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.summary {
+  margin-top: 20px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+/* Payment Update Styles */
+.summaryCard,
+.historyCard,
+.paymentCard {
+  margin-bottom: 24px;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.paymentForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filterContainer {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .searchField,
+  .filterSelect {
+    width: 100%;
+  }
+
+  .dateFilterGroup {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .statistics {
+    grid-template-columns: 1fr;
+  }
+
+  .formGrid,
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dialogForm {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .statusSelect {
+    width: 100%;
+  }
+
+  .saveButtons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .saveButtons button {
+    width: 100%;
+  }
+
+  .headerActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .headerActions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem !important;
+  }
+
+  .dateFilterGroup button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
+
+/* Add to existing styles */
+
+.totalSection {
+  text-align: right;
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+  border-radius: 8px;
+}
+
+.totalBreakdown {
+  max-width: 400px;
+  margin-left: auto;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  align-items: center;
+}
+
+.totalRow:last-child {
+  padding-top: 12px;
+  border-top: 2px solid #e0e0e0;
+  margin-top: 8px;
+}

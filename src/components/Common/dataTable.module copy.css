@@ -1,0 +1,77 @@
+.tableWrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden;
+}
+
+.tableContainer {
+  max-height: calc(100vh - 400px);
+  overflow: auto;
+}
+
+.tableRow {
+  transition: all 0.3s ease;
+}
+
+.tableRow:hover {
+  background: rgba(102, 126, 234, 0.05) !important;
+}
+
+.expandCell {
+  padding: 0 !important;
+}
+
+.expandedContent {
+  padding: 20px;
+  background: rgba(245, 245, 247, 0.5);
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tableFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(224, 224, 224, 1);
+  background: #fafafa;
+}
+
+.rowsSelect {
+  min-width: 100px;
+}
+
+.pagination {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .tableContainer {
+    max-height: calc(100vh - 450px);
+  }
+
+  .tableFooter {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .pagination {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

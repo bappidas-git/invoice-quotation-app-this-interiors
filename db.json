@@ -1,0 +1,362 @@
+{
+  "clients": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "contact": "+971501234567",
+      "address": "123 Business Bay",
+      "pin": "12345",
+      "state": "Dubai",
+      "country": "UAE",
+      "createdAt": "2024-01-15T10:30:00Z"
+    },
+    {
+      "name": "Bhaswar Bhuyan",
+      "email": "bhaswar@assamdigital.com",
+      "contact": "9011223344",
+      "address": "Beltola, Guwahati",
+      "pin": "781001",
+      "state": "Assam",
+      "country": "India",
+      "createdAt": "2025-11-07T08:16:15.426Z",
+      "id": 2
+    }
+  ],
+  "scopeOfWork": [
+    {
+      "id": 1,
+      "name": "CAD drawings",
+      "createdAt": "2024-01-10T10:00:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:14:16.925Z"
+    },
+    {
+      "id": 2,
+      "name": "Design Concept & Proposal",
+      "createdAt": "2024-01-10T10:05:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-04T13:18:06.167Z"
+    },
+    {
+      "id": 3,
+      "name": "Up to 12x 3D Visualizations & Renderings - 2 Rooms",
+      "createdAt": "2024-01-10T10:10:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-04T13:18:07.413Z"
+    },
+    {
+      "id": 4,
+      "name": "Bill of Quantity/ FF&E",
+      "createdAt": "2024-01-10T10:15:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-04T13:18:08.741Z"
+    },
+    {
+      "id": 5,
+      "name": "Schematic & Interior Design Drawings",
+      "createdAt": "2024-01-10T10:20:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-04T13:18:10.151Z"
+    },
+    {
+      "id": 6,
+      "name": "Procurement Management (3 months included)",
+      "createdAt": "2024-01-10T10:25:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-04T13:18:11.817Z"
+    },
+    {
+      "id": 7,
+      "name": "Installation",
+      "createdAt": "2024-01-10T10:30:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-04T13:18:13.330Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "scopeOfWorkId": 1,
+      "description": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+      "createdAt": "2024-01-10T10:00:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:06:55.446Z"
+    },
+    {
+      "id": 2,
+      "scopeOfWorkId": 2,
+      "description": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+      "createdAt": "2024-01-10T10:05:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:06:56.466Z"
+    },
+    {
+      "id": 3,
+      "scopeOfWorkId": 3,
+      "description": "3D renders",
+      "createdAt": "2024-01-10T10:10:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:06:58.740Z"
+    },
+    {
+      "id": 4,
+      "scopeOfWorkId": 4,
+      "description": "Furniture, Fixtures & Equipment (FF&E) Selections List",
+      "createdAt": "2024-01-10T10:15:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:06:59.504Z"
+    },
+    {
+      "id": 5,
+      "scopeOfWorkId": 5,
+      "description": "Overall Layout Plans, Ceiling Designs (RCP), Furniture Placement Plans, Materials and Finishes Schedule, Lighting & Electrical Layouts, and Custom Joinery Concepts",
+      "createdAt": "2024-01-10T10:20:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:07:00.913Z"
+    },
+    {
+      "id": 6,
+      "scopeOfWorkId": 6,
+      "description": "Overseeing FF&E Procurement, Custom Furniture and Joinery Production, and Coordinating Installation – including detailed fit-out drawings. Final scope will be determined once the number of fit-outs is confirmed",
+      "createdAt": "2024-01-10T10:25:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:07:02.346Z"
+    },
+    {
+      "id": 7,
+      "scopeOfWorkId": 7,
+      "description": "Styling & Staging",
+      "createdAt": "2024-01-10T10:30:00Z",
+      "isActive": true,
+      "updatedAt": "2025-11-01T06:07:04.851Z"
+    }
+  ],
+  "quotations": [
+    {
+      "quotationNumber": "QT-2025-0001",
+      "clientId": 1,
+      "date": "2025-11-07T08:14:47.672Z",
+      "items": [
+        {
+          "scopeOfWork": "CAD drawings",
+          "task": "3D renders",
+          "amount": 100
+        },
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+          "amount": 150
+        }
+      ],
+      "subtotal": 250,
+      "taxAmount": 12.5,
+      "serviceTaxAmount": 0,
+      "totalAmount": 262.5,
+      "status": "Fully Paid",
+      "paidAmount": 262.5,
+      "payments": [
+        {
+          "amount": 62.5,
+          "paymentMethod": "Cash",
+          "paymentDate": "2025-11-07T08:23:29.512Z",
+          "notes": "1st Payment",
+          "date": "2025-11-07T08:24:32.609Z"
+        },
+        {
+          "amount": 200,
+          "paymentMethod": "Cheque",
+          "paymentDate": "2025-11-07T08:27:51.039Z",
+          "notes": "Final Payment",
+          "date": "2025-11-07T08:28:36.279Z"
+        }
+      ],
+      "currency": "AED",
+      "notes": "Test Notes",
+      "taxPercent": 5,
+      "serviceTaxPercent": 0,
+      "taxLabel": "VAT",
+      "createdAt": "2025-11-07T08:18:47.746Z",
+      "updatedAt": "2025-11-07T08:28:36.279Z",
+      "id": 1
+    },
+    {
+      "quotationNumber": "QT-2025-0002",
+      "clientId": 2,
+      "date": "2025-11-07T08:31:29.811Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+          "amount": 1000
+        }
+      ],
+      "subtotal": 1000,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 1000,
+      "status": "Partially Paid",
+      "paidAmount": 700,
+      "payments": [
+        {
+          "amount": 700,
+          "paymentMethod": "Online Payment",
+          "paymentDate": "2025-11-07T08:33:18.281Z",
+          "notes": "70% Payment Done. Start of Work",
+          "date": "2025-11-07T08:33:56.273Z"
+        }
+      ],
+      "currency": "AED",
+      "notes": "",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "createdAt": "2025-11-07T08:32:34.047Z",
+      "updatedAt": "2025-11-07T08:33:56.274Z",
+      "id": 2
+    }
+  ],
+  "invoices": [
+    {
+      "invoiceNumber": "INV-2025-0001",
+      "quotationId": 1,
+      "clientId": 1,
+      "date": "2025-11-07T08:24:32.739Z",
+      "items": [
+        {
+          "scopeOfWork": "CAD drawings",
+          "task": "3D renders",
+          "amount": 23.809523809523807
+        },
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+          "amount": 35.714285714285715
+        }
+      ],
+      "subtotal": 59.52380952380952,
+      "taxAmount": 2.976190476190476,
+      "serviceTaxAmount": 0,
+      "totalAmount": 62.5,
+      "paidAmount": 62.5,
+      "paymentDate": "2025-11-07T08:23:29.512Z",
+      "paymentMethod": "Cash",
+      "currency": "AED",
+      "taxPercent": 5,
+      "serviceTaxPercent": 0,
+      "taxLabel": "VAT",
+      "notes": "1st Payment",
+      "createdAt": "2025-11-07T08:24:32.739Z",
+      "id": 1
+    },
+    {
+      "invoiceNumber": "INV-2025-0002",
+      "quotationId": 1,
+      "clientId": 1,
+      "date": "2025-11-07T08:28:36.343Z",
+      "items": [
+        {
+          "scopeOfWork": "CAD drawings",
+          "task": "3D renders",
+          "amount": 76.19047619047619
+        },
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+          "amount": 114.28571428571428
+        }
+      ],
+      "subtotal": 190.47619047619045,
+      "taxAmount": 9.523809523809524,
+      "serviceTaxAmount": 0,
+      "taxPercent": 5,
+      "serviceTaxPercent": 0,
+      "taxLabel": "VAT",
+      "totalAmount": 200,
+      "paidAmount": 200,
+      "paymentDate": "2025-11-07T08:27:51.039Z",
+      "paymentMethod": "Cheque",
+      "currency": "AED",
+      "notes": "Final Payment",
+      "createdAt": "2025-11-07T08:28:36.343Z",
+      "id": 2
+    },
+    {
+      "invoiceNumber": "INV-2025-0003",
+      "quotationId": 2,
+      "clientId": 2,
+      "date": "2025-11-07T08:33:56.340Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+          "amount": 700
+        }
+      ],
+      "subtotal": 700,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 700,
+      "paidAmount": 700,
+      "paymentDate": "2025-11-07T08:33:18.281Z",
+      "paymentMethod": "Online Payment",
+      "currency": "AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "notes": "70% Payment Done. Start of Work",
+      "createdAt": "2025-11-07T08:33:56.340Z",
+      "id": 3
+    }
+  ],
+  "organizationSettings": [
+    {
+      "id": 1,
+      "name": "THIS INTERIORS",
+      "logoUrl": "https://thisinteriors.com/wp-content/uploads/2023/05/NEW-FINAL-THIS-Logo-2.png",
+      "email": "info@thisinteriors.com",
+      "contact": "+971 58 944 7432",
+      "website": "www.thisinteriors.com",
+      "address": "Office 1009, Prism Tower - Business Bay",
+      "city": "Dubai",
+      "state": "",
+      "country": "United Arab Emirates",
+      "postalCode": "",
+      "registrationNumber": "ABCDE12345",
+      "bankName": "Standard Chartered",
+      "bankAccount": "1234567890",
+      "bankBranch": "Dubai",
+      "bankIFSC": "XYZ000012345"
+    }
+  ],
+  "taxSettings": [
+    {
+      "id": 1,
+      "taxLabel": "",
+      "taxPercent": 0,
+      "taxId": "",
+      "serviceTaxLabel": "Service Tax",
+      "serviceTaxPercent": 0,
+      "serviceTaxEnabled": false,
+      "taxInclusive": false,
+      "showTaxBreakdown": false
+    }
+  ],
+  "generalSettings": [
+    {
+      "id": 1,
+      "currency": "AED",
+      "currencySymbol": "AED",
+      "quotationPrefix": "QT",
+      "invoicePrefix": "INV",
+      "quotationValidDays": 30,
+      "paymentTerms": "Net 30",
+      "defaultPaymentMethod": "Online Payment",
+      "fiscalYearStart": "01-01",
+      "dateFormat": "DD/MM/YYYY",
+      "timeZone": "Asia/Dubai",
+      "numberFormat": "1,000.00",
+      "decimalPlaces": 2
+    }
+  ]
+}
