@@ -43,8 +43,10 @@ import {
   formatCurrency,
   getTaxSettings,
   getGeneralSettings,
+  getOrgProfile,
   applyTaxCalculations,
 } from "../../utils/helpers";
+import PrintQuotation from "./PrintQuotation";
 import { QUOTATION_STATUS } from "../../utils/constants";
 import styles from "./quotation.module.css";
 
@@ -532,24 +534,38 @@ const CreateQuotation = () => {
       if (isEdit) {
         await quotationsAPI.update(id, quotationData);
         savedQuotation = { ...quotationData, id };
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Performa invoice updated successfully",
-        });
       } else {
         const response = await quotationsAPI.create(quotationData);
         savedQuotation = response.data;
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Performa invoice created successfully",
-        });
       }
 
+      await Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: isEdit
+          ? "Performa invoice updated successfully"
+          : "Performa invoice created successfully",
+      });
+
       if (shouldPrint) {
-        window.open(`/quotations/print/${savedQuotation.id}`, "_blank");
+        const [clientRes, org] = await Promise.all([
+          clientsAPI.getById(savedQuotation.clientId),
+          getOrgProfile(),
+        ]);
+        const printContent = PrintQuotation({
+          quotation: savedQuotation,
+          client: clientRes.data,
+          organization: org,
+        });
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+          printWindow.print();
+        }, 250);
       }
+
       navigate("/quotations");
     } catch (error) {
       Swal.fire({
