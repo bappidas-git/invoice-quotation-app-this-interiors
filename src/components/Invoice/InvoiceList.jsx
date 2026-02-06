@@ -739,7 +739,9 @@ import {
   formatDate,
   formatCurrency,
   getGeneralSettings,
+  getOrgProfile,
 } from "../../utils/helpers";
+import PrintInvoice from "./PrintInvoice";
 import styles from "./invoice.module.css";
 
 /** ---------- helpers ---------- */
@@ -835,10 +837,31 @@ const InvoiceList = () => {
     handleMenuClose();
   };
 
-  const handlePrint = () => {
-    if (selectedInvoice)
-      window.open(`/invoices/print/${selectedInvoice.id}`, "_blank");
+  const handlePrint = async () => {
+    if (selectedInvoice) {
+      await printInvoice(selectedInvoice);
+    }
     handleMenuClose();
+  };
+
+  const printInvoice = async (invoice) => {
+    try {
+      const [org, clientRes] = await Promise.all([
+        getOrgProfile(),
+        invoice.clientId ? clientsAPI.getById(getObjString(invoice.clientId)) : Promise.resolve(null),
+      ]);
+      const client = clientRes?.data || null;
+      const printWindow = window.open("", "_blank");
+      const printContent = PrintInvoice({ invoice, client, organization: org });
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    } catch (error) {
+      console.error("Error printing invoice:", error);
+    }
   };
 
   const getClientName = (clientId) => {
@@ -1025,12 +1048,7 @@ const InvoiceList = () => {
                           <Tooltip title="Print">
                             <IconButton
                               size="small"
-                              onClick={() =>
-                                window.open(
-                                  `/invoices/print/${invoice.id}`,
-                                  "_blank"
-                                )
-                              }
+                              onClick={() => printInvoice(invoice)}
                             >
                               <Icon icon="mdi:printer" />
                             </IconButton>
