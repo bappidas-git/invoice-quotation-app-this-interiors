@@ -21,8 +21,9 @@ import Swal from "sweetalert2";
 import DataTable from "../Common/DataTable";
 import DateRangeFilter from "../Common/DateRangeFilter";
 import { quotationsAPI, clientsAPI } from "../../services/api";
-import { formatDate, formatCurrency, getDateRange } from "../../utils/helpers";
+import { formatDate, formatCurrency, getDateRange, getOrgProfile } from "../../utils/helpers";
 import { QUOTATION_STATUS } from "../../utils/constants";
+import PrintQuotation from "./PrintQuotation";
 import styles from "./quotation.module.css";
 
 const QuotationList = () => {
@@ -166,6 +167,26 @@ const QuotationList = () => {
     }
   };
 
+  const printQuotation = async (quotation) => {
+    try {
+      const [org, clientRes] = await Promise.all([
+        getOrgProfile(),
+        quotation.clientId ? clientsAPI.getById(quotation.clientId) : Promise.resolve(null),
+      ]);
+      const client = clientRes?.data || null;
+      const printWindow = window.open("", "_blank");
+      const printContent = PrintQuotation({ quotation, client, organization: org });
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    } catch (error) {
+      console.error("Error printing quotation:", error);
+    }
+  };
+
   const handleDateFilterChange = (filter, dateRange) => {
     setDateFilter(filter);
     setCustomDateRange(dateRange);
@@ -264,7 +285,7 @@ const QuotationList = () => {
       <Tooltip title="Print">
         <IconButton
           size="small"
-          onClick={() => navigate(`/quotations/print/${row.id}`)}
+          onClick={() => printQuotation(row)}
         >
           <Icon icon="mdi:printer" />
         </IconButton>
