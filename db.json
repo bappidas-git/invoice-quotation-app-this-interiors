@@ -214,6 +214,68 @@
       "createdAt": "2025-11-07T08:32:34.047Z",
       "updatedAt": "2025-11-07T08:33:56.274Z",
       "id": 2
+    },
+    {
+      "quotationNumber": "QT-2026-0003",
+      "clientId": 1,
+      "date": "2026-02-06T09:05:20.114Z",
+      "items": [
+        {
+          "scopeOfWork": "CAD drawings",
+          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+          "amount": 100
+        }
+      ],
+      "subtotal": 100,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 100,
+      "status": "Quotation",
+      "paidAmount": 0,
+      "payments": [],
+      "currency": "AED",
+      "notes": "Test ",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "createdAt": "2026-02-06T09:05:56.272Z",
+      "updatedAt": "2026-02-06T09:05:56.272Z",
+      "id": 3
+    },
+    {
+      "quotationNumber": "QT-2026-0004",
+      "clientId": 2,
+      "date": "2026-02-06T09:07:05.353Z",
+      "items": [
+        {
+          "scopeOfWork": "Up to 12x 3D Visualizations & Renderings - 2 Rooms",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 220
+        }
+      ],
+      "subtotal": 220,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 220,
+      "status": "Partially Paid",
+      "paidAmount": 20,
+      "payments": [
+        {
+          "amount": 20,
+          "paymentMethod": "Cash",
+          "paymentDate": "2026-02-06T09:07:05.353Z",
+          "notes": "Partially Paid by Cash",
+          "date": "2026-02-06T09:07:59.625Z"
+        }
+      ],
+      "currency": "AED",
+      "notes": "Partially Paid",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "createdAt": "2026-02-06T09:07:59.625Z",
+      "updatedAt": "2026-02-06T09:07:59.625Z",
+      "id": 4
     }
   ],
   "invoices": [
@@ -307,6 +369,33 @@
       "notes": "70% Payment Done. Start of Work",
       "createdAt": "2025-11-07T08:33:56.340Z",
       "id": 3
+    },
+    {
+      "invoiceNumber": "INV-2026-0004",
+      "quotationId": 4,
+      "clientId": 2,
+      "date": "2026-02-06T09:07:59.691Z",
+      "items": [
+        {
+          "scopeOfWork": "Up to 12x 3D Visualizations & Renderings - 2 Rooms",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 20
+        }
+      ],
+      "subtotal": 20,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 20,
+      "paidAmount": 20,
+      "paymentDate": "2026-02-06T09:07:05.353Z",
+      "paymentMethod": "Cash",
+      "currency": "AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "notes": "Partially Paid by Cash",
+      "createdAt": "2026-02-06T09:07:59.691Z",
+      "id": 4
     }
   ],
   "organizationSettings": [
