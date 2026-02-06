@@ -325,17 +325,14 @@ import {
   CardContent,
   Typography,
   Button,
-  ButtonGroup,
-  TextField,
-  InputAdornment,
   IconButton,
   Skeleton,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import MetricCard from "../Common/MetricCard";
+import DateRangeFilter from "../Common/DateRangeFilter";
 import { quotationsAPI, invoicesAPI, clientsAPI } from "../../services/api";
 import { formatCurrency, getDateRange } from "../../utils/helpers";
 import styles from "./dashboard.module.css";
@@ -344,9 +341,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState("Last Month");
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [customDateRange, setCustomDateRange] = useState(null);
   const [dashboardData, setDashboardData] = useState({
     totalInvoices: 0,
     totalInvoiceAmount: 0,
@@ -360,37 +355,48 @@ const Dashboard = () => {
     monthlyTrend: [],
   });
 
-  const dateFilters = ["Today", "Last Week", "Last Month", "Choose Date Range"];
-
   useEffect(() => {
     fetchDashboardData();
-  }, [dateFilter, startDate, endDate]);
+  }, [dateFilter, customDateRange]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const dateRange =
-        dateFilter === "Choose Date Range"
-          ? { startDate, endDate }
-          : getDateRange(dateFilter);
-
       const [quotations, invoices, clients] = await Promise.all([
         quotationsAPI.getAll(),
         invoicesAPI.getAll(),
         clientsAPI.getAll(),
       ]);
 
-      const filteredQuotations = quotations.data.filter(
-        (q) =>
-          new Date(q.date) >= dateRange.startDate &&
-          new Date(q.date) <= dateRange.endDate
-      );
+      let filteredQuotations = quotations.data;
+      let filteredInvoices = invoices.data;
 
-      const filteredInvoices = invoices.data.filter(
-        (i) =>
-          new Date(i.date) >= dateRange.startDate &&
-          new Date(i.date) <= dateRange.endDate
-      );
+      // Date filtering
+      if (dateFilter !== "All") {
+        let dateRange;
+        if (customDateRange && dateFilter.includes("-")) {
+          dateRange = {
+            startDate: customDateRange.start,
+            endDate: customDateRange.end,
+          };
+        } else {
+          dateRange = getDateRange(dateFilter);
+        }
+
+        if (dateRange.startDate && dateRange.endDate) {
+          filteredQuotations = filteredQuotations.filter(
+            (q) =>
+              new Date(q.date) >= new Date(dateRange.startDate) &&
+              new Date(q.date) <= new Date(dateRange.endDate)
+          );
+
+          filteredInvoices = filteredInvoices.filter(
+            (i) =>
+              new Date(i.date) >= new Date(dateRange.startDate) &&
+              new Date(i.date) <= new Date(dateRange.endDate)
+          );
+        }
+      }
 
       const totalQuotationAmount = filteredQuotations.reduce(
         (sum, q) => sum + q.totalAmount,
@@ -426,13 +432,9 @@ const Dashboard = () => {
     }
   };
 
-  const handleDateFilterChange = (filter) => {
-    if (filter === "Choose Date Range") {
-      setShowDatePicker(true);
-    } else {
-      setShowDatePicker(false);
-      setDateFilter(filter);
-    }
+  const handleDateFilterChange = (filter, dateRange) => {
+    setDateFilter(filter);
+    setCustomDateRange(dateRange);
   };
 
   const metrics = [
@@ -513,48 +515,12 @@ const Dashboard = () => {
           </Typography>
         </Box>
 
-        <ButtonGroup variant="outlined" className={styles.dateFilterGroup}>
-          {dateFilters.map((filter) => (
-            <Button
-              key={filter}
-              onClick={() => handleDateFilterChange(filter)}
-              className={dateFilter === filter ? styles.activeFilter : ""}
-            >
-              {filter}
-            </Button>
-          ))}
-        </ButtonGroup>
+        <DateRangeFilter
+          value={dateFilter}
+          onChange={handleDateFilterChange}
+          className={styles.dateFilterGroup}
+        />
       </Box>
-
-      {showDatePicker && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={styles.datePickerContainer}
-        >
-          <DatePicker
-            label="Start Date"
-            value={startDate}
-            onChange={setStartDate}
-            renderInput={(params) => <TextField {...params} />}
-          />
-          <DatePicker
-            label="End Date"
-            value={endDate}
-            onChange={setEndDate}
-            renderInput={(params) => <TextField {...params} />}
-          />
-          <Button
-            variant="contained"
-            onClick={() => {
-              setDateFilter("Choose Date Range");
-              setShowDatePicker(false);
-            }}
-          >
-            Apply
-          </Button>
-        </motion.div>
-      )}
 
       <Grid container spacing={3} className={styles.metricsGrid}>
         {metrics.map((metric, index) => (
