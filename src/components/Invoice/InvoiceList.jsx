@@ -734,11 +734,13 @@ import {
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
+import DateRangeFilter from "../Common/DateRangeFilter";
 import { invoicesAPI, clientsAPI } from "../../services/api";
 import {
   formatDate,
   formatCurrency,
   getGeneralSettings,
+  getDateRange,
   getOrgProfile,
 } from "../../utils/helpers";
 import PrintInvoice from "./PrintInvoice";
@@ -770,13 +772,15 @@ const InvoiceList = () => {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("Last Month");
+  const [customDateRange, setCustomDateRange] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [generalSettings, setGeneralSettings] = useState(null);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [dateFilter, customDateRange]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -787,7 +791,29 @@ const InvoiceList = () => {
         getGeneralSettings(),
       ]);
 
-      const safeInvoices = (invoicesRes.data || []).map(normalizeInvoice);
+      let safeInvoices = (invoicesRes.data || []).map(normalizeInvoice);
+
+      // Date filtering
+      if (dateFilter !== "All") {
+        let dateRange;
+        if (customDateRange && dateFilter.includes("-")) {
+          dateRange = {
+            startDate: customDateRange.start,
+            endDate: customDateRange.end,
+          };
+        } else {
+          dateRange = getDateRange(dateFilter);
+        }
+
+        if (dateRange.startDate && dateRange.endDate) {
+          safeInvoices = safeInvoices.filter(
+            (i) =>
+              new Date(i.date) >= new Date(dateRange.startDate) &&
+              new Date(i.date) <= new Date(dateRange.endDate)
+          );
+        }
+      }
+
       setInvoices(safeInvoices);
       setClients(clientsRes.data || []);
       setGeneralSettings(settings);
@@ -862,6 +888,11 @@ const InvoiceList = () => {
     } catch (error) {
       console.error("Error printing invoice:", error);
     }
+  };
+
+  const handleDateFilterChange = (filter, dateRange) => {
+    setDateFilter(filter);
+    setCustomDateRange(dateRange);
   };
 
   const getClientName = (clientId) => {
@@ -943,21 +974,28 @@ const InvoiceList = () => {
           </Box>
         </Box>
 
-        <Card className={styles.searchCard}>
+        <Card className={styles.filterCard}>
           <CardContent>
-            <TextField
-              placeholder="Search by invoice number, client, or amount."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Icon icon="mdi:magnify" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <Box className={styles.filterContainer}>
+              <TextField
+                placeholder="Search by invoice number, client, or amount..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={styles.searchField}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Icon icon="mdi:magnify" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <DateRangeFilter
+                value={dateFilter}
+                onChange={handleDateFilterChange}
+              />
+            </Box>
           </CardContent>
         </Card>
 

@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { format } from "date-fns";
@@ -22,18 +21,25 @@ const DateRangeFilter = ({ value, onChange, className }) => {
   const filters = ["Today", "Last Week", "Last Month", customLabel, "All"];
 
   useEffect(() => {
-    if (activeFilter === "Choose Date Range" || activeFilter.includes(" - ")) {
-      return;
+    if (value && value !== activeFilter) {
+      setActiveFilter(value);
     }
-    setCustomLabel("Choose Date Range");
-    setDateRange({ start: null, end: null });
+  }, [value]);
+
+  useEffect(() => {
+    if (
+      activeFilter !== "Choose Date Range" &&
+      !activeFilter.includes(" - ")
+    ) {
+      setCustomLabel("Choose Date Range");
+      setDateRange({ start: null, end: null });
+    }
   }, [activeFilter]);
 
   const handleFilterClick = (filter) => {
     if (filter === customLabel && customLabel === "Choose Date Range") {
       setShowDatePicker(true);
     } else if (filter === customLabel && customLabel !== "Choose Date Range") {
-      // Custom date range already selected, just set it as active
       setActiveFilter(filter);
       onChange(filter, dateRange);
     } else {
@@ -92,14 +98,14 @@ const DateRangeFilter = ({ value, onChange, className }) => {
               label="Start Date"
               value={dateRange.start}
               onChange={(date) => setDateRange({ ...dateRange, start: date })}
-              renderInput={(params) => <TextField {...params} fullWidth />}
+              slotProps={{ textField: { fullWidth: true } }}
               maxDate={new Date()}
             />
             <DatePicker
               label="End Date"
               value={dateRange.end}
               onChange={(date) => setDateRange({ ...dateRange, end: date })}
-              renderInput={(params) => <TextField {...params} fullWidth />}
+              slotProps={{ textField: { fullWidth: true } }}
               minDate={dateRange.start}
               maxDate={new Date()}
             />
