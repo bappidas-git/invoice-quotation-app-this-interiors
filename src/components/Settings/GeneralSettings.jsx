@@ -181,11 +181,11 @@ const GeneralSettings = () => {
               <Grid container spacing={2}>
                 <Grid item xs={12} md={3}>
                   <TextField
-                    label="Quotation Prefix"
+                    label="Performa Prefix"
                     value={settings.quotationPrefix}
                     onChange={handleChange("quotationPrefix")}
                     fullWidth
-                    helperText="e.g., QT, QUOTE, Q"
+                    helperText="e.g., PI, QT, PF"
                   />
                 </Grid>
                 <Grid item xs={12} md={3}>
@@ -199,7 +199,7 @@ const GeneralSettings = () => {
                 </Grid>
                 <Grid item xs={12} md={3}>
                   <TextField
-                    label="Quotation Valid Days"
+                    label="Performa Valid Days"
                     type="number"
                     value={settings.quotationValidDays}
                     onChange={handleChange("quotationValidDays")}

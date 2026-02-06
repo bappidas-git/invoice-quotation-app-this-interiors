@@ -205,7 +205,7 @@ const PaymentUpdate = () => {
           currency: CURRENCY,
           notes:
             paymentDetails.notes ||
-            `Payment for quotation ${quotation.quotationNumber}`,
+            `Payment for performa ${quotation.quotationNumber}`,
           createdAt: new Date().toISOString(),
         };
 
@@ -242,7 +242,7 @@ const PaymentUpdate = () => {
   if (!quotation) {
     return (
       <Box className={styles.errorContainer}>
-        <Typography>Quotation not found</Typography>
+        <Typography>Performa invoice not found</Typography>
       </Box>
     );
   }
@@ -257,7 +257,7 @@ const PaymentUpdate = () => {
             Add Payment
           </Typography>
           <Typography variant="body2" className={styles.subtitle}>
-            Record payment for quotation {quotation.quotationNumber}
+            Record payment for performa {quotation.quotationNumber}
           </Typography>
         </Box>
         <Button
@@ -272,12 +272,12 @@ const PaymentUpdate = () => {
       <Card className={styles.summaryCard}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Quotation Summary
+            Performa Summary
           </Typography>
           <Box className={styles.summaryGrid}>
             <Box>
               <Typography variant="caption" color="textSecondary">
-                Quotation Number
+                Performa Number
               </Typography>
               <Typography variant="body1" fontWeight="600">
                 {quotation.quotationNumber}

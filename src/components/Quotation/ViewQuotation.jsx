@@ -80,7 +80,7 @@ const ViewQuotation = () => {
   if (!quotation) {
     return (
       <Box className={styles.errorContainer}>
-        <Typography>Quotation not found</Typography>
+        <Typography>Performa invoice not found</Typography>
       </Box>
     );
   }
@@ -90,10 +90,10 @@ const ViewQuotation = () => {
       <Box className={styles.header}>
         <Box>
           <Typography variant="h4" className={styles.title}>
-            View Quotation
+            View Performa Invoice
           </Typography>
           <Typography variant="body2" className={styles.subtitle}>
-            Quotation details and summary
+            Performa invoice details and summary
           </Typography>
         </Box>
         <Box className={styles.headerActions}>
@@ -140,12 +140,12 @@ const ViewQuotation = () => {
           <Card className={styles.detailsCard}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Quotation Details
+                Performa Invoice Details
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <Typography variant="caption" color="textSecondary">
-                    Quotation Number
+                    Performa Number
                   </Typography>
                   <Typography variant="body1" fontWeight="600">
                     {quotation.quotationNumber}

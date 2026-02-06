@@ -65,7 +65,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
           {isTablet ? (
             <>
               <motion.div whileTap={{ scale: 0.95 }}>
-                <Tooltip title="New Quotation">
+                <Tooltip title="New Performa">
                   <IconButton
                     color="inherit"
                     onClick={handleNewQuotation}
@@ -104,7 +104,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                   onClick={handleNewQuotation}
                   className={styles.newQuotationBtn}
                 >
-                  New Quotation
+                  New Performa
                 </Button>
               </motion.div>
 

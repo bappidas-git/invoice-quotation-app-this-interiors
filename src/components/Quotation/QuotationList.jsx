@@ -129,7 +129,7 @@ const QuotationList = () => {
       Swal.fire({
         icon: "error",
         title: "Cannot Delete",
-        text: "Cannot delete quotations with payment records",
+        text: "Cannot delete performa invoices with payment records",
       });
       return;
     }
@@ -147,10 +147,10 @@ const QuotationList = () => {
     if (result.isConfirmed) {
       try {
         await quotationsAPI.delete(quotation.id);
-        Swal.fire("Deleted!", "Quotation has been deleted.", "success");
+        Swal.fire("Deleted!", "Performa invoice has been deleted.", "success");
         fetchData();
       } catch (error) {
-        Swal.fire("Error!", "Failed to delete quotation.", "error");
+        Swal.fire("Error!", "Failed to delete performa invoice.", "error");
       }
     }
   };
@@ -183,7 +183,7 @@ const QuotationList = () => {
   const columns = [
     {
       field: "quotationNumber",
-      label: "Quotation No.",
+      label: "Performa No.",
       sortable: true,
       render: (value) => (
         <Typography variant="body2" fontWeight="600">
@@ -284,7 +284,7 @@ const QuotationList = () => {
   const renderExpandedContent = (row) => (
     <>
       <Typography variant="subtitle2" gutterBottom>
-        Quotation Summary
+        Performa Summary
       </Typography>
       <Box className={styles.summaryGrid}>
         <Box>
@@ -336,10 +336,10 @@ const QuotationList = () => {
       <Box className={styles.header}>
         <Box>
           <Typography variant="h4" className={styles.title}>
-            Quotations
+            Performa
           </Typography>
           <Typography variant="body2" className={styles.subtitle}>
-            Manage all your quotations and track payments
+            Manage all your performa invoices and track payments
           </Typography>
         </Box>
         <Button
@@ -348,7 +348,7 @@ const QuotationList = () => {
           onClick={() => navigate("/quotations/create")}
           className={styles.createButton}
         >
-          Create New Quotation
+          Create New Performa
         </Button>
       </Box>
 
@@ -356,7 +356,7 @@ const QuotationList = () => {
         <Card className={styles.statCard}>
           <CardContent>
             <Typography variant="h6">{statistics.total.count}</Typography>
-            <Typography variant="body2">Total Quotations</Typography>
+            <Typography variant="body2">Total Performa</Typography>
             <Typography variant="caption" color="primary">
               {formatCurrency(statistics.total.amount)}
             </Typography>
@@ -386,7 +386,7 @@ const QuotationList = () => {
         <CardContent>
           <Box className={styles.filterContainer}>
             <TextField
-              placeholder="Search quotations..."
+              placeholder="Search performa..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchField}
@@ -408,7 +408,7 @@ const QuotationList = () => {
               >
                 <MenuItem value="All">All Status</MenuItem>
                 <MenuItem value={QUOTATION_STATUS.QUOTATION}>
-                  Quotation
+                  Performa
                 </MenuItem>
                 <MenuItem value={QUOTATION_STATUS.PARTIALLY_PAID}>
                   Partially Paid
@@ -434,7 +434,7 @@ const QuotationList = () => {
         expandable={true}
         expandedContent={renderExpandedContent}
         actions={renderActions}
-        emptyMessage="No quotations found"
+        emptyMessage="No performa invoices found"
       />
     </Box>
   );

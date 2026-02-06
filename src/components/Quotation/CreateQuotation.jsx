@@ -350,7 +350,7 @@ const CreateQuotation = () => {
       await Swal.fire({
         icon: "info",
         title: "Nothing to pay",
-        text: "This quotation is already fully paid.",
+        text: "This performa invoice is already fully paid.",
       });
       return;
     }
@@ -535,7 +535,7 @@ const CreateQuotation = () => {
         Swal.fire({
           icon: "success",
           title: "Success",
-          text: "Quotation updated successfully",
+          text: "Performa invoice updated successfully",
         });
       } else {
         const response = await quotationsAPI.create(quotationData);
@@ -543,7 +543,7 @@ const CreateQuotation = () => {
         Swal.fire({
           icon: "success",
           title: "Success",
-          text: "Quotation created successfully",
+          text: "Performa invoice created successfully",
         });
       }
 
@@ -555,7 +555,7 @@ const CreateQuotation = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Failed to save quotation",
+        text: "Failed to save performa invoice",
       });
     } finally {
       setLoading(false);
@@ -623,12 +623,12 @@ const CreateQuotation = () => {
       <Box className={styles.header}>
         <Box>
           <Typography variant="h4" className={styles.title}>
-            {isEdit ? "Edit Quotation" : "Create New Quotation"}
+            {isEdit ? "Edit Performa Invoice" : "Create New Performa Invoice"}
           </Typography>
           <Typography variant="body2" className={styles.subtitle}>
             {isEdit
-              ? "Update quotation details"
-              : "Generate a new quotation for your client"}
+              ? "Update performa invoice details"
+              : "Generate a new performa invoice for your client"}
           </Typography>
         </Box>
         <Button
@@ -648,7 +648,7 @@ const CreateQuotation = () => {
             </Typography>
             <Box className={styles.formGrid}>
               <TextField
-                label="Quotation Number"
+                label="Performa Number"
                 value={quotation.quotationNumber}
                 disabled
                 fullWidth
@@ -887,7 +887,7 @@ const CreateQuotation = () => {
                 }
               >
                 <MenuItem value={QUOTATION_STATUS.QUOTATION}>
-                  Quotation
+                  Performa
                 </MenuItem>
                 <MenuItem value={QUOTATION_STATUS.PARTIALLY_PAID}>
                   Partially Paid
