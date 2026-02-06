@@ -84,7 +84,7 @@ const TaxSettings = () => {
       <Box className={styles.header}>
         <Typography variant="h5">Tax Settings</Typography>
         <Typography variant="body2" color="text.secondary">
-          Configure tax rates and settings for quotations and invoices
+          Configure tax rates and settings for performa invoices and invoices
         </Typography>
       </Box>
 

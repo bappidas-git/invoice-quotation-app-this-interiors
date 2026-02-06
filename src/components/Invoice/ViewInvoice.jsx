@@ -171,7 +171,7 @@ const ViewInvoice = () => {
                 {quotation && (
                   <Grid item xs={12}>
                     <Typography variant="caption" color="textSecondary">
-                      Related Quotation
+                      Related Performa
                     </Typography>
                     <Box display="flex" alignItems="center" gap={1}>
                       <Typography variant="body1">

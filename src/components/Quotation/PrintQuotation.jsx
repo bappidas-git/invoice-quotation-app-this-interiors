@@ -18,7 +18,7 @@ const PrintQuotation = ({ quotation, client, organization }) => {
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Quotation - ${quotation.quotationNumber}</title>
+      <title>Performa Invoice - ${quotation.quotationNumber}</title>
       <style>
         * {
           margin: 0;
@@ -170,7 +170,7 @@ const PrintQuotation = ({ quotation, client, organization }) => {
           font-weight: bold;
           margin-left: 10px;
         }
-        .status-quotation {
+        .status-performa {
           background: #e3f2fd;
           color: #1976d2;
         }
@@ -230,14 +230,14 @@ const PrintQuotation = ({ quotation, client, organization }) => {
             </div>
           </div>
           <div class="document-title">
-            <h1>QUOTATION</h1>
+            <h1>PERFORMA INVOICE</h1>
             <div class="document-number">${quotation.quotationNumber}</div>
             <span class="status-badge ${
               quotation.status === "Fully Paid"
                 ? "status-paid"
                 : quotation.status === "Partially Paid"
                 ? "status-partially"
-                : "status-quotation"
+                : "status-performa"
             }">${quotation.status}</span>
           </div>
         </div>
@@ -257,7 +257,7 @@ const PrintQuotation = ({ quotation, client, organization }) => {
             </div>
           </div>
           <div class="quotation-info">
-            <div class="section-title">Quotation Details</div>
+            <div class="section-title">Performa Invoice Details</div>
             <div class="info-block">
               <strong>Date:</strong> ${formatDate(quotation.date)}<br>
               <strong>Valid Until:</strong> ${formatDate(

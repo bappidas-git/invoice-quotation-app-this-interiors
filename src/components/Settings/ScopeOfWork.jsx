@@ -167,7 +167,7 @@ const ScopeOfWork = () => {
         <Box>
           <Typography variant="h5">Scope of Work</Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage scope of work categories for quotations
+            Manage scope of work categories for performa invoices
           </Typography>
         </Box>
         <Button

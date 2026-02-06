@@ -33,7 +33,7 @@ const Footer = () => {
           </Typography>
           <Box className={styles.footerDivider}>|</Box>
           <Typography variant="body2" className={styles.footerText}>
-            Invoice & Quotation Management System v1.0
+            Invoice & Performa Management System v1.0
           </Typography>
         </Box>
       </Container>

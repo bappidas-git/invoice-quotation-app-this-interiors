@@ -446,7 +446,7 @@ const Dashboard = () => {
         "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
     },
     {
-      title: "Total Quotations",
+      title: "Total Performa",
       value: dashboardData.totalQuotations,
       amount: formatCurrency(dashboardData.totalQuotationAmount),
       icon: "mdi:file-document-edit",
@@ -476,7 +476,7 @@ const Dashboard = () => {
 
   const quickActions = [
     {
-      title: "Create New Quotation",
+      title: "Create New Performa",
       icon: "mdi:file-document-plus",
       color: "#667eea",
       path: "/quotations/create",
@@ -601,7 +601,7 @@ const Dashboard = () => {
                       variant="subtitle2"
                       className={styles.activityHeader}
                     >
-                      Recent Quotations
+                      Recent Performa
                     </Typography>
                     {dashboardData.recentQuotations.map((q) => (
                       <Box key={q.id} className={styles.activityItem}>

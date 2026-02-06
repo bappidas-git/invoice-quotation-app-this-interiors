@@ -31,7 +31,7 @@ const Sidebar = ({ open, onClose }) => {
       path: "/",
     },
     {
-      title: "Quotations",
+      title: "Performa",
       icon: "mdi:file-document-edit",
       path: "/quotations",
     },
