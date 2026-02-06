@@ -276,6 +276,68 @@
       "createdAt": "2026-02-06T09:07:59.625Z",
       "updatedAt": "2026-02-06T09:07:59.625Z",
       "id": 4
+    },
+    {
+      "quotationNumber": "QT-2026-0005",
+      "clientId": 1,
+      "date": "2026-02-06T10:34:29.925Z",
+      "items": [
+        {
+          "scopeOfWork": "CAD drawings",
+          "task": "Overall Layout Plans, Ceiling Designs (RCP), Furniture Placement Plans, Materials and Finishes Schedule, Lighting & Electrical Layouts, and Custom Joinery Concepts",
+          "amount": 500
+        }
+      ],
+      "subtotal": 500,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 500,
+      "status": "Performa",
+      "paidAmount": 0,
+      "payments": [],
+      "currency": "AED",
+      "notes": "Test Performa Edited",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "createdAt": "2026-02-06T10:35:18.352Z",
+      "updatedAt": "2026-02-06T10:39:16.242Z",
+      "id": 5
+    },
+    {
+      "quotationNumber": "QT-2026-0006",
+      "clientId": 1,
+      "date": "2026-02-06T10:39:46.315Z",
+      "items": [
+        {
+          "scopeOfWork": "Installation",
+          "task": "Overseeing FF&E Procurement, Custom Furniture and Joinery Production, and Coordinating Installation – including detailed fit-out drawings. Final scope will be determined once the number of fit-outs is confirmed",
+          "amount": 1000
+        }
+      ],
+      "subtotal": 1000,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 1000,
+      "status": "Partially Paid",
+      "paidAmount": 100,
+      "payments": [
+        {
+          "amount": 100,
+          "paymentMethod": "Bank Transfer",
+          "paymentDate": "2026-02-06T10:39:46.315Z",
+          "notes": "",
+          "date": "2026-02-06T10:41:18.663Z"
+        }
+      ],
+      "currency": "AED",
+      "notes": "Partially Paid after making change Quotaion to Performa -- Testing",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "createdAt": "2026-02-06T10:41:18.663Z",
+      "updatedAt": "2026-02-06T10:41:18.663Z",
+      "id": 6
     }
   ],
   "invoices": [
@@ -396,6 +458,33 @@
       "notes": "Partially Paid by Cash",
       "createdAt": "2026-02-06T09:07:59.691Z",
       "id": 4
+    },
+    {
+      "invoiceNumber": "INV-2026-0005",
+      "quotationId": 6,
+      "clientId": 1,
+      "date": "2026-02-06T10:41:18.744Z",
+      "items": [
+        {
+          "scopeOfWork": "Installation",
+          "task": "Overseeing FF&E Procurement, Custom Furniture and Joinery Production, and Coordinating Installation – including detailed fit-out drawings. Final scope will be determined once the number of fit-outs is confirmed",
+          "amount": 100
+        }
+      ],
+      "subtotal": 100,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 100,
+      "paidAmount": 100,
+      "paymentDate": "2026-02-06T10:39:46.315Z",
+      "paymentMethod": "Bank Transfer",
+      "currency": "AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "notes": "Invoice for partial payment",
+      "createdAt": "2026-02-06T10:41:18.744Z",
+      "id": 5
     }
   ],
   "organizationSettings": [
