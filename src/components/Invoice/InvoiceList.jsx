@@ -11,6 +11,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Paper,
   IconButton,
   Chip,
@@ -19,6 +20,8 @@ import {
   Menu,
   MenuItem,
   Tooltip,
+  FormControl,
+  Select,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
@@ -46,6 +49,8 @@ const InvoiceList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [generalSettings, setGeneralSettings] = useState(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchData();
@@ -164,6 +169,7 @@ const InvoiceList = () => {
   const handleDateFilterChange = (filter, dateRange) => {
     setDateFilter(filter);
     setCustomDateRange(dateRange);
+    setPage(0);
   };
 
   const getClientName = (clientId) => {
@@ -199,25 +205,39 @@ const InvoiceList = () => {
     return "Pending";
   };
 
-  const filteredInvoices = invoices.filter((inv) => {
-    if (!searchTerm) return true;
-    const q = searchTerm.toLowerCase();
+  const filteredInvoices = invoices
+    .filter((inv) => {
+      if (!searchTerm) return true;
+      const q = searchTerm.toLowerCase();
 
-    if (
-      typeof inv.invoiceNumber === "string" &&
-      inv.invoiceNumber.toLowerCase().includes(q)
-    ) {
-      return true;
-    }
+      if (
+        typeof inv.invoiceNumber === "string" &&
+        inv.invoiceNumber.toLowerCase().includes(q)
+      ) {
+        return true;
+      }
 
-    const clientName = getClientName(inv.clientId).toLowerCase();
-    if (clientName.includes(q)) return true;
+      const clientName = getClientName(inv.clientId).toLowerCase();
+      if (clientName.includes(q)) return true;
 
-    const amt = (inv.totalAmount || 0).toString();
-    if (amt.includes(searchTerm)) return true;
+      const amt = (inv.totalAmount || 0).toString();
+      if (amt.includes(searchTerm)) return true;
 
-    return false;
-  });
+      return false;
+    })
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const paginatedInvoices = filteredInvoices.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const handleChangePage = (event, newPage) => setPage(newPage);
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -248,7 +268,7 @@ const InvoiceList = () => {
               <TextField
                 placeholder="Search by invoice number, client, or amount..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
                 className={styles.searchField}
                 InputProps={{
                   startAdornment: (
@@ -299,7 +319,7 @@ const InvoiceList = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {filteredInvoices.map((invoice) => (
+                    {paginatedInvoices.map((invoice) => (
                       <TableRow key={invoice.id} hover>
                         <TableCell>
                           <Typography variant="body2" fontWeight="500">
@@ -374,6 +394,28 @@ const InvoiceList = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2 }}>
+                <FormControl size="small">
+                  <Select value={rowsPerPage} onChange={handleChangeRowsPerPage}>
+                    {[5, 10, 25, 50, 100].map((n) => (
+                      <MenuItem key={n} value={n}>
+                        {n} rows
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <TablePagination
+                  component="div"
+                  count={filteredInvoices.length}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPageOptions={[]}
+                />
+              </Box>
             )}
           </CardContent>
         </Card>

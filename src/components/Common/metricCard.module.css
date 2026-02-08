@@ -7,6 +7,7 @@
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
   overflow: visible !important;
   transition: all 0.3s ease !important;
+  height: 100%;
 }
 
 .metricCard:hover {
@@ -17,6 +18,10 @@
 .cardContent {
   padding: 20px !important;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .cardHeader {
@@ -54,6 +59,7 @@
   color: #666;
   margin-bottom: 8px !important;
   font-weight: 500 !important;
+  min-height: 20px;
 }
 
 .title {
