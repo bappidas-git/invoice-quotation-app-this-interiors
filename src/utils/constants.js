@@ -11,6 +11,13 @@ export const INVOICE_STATUS = {
   CANCELLED: "Cancelled",
 };
 
+export const BOQ_STATUS = {
+  DRAFT: "Draft",
+  SENT: "Sent",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+};
+
 export const PAYMENT_METHODS = [
   "Cash",
   "Bank Transfer",
@@ -28,6 +35,7 @@ export const DATE_FORMAT = "dd/MM/yyyy";
 export default {
   QUOTATION_STATUS,
   INVOICE_STATUS,
+  BOQ_STATUS,
   PAYMENT_METHODS,
   CURRENCY,
   DATE_FORMAT,

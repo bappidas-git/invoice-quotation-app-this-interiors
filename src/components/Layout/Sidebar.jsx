@@ -41,6 +41,11 @@ const Sidebar = ({ open, onClose }) => {
       path: "/invoices",
     },
     {
+      title: "BOQ",
+      icon: "mdi:clipboard-list",
+      path: "/boq",
+    },
+    {
       title: "Clients",
       icon: "mdi:account-group",
       path: "/clients",
@@ -54,6 +59,11 @@ const Sidebar = ({ open, onClose }) => {
       title: "Settings",
       icon: "mdi:cog",
       path: "/settings",
+    },
+    {
+      title: "BOQ Settings",
+      icon: "mdi:cog-box",
+      path: "/boq-settings",
     },
   ];
 
