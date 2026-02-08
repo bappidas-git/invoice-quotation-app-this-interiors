@@ -392,6 +392,12 @@
   color: #6b7280;
 }
 
+/* Search Field */
+.searchField {
+  width: 100%;
+  max-width: 360px;
+}
+
 /* Empty State */
 .emptyState {
   display: flex;
@@ -442,6 +448,10 @@
   .tab {
     font-size: 11px !important;
     padding: 6px 10px !important;
+  }
+
+  .searchField {
+    max-width: 100%;
   }
 }
 
