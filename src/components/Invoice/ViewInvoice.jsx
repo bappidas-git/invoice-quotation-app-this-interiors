@@ -18,7 +18,7 @@ import {
   Grid,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
-import { invoicesAPI, clientsAPI, quotationsAPI } from "../../services/api";
+import { invoicesAPI, clientsAPI, quotationsAPI, bankAccountsAPI } from "../../services/api";
 import { formatDate, formatCurrency, getOrgProfile } from "../../utils/helpers";
 import PrintInvoice from "./PrintInvoice";
 import styles from "./invoice.module.css";
@@ -30,6 +30,7 @@ const ViewInvoice = () => {
   const [client, setClient] = useState(null);
   const [quotation, setQuotation] = useState(null);
   const [organization, setOrganization] = useState(null);
+  const [bankAccount, setBankAccount] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -56,6 +57,15 @@ const ViewInvoice = () => {
         );
         setQuotation(quotationRes.data);
       }
+
+      if (invoiceRes.data.bankAccountId) {
+        try {
+          const bankRes = await bankAccountsAPI.getById(invoiceRes.data.bankAccountId);
+          setBankAccount(bankRes.data);
+        } catch (e) {
+          console.error("Error loading bank account:", e);
+        }
+      }
     } catch (error) {
       console.error("Error fetching invoice:", error);
     } finally {
@@ -65,7 +75,7 @@ const ViewInvoice = () => {
 
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
-    const printContent = PrintInvoice({ invoice, client, organization });
+    const printContent = PrintInvoice({ invoice, client, organization, bankAccount });
 
     printWindow.document.write(printContent);
     printWindow.document.close();
@@ -122,8 +132,61 @@ const ViewInvoice = () => {
       </Box>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Card className={styles.detailsCard}>
+        <Grid item xs={12} md={4}>
+          <Card className={styles.clientCard} sx={{ height: "100%" }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Bill To
+              </Typography>
+              {client && (
+                <Box>
+                  <Typography variant="body1" fontWeight="600" gutterBottom>
+                    {client.name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <Icon
+                      icon="mdi:email"
+                      style={{
+                        verticalAlign: "middle",
+                        marginRight: 8,
+                      }}
+                    />
+                    {client.email}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <Icon
+                      icon="mdi:phone"
+                      style={{
+                        verticalAlign: "middle",
+                        marginRight: 8,
+                      }}
+                    />
+                    {client.contact}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <Icon
+                      icon="mdi:map-marker"
+                      style={{
+                        verticalAlign: "middle",
+                        marginRight: 8,
+                      }}
+                    />
+                    {client.address}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {client.state}, {client.pin}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {client.country}
+                  </Typography>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card className={styles.detailsCard} sx={{ height: "100%" }}>
             <CardContent>
               <Box className={styles.invoiceHeader}>
                 <Typography variant="h6" gutterBottom>
@@ -195,54 +258,103 @@ const ViewInvoice = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card className={styles.clientCard}>
+          <Card sx={{ height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Client Information
+                Banking Information
               </Typography>
-              {client && (
+              {bankAccount ? (
                 <Box>
-                  <Typography variant="body1" fontWeight="600" gutterBottom>
-                    {client.name}
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Bank:</strong> {bankAccount.bankName}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    <Icon
-                      icon="mdi:email"
-                      style={{
-                        verticalAlign: "middle",
-                        marginRight: 8,
-                      }}
-                    />
-                    {client.email}
+                    <strong>A/C No:</strong> {bankAccount.accountNumber}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    <Icon
-                      icon="mdi:phone"
-                      style={{
-                        verticalAlign: "middle",
-                        marginRight: 8,
-                      }}
-                    />
-                    {client.contact}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    <Icon
-                      icon="mdi:map-marker"
-                      style={{
-                        verticalAlign: "middle",
-                        marginRight: 8,
-                      }}
-                    />
-                    {client.address}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {client.state}, {client.pin}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {client.country}
-                  </Typography>
+                  {bankAccount.accountHolderName && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>A/C Holder:</strong> {bankAccount.accountHolderName}
+                    </Typography>
+                  )}
+                  {bankAccount.branch && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>Branch:</strong> {bankAccount.branch}
+                    </Typography>
+                  )}
+                  {bankAccount.ifscSwift && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>IFSC/SWIFT:</strong> {bankAccount.ifscSwift}
+                    </Typography>
+                  )}
+                  {bankAccount.qrCodeUrl && (
+                    <Box sx={{ mt: 1 }}>
+                      <Box
+                        component="img"
+                        src={bankAccount.qrCodeUrl}
+                        alt="Payment QR Code"
+                        sx={{
+                          maxWidth: 120,
+                          maxHeight: 120,
+                          border: "1px solid #e0e0e0",
+                          borderRadius: 1,
+                        }}
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
+                    </Box>
+                  )}
                 </Box>
+              ) : (
+                <Typography variant="body2" color="textSecondary">
+                  No bank account linked
+                </Typography>
               )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Card sx={{ bgcolor: "#e8f5e9" }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom color="success.main">
+                <Icon icon="mdi:check-circle" style={{ verticalAlign: "middle", marginRight: 8 }} />
+                Payment Information
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={3}>
+                  <Typography variant="caption" color="textSecondary">
+                    Amount Paid
+                  </Typography>
+                  <Typography variant="body1" fontWeight="600" color="success.main">
+                    {formatCurrency(invoice.paidAmount)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Typography variant="caption" color="textSecondary">
+                    Payment Method
+                  </Typography>
+                  <Typography variant="body1" fontWeight="600">
+                    {invoice.paymentMethod}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Typography variant="caption" color="textSecondary">
+                    Payment Date
+                  </Typography>
+                  <Typography variant="body1" fontWeight="600">
+                    {formatDate(invoice.paymentDate)}
+                  </Typography>
+                </Grid>
+                {bankAccount && (
+                  <Grid item xs={12} md={3}>
+                    <Typography variant="caption" color="textSecondary">
+                      Bank
+                    </Typography>
+                    <Typography variant="body1" fontWeight="600">
+                      {bankAccount.bankName}
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
             </CardContent>
           </Card>
         </Grid>

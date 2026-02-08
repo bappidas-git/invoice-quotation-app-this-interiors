@@ -611,6 +611,19 @@
       "id": 7
     }
   ],
+  "bankAccounts": [
+    {
+      "id": 1,
+      "bankName": "Standard Chartered",
+      "accountNumber": "1234567890",
+      "branch": "Dubai",
+      "ifscSwift": "XYZ000012345",
+      "accountHolderName": "THIS INTERIORS",
+      "qrCodeUrl": "",
+      "isDefault": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    }
+  ],
   "organizationSettings": [
     {
       "id": 1,

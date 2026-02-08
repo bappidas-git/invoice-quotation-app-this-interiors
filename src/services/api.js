@@ -106,6 +106,17 @@ export const invoicesAPI = {
 };
 
 // ──────────────────────────────────────────────
+// Bank Accounts API
+// ──────────────────────────────────────────────
+export const bankAccountsAPI = {
+  getAll: () => api.get("/bankAccounts"),
+  getById: (id) => api.get(`/bankAccounts/${id}`),
+  create: (data) => api.post("/bankAccounts", data),
+  update: (id, data) => api.put(`/bankAccounts/${id}`, data),
+  delete: (id) => api.delete(`/bankAccounts/${id}`),
+};
+
+// ──────────────────────────────────────────────
 // Organization Settings API
 // ──────────────────────────────────────────────
 export const organizationsAPI = {

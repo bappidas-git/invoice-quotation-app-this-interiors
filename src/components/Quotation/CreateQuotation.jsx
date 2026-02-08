@@ -36,6 +36,7 @@ import {
   scopeOfWorkAPI,
   tasksAPI,
   invoicesAPI,
+  bankAccountsAPI,
 } from "../../services/api";
 import {
   generateQuotationNumber,
@@ -59,6 +60,7 @@ const CreateQuotation = () => {
   const [clients, setClients] = useState([]);
   const [scopeOfWork, setScopeOfWork] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [bankAccounts, setBankAccounts] = useState([]);
   const [taxSettings, setTaxSettings] = useState(null);
   const [generalSettings, setGeneralSettings] = useState(null);
   const [quotation, setQuotation] = useState({
@@ -78,6 +80,7 @@ const CreateQuotation = () => {
     taxPercent: 0,
     serviceTaxPercent: 0,
     taxLabel: "Tax",
+    bankAccountId: null,
   });
 
   const [openClientDialog, setOpenClientDialog] = useState(false);
@@ -117,7 +120,7 @@ const CreateQuotation = () => {
 
   const fetchInitialData = async () => {
     try {
-      const [clientsRes, scopeRes, tasksRes, quotationsRes, taxSet, genSet] =
+      const [clientsRes, scopeRes, tasksRes, quotationsRes, taxSet, genSet, banksRes] =
         await Promise.all([
           clientsAPI.getAll(),
           scopeOfWorkAPI.getAll(),
@@ -125,6 +128,7 @@ const CreateQuotation = () => {
           quotationsAPI.getAll(),
           getTaxSettings(),
           getGeneralSettings(),
+          bankAccountsAPI.getAll(),
         ]);
 
       setClients(clientsRes.data);
@@ -132,6 +136,10 @@ const CreateQuotation = () => {
       setTasks(tasksRes.data);
       setTaxSettings(taxSet);
       setGeneralSettings(genSet);
+      setBankAccounts(banksRes.data);
+
+      const defaultBank = banksRes.data.find((b) => b.isDefault);
+      const defaultBankId = defaultBank ? defaultBank.id : (banksRes.data.length > 0 ? banksRes.data[0].id : null);
 
       if (isEdit) {
         const existingQuotation = quotationsRes.data.find(
@@ -163,6 +171,7 @@ const CreateQuotation = () => {
           serviceTaxPercent: taxSet?.serviceTaxPercent || 0,
           taxLabel: taxSet?.taxLabel || "Tax",
           currency: genSet?.currency || "AED",
+          bankAccountId: defaultBankId,
         }));
       }
     } catch (error) {
@@ -495,6 +504,7 @@ const CreateQuotation = () => {
               ? "full"
               : "partial"
           } payment`,
+        bankAccountId: currentQuotation.bankAccountId || null,
         createdAt: new Date().toISOString(),
       };
 
@@ -554,14 +564,22 @@ const CreateQuotation = () => {
       });
 
       if (shouldPrint) {
-        const [clientRes, org] = await Promise.all([
+        const fetchPromises = [
           clientsAPI.getById(savedQuotation.clientId),
           getOrgProfile(),
-        ]);
+        ];
+        if (savedQuotation.bankAccountId) {
+          fetchPromises.push(bankAccountsAPI.getById(savedQuotation.bankAccountId));
+        }
+        const results = await Promise.all(fetchPromises);
+        const clientRes = results[0];
+        const org = results[1];
+        const bankRes = results[2];
         const printContent = PrintQuotation({
           quotation: savedQuotation,
           client: clientRes.data,
           organization: org,
+          bankAccount: bankRes?.data || null,
         });
         const printWindow = window.open("", "_blank");
         printWindow.document.write(printContent);
@@ -919,6 +937,29 @@ const CreateQuotation = () => {
                 </MenuItem>
               </Select>
             </FormControl>
+
+            {bankAccounts.length > 0 && (
+              <FormControl className={styles.statusSelect}>
+                <InputLabel>Bank Account</InputLabel>
+                <Select
+                  value={quotation.bankAccountId || ""}
+                  onChange={(e) =>
+                    setQuotation((prev) => ({
+                      ...prev,
+                      bankAccountId: e.target.value || null,
+                    }))
+                  }
+                  label="Bank Account"
+                >
+                  {bankAccounts.map((bank) => (
+                    <MenuItem key={bank.id} value={bank.id}>
+                      {bank.bankName} - {bank.accountNumber}
+                      {bank.isDefault ? " (Default)" : ""}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
 
             <Box className={styles.saveButtons}>
               <Button
