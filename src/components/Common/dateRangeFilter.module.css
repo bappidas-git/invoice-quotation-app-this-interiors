@@ -10,17 +10,17 @@
   font-size: 13px;
   transition: all 0.3s ease;
   border: none !important;
-  color: #666;
+  color: #6B6B6B;
   white-space: nowrap;
 }
 
 .dateFilterGroup button:hover {
-  background: rgba(102, 126, 234, 0.08);
-  color: #667eea;
+  background: rgba(199, 138, 30, 0.08);
+  color: #C78A1E;
 }
 
 .activeFilter {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%) !important;
   color: white !important;
 }
 

@@ -14,22 +14,22 @@
 
 .title {
   font-weight: 600 !important;
-  color: #1a1a1a;
+  color: #2F2F2F;
   margin-bottom: 4px !important;
 }
 
 .subtitle {
-  color: #666;
+  color: #6B6B6B;
 }
 
 .createButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%) !important;
   color: white !important;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(199, 138, 30, 0.3) !important;
 }
 
 .createButton:hover {
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+  box-shadow: 0 6px 20px rgba(199, 138, 30, 0.5) !important;
   transform: translateY(-2px);
 }
 

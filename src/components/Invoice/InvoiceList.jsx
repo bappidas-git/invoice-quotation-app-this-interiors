@@ -456,7 +456,7 @@ const InvoiceList = () => {
             handleDelete(selectedInvoice?.id);
             handleMenuClose();
           }}
-          style={{ color: "#f44336" }}
+          style={{ color: "#C0392B" }}
         >
           <Icon icon="mdi:delete" style={{ marginRight: 8 }} />
           Delete

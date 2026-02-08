@@ -158,36 +158,36 @@ const Dashboard = () => {
       value: dashboardData.totalInvoices,
       amount: formatCurrency(dashboardData.totalInvoiceAmount),
       icon: "mdi:receipt-text",
-      color: "#667eea",
+      color: "#C78A1E",
       bgGradient:
-        "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
+        "linear-gradient(135deg, rgba(199, 138, 30, 0.1) 0%, rgba(230, 182, 92, 0.1) 100%)",
     },
     {
       title: "Total Performa",
       value: dashboardData.totalQuotations,
       amount: formatCurrency(dashboardData.totalQuotationAmount),
       icon: "mdi:file-document-edit",
-      color: "#764ba2",
+      color: "#E6B65C",
       bgGradient:
-        "linear-gradient(135deg, rgba(118, 75, 162, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%)",
+        "linear-gradient(135deg, rgba(230, 182, 92, 0.1) 0%, rgba(199, 138, 30, 0.1) 100%)",
     },
     {
       title: "Due Amount",
       value: formatCurrency(dashboardData.dueAmount),
       amount: null,
       icon: "mdi:cash-clock",
-      color: "#f59e0b",
+      color: "#C0392B",
       bgGradient:
-        "linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 146, 60, 0.1) 100%)",
+        "linear-gradient(135deg, rgba(192, 57, 43, 0.1) 0%, rgba(192, 57, 43, 0.05) 100%)",
     },
     {
       title: "Total Clients",
       value: dashboardData.totalClients,
       amount: null,
       icon: "mdi:account-group",
-      color: "#10b981",
+      color: "#2E7D32",
       bgGradient:
-        "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%)",
+        "linear-gradient(135deg, rgba(46, 125, 50, 0.1) 0%, rgba(46, 125, 50, 0.05) 100%)",
     },
   ];
 
@@ -195,25 +195,25 @@ const Dashboard = () => {
     {
       title: "Create New Performa",
       icon: "mdi:file-document-plus",
-      color: "#667eea",
+      color: "#C78A1E",
       path: "/quotations/create",
     },
     {
       title: "View All Invoices",
       icon: "mdi:receipt-text-outline",
-      color: "#764ba2",
+      color: "#E6B65C",
       path: "/invoices",
     },
     {
       title: "Manage Clients",
       icon: "mdi:account-edit",
-      color: "#10b981",
+      color: "#2E7D32",
       path: "/clients",
     },
     {
       title: "View Reports",
       icon: "mdi:chart-line",
-      color: "#f59e0b",
+      color: "#1F6FB2",
       path: "/reports",
     },
   ];
@@ -263,8 +263,9 @@ const Dashboard = () => {
         ))}
       </Grid>
 
+      {/* Recent Activity - Full Width */}
       <Grid container spacing={3} className={styles.contentGrid}>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12}>
           <Card className={styles.glassCard}>
             <CardContent>
               <Box className={styles.cardHeader}>
@@ -285,234 +286,240 @@ const Dashboard = () => {
                     <Skeleton variant="rectangular" height={60} />
                   </>
                 ) : (
-                  <>
-                    <Typography
-                      variant="subtitle2"
-                      className={styles.activityHeader}
-                    >
-                      Recent Performa
-                    </Typography>
-                    {dashboardData.recentQuotations.length > 0 ? (
-                      dashboardData.recentQuotations.map((q) => (
-                        <Box
-                          key={q.id}
-                          className={styles.activityItem}
-                          onClick={() => navigate(`/quotations/view/${q.id}`)}
-                        >
-                          <Box className={styles.activityIcon}>
-                            <Icon icon="mdi:file-document" />
-                          </Box>
-                          <Box className={styles.activityDetails}>
-                            <Typography variant="body2">
-                              {q.quotationNumber}
-                            </Typography>
-                            <Typography variant="caption" color="textSecondary">
-                              {formatCurrency(q.totalAmount)} - {q.status}
-                            </Typography>
-                          </Box>
-                          <Typography variant="caption" color="textSecondary" className={styles.activityDate}>
-                            {formatDateShort(q.date)}
-                          </Typography>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => { e.stopPropagation(); navigate(`/quotations/view/${q.id}`); }}
-                          >
-                            <Icon icon="mdi:arrow-right" />
-                          </IconButton>
-                        </Box>
-                      ))
-                    ) : (
-                      <Typography variant="body2" color="textSecondary" sx={{ py: 1, pl: 1 }}>
-                        No performa in this period
+                  <Box className={styles.activityColumns}>
+                    <Box className={styles.activityColumn}>
+                      <Typography
+                        variant="subtitle2"
+                        className={styles.activityHeader}
+                      >
+                        Recent Performa
                       </Typography>
-                    )}
+                      {dashboardData.recentQuotations.length > 0 ? (
+                        dashboardData.recentQuotations.map((q) => (
+                          <Box
+                            key={q.id}
+                            className={styles.activityItem}
+                            onClick={() => navigate(`/quotations/view/${q.id}`)}
+                          >
+                            <Box className={styles.activityIcon}>
+                              <Icon icon="mdi:file-document" />
+                            </Box>
+                            <Box className={styles.activityDetails}>
+                              <Typography variant="body2">
+                                {q.quotationNumber}
+                              </Typography>
+                              <Typography variant="caption" color="textSecondary">
+                                {formatCurrency(q.totalAmount)} - {q.status}
+                              </Typography>
+                            </Box>
+                            <Typography variant="caption" color="textSecondary" className={styles.activityDate}>
+                              {formatDateShort(q.date)}
+                            </Typography>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => { e.stopPropagation(); navigate(`/quotations/view/${q.id}`); }}
+                            >
+                              <Icon icon="mdi:arrow-right" />
+                            </IconButton>
+                          </Box>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="textSecondary" sx={{ py: 1, pl: 1 }}>
+                          No performa in this period
+                        </Typography>
+                      )}
+                    </Box>
 
-                    <Typography
-                      variant="subtitle2"
-                      className={styles.activityHeader}
-                    >
-                      Recent Invoices
-                    </Typography>
-                    {dashboardData.recentInvoices.length > 0 ? (
-                      dashboardData.recentInvoices.map((i) => (
-                        <Box
-                          key={i.id}
-                          className={styles.activityItem}
-                          onClick={() => navigate(`/invoices/view/${i.id}`)}
-                        >
-                          <Box className={`${styles.activityIcon} ${styles.activityIconInvoice}`}>
-                            <Icon icon="mdi:receipt" />
-                          </Box>
-                          <Box className={styles.activityDetails}>
-                            <Typography variant="body2">
-                              {i.invoiceNumber}
-                            </Typography>
-                            <Typography variant="caption" color="textSecondary">
-                              {formatCurrency(i.totalAmount)} - Paid
-                            </Typography>
-                          </Box>
-                          <Typography variant="caption" color="textSecondary" className={styles.activityDate}>
-                            {formatDateShort(i.date)}
-                          </Typography>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => { e.stopPropagation(); navigate(`/invoices/view/${i.id}`); }}
-                          >
-                            <Icon icon="mdi:arrow-right" />
-                          </IconButton>
-                        </Box>
-                      ))
-                    ) : (
-                      <Typography variant="body2" color="textSecondary" sx={{ py: 1, pl: 1 }}>
-                        No invoices in this period
+                    <Box className={styles.activityColumn}>
+                      <Typography
+                        variant="subtitle2"
+                        className={styles.activityHeader}
+                      >
+                        Recent Invoices
                       </Typography>
-                    )}
-                  </>
+                      {dashboardData.recentInvoices.length > 0 ? (
+                        dashboardData.recentInvoices.map((i) => (
+                          <Box
+                            key={i.id}
+                            className={styles.activityItem}
+                            onClick={() => navigate(`/invoices/view/${i.id}`)}
+                          >
+                            <Box className={`${styles.activityIcon} ${styles.activityIconInvoice}`}>
+                              <Icon icon="mdi:receipt" />
+                            </Box>
+                            <Box className={styles.activityDetails}>
+                              <Typography variant="body2">
+                                {i.invoiceNumber}
+                              </Typography>
+                              <Typography variant="caption" color="textSecondary">
+                                {formatCurrency(i.totalAmount)} - Paid
+                              </Typography>
+                            </Box>
+                            <Typography variant="caption" color="textSecondary" className={styles.activityDate}>
+                              {formatDateShort(i.date)}
+                            </Typography>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => { e.stopPropagation(); navigate(`/invoices/view/${i.id}`); }}
+                            >
+                              <Icon icon="mdi:arrow-right" />
+                            </IconButton>
+                          </Box>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="textSecondary" sx={{ py: 1, pl: 1 }}>
+                          No invoices in this period
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
                 )}
               </Box>
             </CardContent>
           </Card>
         </Grid>
+      </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Box className={styles.rightColumn}>
-            <Card className={styles.glassCard}>
-              <CardContent>
-                <Typography variant="h6" className={styles.cardTitle}>
-                  Quick Actions
-                </Typography>
-                <Box className={styles.quickActionsList}>
-                  {quickActions.map((action, index) => (
-                    <motion.div
-                      key={index}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+      {/* Quick Actions & BOQ Overview - Below Recent Activity */}
+      <Grid container spacing={3} className={styles.bottomGrid}>
+        <Grid item xs={12} md={6}>
+          <Card className={styles.glassCard}>
+            <CardContent>
+              <Typography variant="h6" className={styles.cardTitle}>
+                Quick Actions
+              </Typography>
+              <Box className={styles.quickActionsList}>
+                {quickActions.map((action, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Box
+                      className={styles.quickActionItem}
+                      onClick={() => navigate(action.path)}
+                      style={{ borderColor: action.color }}
                     >
                       <Box
-                        className={styles.quickActionItem}
-                        onClick={() => navigate(action.path)}
-                        style={{ borderColor: action.color }}
+                        className={styles.quickActionIcon}
+                        style={{ background: action.color }}
                       >
-                        <Box
-                          className={styles.quickActionIcon}
-                          style={{ background: action.color }}
-                        >
-                          <Icon icon={action.icon} />
-                        </Box>
-                        <Typography variant="body2">{action.title}</Typography>
-                        <Icon icon="mdi:chevron-right" />
+                        <Icon icon={action.icon} />
                       </Box>
-                    </motion.div>
-                  ))}
-                </Box>
-              </CardContent>
-            </Card>
-
-            {/* BOQ Summary Card */}
-            <Card className={styles.glassCard}>
-              <CardContent>
-                <Box className={styles.cardHeader}>
-                  <Typography variant="h6" className={styles.cardTitle}>
-                    BOQ Overview
-                  </Typography>
-                  <IconButton size="small" onClick={() => navigate("/boq")}>
-                    <Icon icon="mdi:arrow-right" />
-                  </IconButton>
-                </Box>
-
-                {loading ? (
-                  <Skeleton variant="rectangular" height={120} />
-                ) : (
-                  <Box className={styles.boqSummary}>
-                    <Box className={styles.boqStatRow}>
-                      <Box className={styles.boqStat}>
-                        <Box className={styles.boqStatIcon} style={{ background: "#c17f24" }}>
-                          <Icon icon="mdi:clipboard-list" width="20" height="20" />
-                        </Box>
-                        <Box>
-                          <Typography variant="h5" className={styles.boqStatValue}>
-                            {dashboardData.totalBoqs}
-                          </Typography>
-                          <Typography variant="caption" color="textSecondary">
-                            Total BOQs
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box className={styles.boqStat}>
-                        <Box className={styles.boqStatIcon} style={{ background: "#10b981" }}>
-                          <Icon icon="mdi:check-circle" width="20" height="20" />
-                        </Box>
-                        <Box>
-                          <Typography variant="h5" className={styles.boqStatValue}>
-                            {dashboardData.boqApproved}
-                          </Typography>
-                          <Typography variant="caption" color="textSecondary">
-                            Approved
-                          </Typography>
-                        </Box>
-                      </Box>
+                      <Typography variant="body2">{action.title}</Typography>
+                      <Icon icon="mdi:chevron-right" />
                     </Box>
+                  </motion.div>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-                    <Box className={styles.boqAmountBar}>
-                      <Typography variant="caption" color="textSecondary">
-                        Total BOQ Value
-                      </Typography>
-                      <Typography variant="h6" className={styles.boqAmountValue}>
-                        {formatCurrency(dashboardData.totalBoqAmount)}
-                      </Typography>
-                    </Box>
+        <Grid item xs={12} md={6}>
+          <Card className={styles.glassCard}>
+            <CardContent>
+              <Box className={styles.cardHeader}>
+                <Typography variant="h6" className={styles.cardTitle}>
+                  BOQ Overview
+                </Typography>
+                <IconButton size="small" onClick={() => navigate("/boq")}>
+                  <Icon icon="mdi:arrow-right" />
+                </IconButton>
+              </Box>
 
-                    {dashboardData.boqPending > 0 && (
-                      <Box className={styles.boqPendingBadge}>
-                        <Icon icon="mdi:clock-outline" width="16" />
-                        <Typography variant="caption">
-                          {dashboardData.boqPending} pending approval
+              {loading ? (
+                <Skeleton variant="rectangular" height={120} />
+              ) : (
+                <Box className={styles.boqSummary}>
+                  <Box className={styles.boqStatRow}>
+                    <Box className={styles.boqStat}>
+                      <Box className={styles.boqStatIcon} style={{ background: "#C78A1E" }}>
+                        <Icon icon="mdi:clipboard-list" width="20" height="20" />
+                      </Box>
+                      <Box>
+                        <Typography variant="h5" className={styles.boqStatValue}>
+                          {dashboardData.totalBoqs}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          Total BOQs
                         </Typography>
                       </Box>
-                    )}
-
-                    {dashboardData.recentBoqs.length > 0 && (
-                      <Box className={styles.boqRecentList}>
-                        <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600, mb: 1, display: "block" }}>
-                          Latest BOQs
-                        </Typography>
-                        {dashboardData.recentBoqs.map((b) => (
-                          <Box
-                            key={b.id}
-                            className={styles.boqRecentItem}
-                            onClick={() => navigate(`/boq/view/${b.id}`)}
-                          >
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {b.boqNumber}
-                            </Typography>
-                            <Typography variant="caption" color="textSecondary">
-                              {formatCurrency(b.totalAmount)}
-                            </Typography>
-                          </Box>
-                        ))}
+                    </Box>
+                    <Box className={styles.boqStat}>
+                      <Box className={styles.boqStatIcon} style={{ background: "#2E7D32" }}>
+                        <Icon icon="mdi:check-circle" width="20" height="20" />
                       </Box>
-                    )}
-
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => navigate("/boq/create")}
-                      sx={{
-                        mt: 1.5,
-                        borderColor: "#c17f24",
-                        color: "#c17f24",
-                        "&:hover": { borderColor: "#a06a1e", background: "rgba(193, 127, 36, 0.05)" },
-                      }}
-                      startIcon={<Icon icon="mdi:plus" />}
-                    >
-                      Create New BOQ
-                    </Button>
+                      <Box>
+                        <Typography variant="h5" className={styles.boqStatValue}>
+                          {dashboardData.boqApproved}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          Approved
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Box>
-                )}
-              </CardContent>
-            </Card>
-          </Box>
+
+                  <Box className={styles.boqAmountBar}>
+                    <Typography variant="caption" color="textSecondary">
+                      Total BOQ Value
+                    </Typography>
+                    <Typography variant="h6" className={styles.boqAmountValue}>
+                      {formatCurrency(dashboardData.totalBoqAmount)}
+                    </Typography>
+                  </Box>
+
+                  {dashboardData.boqPending > 0 && (
+                    <Box className={styles.boqPendingBadge}>
+                      <Icon icon="mdi:clock-outline" width="16" />
+                      <Typography variant="caption">
+                        {dashboardData.boqPending} pending approval
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {dashboardData.recentBoqs.length > 0 && (
+                    <Box className={styles.boqRecentList}>
+                      <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600, mb: 1, display: "block" }}>
+                        Latest BOQs
+                      </Typography>
+                      {dashboardData.recentBoqs.map((b) => (
+                        <Box
+                          key={b.id}
+                          className={styles.boqRecentItem}
+                          onClick={() => navigate(`/boq/view/${b.id}`)}
+                        >
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {b.boqNumber}
+                          </Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            {formatCurrency(b.totalAmount)}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => navigate("/boq/create")}
+                    sx={{
+                      mt: 1.5,
+                      borderColor: "#C78A1E",
+                      color: "#C78A1E",
+                      "&:hover": { borderColor: "#B87916", background: "rgba(199, 138, 30, 0.05)" },
+                    }}
+                    startIcon={<Icon icon="mdi:plus" />}
+                  >
+                    Create New BOQ
+                  </Button>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </Box>

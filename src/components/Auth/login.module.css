@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%);
   padding: 20px;
 }
 
@@ -41,7 +41,7 @@
 
 .subtitle {
   text-align: center;
-  color: #666;
+  color: #6B6B6B;
   margin-bottom: 32px !important;
 }
 
@@ -70,7 +70,7 @@
   margin-top: 24px;
   text-align: center;
   padding: 16px;
-  background: #f5f5f5;
+  background: #FAFAFA;
   border-radius: 8px;
 }
 
