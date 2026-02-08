@@ -399,6 +399,41 @@
       "createdAt": "2026-02-08T03:00:41.388Z",
       "updatedAt": "2026-02-08T03:00:41.388Z",
       "id": 7
+    },
+    {
+      "quotationNumber": "PI-2026-0008",
+      "clientId": 1,
+      "date": "2026-02-08T03:38:39.840Z",
+      "items": [
+        {
+          "scopeOfWork": "Test Scope 1",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 200
+        }
+      ],
+      "subtotal": 200,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 200,
+      "status": "Fully Paid",
+      "paidAmount": 200,
+      "payments": [
+        {
+          "amount": 200,
+          "paymentMethod": "Online Payment",
+          "paymentDate": "2026-02-08T03:39:15.915Z",
+          "date": "2026-02-08T03:39:15.915Z",
+          "notes": "Full payment"
+        }
+      ],
+      "currency": "AED",
+      "notes": "Test Full payment",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "createdAt": "2026-02-08T03:39:15.915Z",
+      "updatedAt": "2026-02-08T03:39:15.915Z",
+      "id": 8
     }
   ],
   "invoices": [
@@ -573,6 +608,33 @@
       "notes": "Advance Payment",
       "createdAt": "2026-02-08T03:00:41.528Z",
       "id": 6
+    },
+    {
+      "invoiceNumber": "INV-2026-0007",
+      "quotationId": 8,
+      "clientId": 1,
+      "date": "2026-02-08T03:39:16.056Z",
+      "items": [
+        {
+          "scopeOfWork": "Test Scope 1",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 200
+        }
+      ],
+      "subtotal": 200,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 200,
+      "paidAmount": 200,
+      "paymentDate": "2026-02-08T03:38:39.840Z",
+      "paymentMethod": "Bank Transfer",
+      "currency": "AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "notes": "Invoice for full payment",
+      "createdAt": "2026-02-08T03:39:16.056Z",
+      "id": 7
     }
   ],
   "organizationSettings": [
