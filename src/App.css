@@ -133,6 +133,36 @@ code {
   justify-content: space-between;
 }
 
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .flex-between {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+
+  body {
+    font-size: 14px;
+  }
+
+  .mb-3 {
+    margin-bottom: 16px;
+  }
+
+  .mt-3 {
+    margin-top: 16px;
+  }
+}
+
 /* Print Styles */
 @media print {
   .no-print {

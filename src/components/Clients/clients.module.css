@@ -128,4 +128,16 @@
   .title {
     font-size: 1.5rem !important;
   }
+
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  .createButton {
+    width: 100%;
+  }
+
+  .statCard {
+    border-radius: 8px !important;
+  }
 }

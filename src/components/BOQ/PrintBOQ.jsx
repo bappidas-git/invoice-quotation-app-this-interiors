@@ -1,4 +1,4 @@
-const PrintBOQ = ({ boq, client, organization }) => {
+const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
   const formatCurrency = (amount, currency = "AED") => {
     return `${currency} ${Number(amount || 0).toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -80,7 +80,7 @@ const PrintBOQ = ({ boq, client, organization }) => {
           justify-content: space-between;
           align-items: flex-start;
           padding-bottom: 15px;
-          border-bottom: 3px solid #c17f24;
+          border-bottom: 3px solid #667eea;
           margin-bottom: 20px;
         }
         .logo-section {
@@ -100,7 +100,10 @@ const PrintBOQ = ({ boq, client, organization }) => {
           flex: 1;
         }
         .document-info h1 {
-          color: #c17f24;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
           font-size: 26px;
           margin-bottom: 5px;
         }
@@ -109,25 +112,37 @@ const PrintBOQ = ({ boq, client, organization }) => {
           color: #666;
           margin-bottom: 3px;
         }
-        .billed-to {
-          margin-bottom: 20px;
-          padding: 12px;
+        .info-row {
+          display: flex;
+          gap: 15px;
+          margin-bottom: 15px;
+        }
+        .info-box {
+          flex: 1;
           border: 1px solid #e0e0e0;
           border-radius: 6px;
+          padding: 10px;
         }
-        .billed-to-title {
-          font-size: 13px;
-          color: #c17f24;
+        .info-box-title {
+          font-size: 11px;
+          color: #667eea;
           font-weight: bold;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
           text-transform: uppercase;
         }
-        .billed-to-content {
-          font-size: 12px;
+        .info-box-content {
+          font-size: 11px;
           line-height: 1.5;
         }
-        .billed-to-content strong {
-          font-size: 14px;
+        .info-box-content strong {
+          font-size: 12px;
+        }
+        .qr-code {
+          max-width: 80px;
+          max-height: 80px;
+          margin-top: 5px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
         }
         .items-table {
           width: 100%;
@@ -136,7 +151,7 @@ const PrintBOQ = ({ boq, client, organization }) => {
           font-size: 12px;
         }
         .items-table thead {
-          background: #c17f24;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
         }
         .items-table th {
@@ -153,7 +168,7 @@ const PrintBOQ = ({ boq, client, organization }) => {
           vertical-align: middle;
         }
         .items-table tbody tr:nth-child(even) {
-          background: #faf6f0;
+          background: #f3f0ff;
         }
         .text-right {
           text-align: right;
@@ -175,27 +190,50 @@ const PrintBOQ = ({ boq, client, organization }) => {
         .summary-row.total {
           font-size: 16px;
           font-weight: bold;
-          color: #c17f24;
-          border-top: 2px solid #c17f24;
+          color: #667eea;
+          border-top: 2px solid #667eea;
           margin-top: 8px;
           padding-top: 10px;
         }
         .notes-section {
           margin-bottom: 25px;
           padding: 12px;
-          background: #faf6f0;
+          background: #f3f0ff;
           border-radius: 6px;
         }
         .notes-title {
           font-size: 13px;
           font-weight: bold;
           margin-bottom: 6px;
-          color: #c17f24;
+          color: #667eea;
         }
         .notes-content {
           font-size: 12px;
           color: #666;
           line-height: 1.5;
+        }
+        .bank-section {
+          margin-bottom: 20px;
+          padding: 12px;
+          background: #f3f0ff;
+          border: 1px solid #d1c4e9;
+          border-radius: 6px;
+        }
+        .bank-title {
+          font-size: 12px;
+          font-weight: bold;
+          margin-bottom: 6px;
+          color: #667eea;
+          text-transform: uppercase;
+        }
+        .bank-grid {
+          display: flex;
+          gap: 20px;
+          font-size: 11px;
+          line-height: 1.5;
+        }
+        .bank-details {
+          flex: 1;
         }
         .footer {
           text-align: center;
@@ -206,7 +244,7 @@ const PrintBOQ = ({ boq, client, organization }) => {
         }
         .footer .company-name {
           font-weight: bold;
-          color: #c17f24;
+          color: #667eea;
           font-size: 12px;
           margin-bottom: 3px;
         }
@@ -260,15 +298,34 @@ const PrintBOQ = ({ boq, client, organization }) => {
           </div>
         </div>
 
-        <div class="billed-to">
-          <div class="billed-to-title">Billed To</div>
-          <div class="billed-to-content">
-            <strong>${client?.name || ""}</strong><br>
-            ${client?.address || ""}${client?.state ? `, ${client.state}` : ""}${client?.pin ? ` - ${client.pin}` : ""}<br>
-            ${client?.country || ""}<br>
-            ${client?.email ? `Email: ${client.email}<br>` : ""}
-            ${client?.contact ? `Phone: ${client.contact}` : ""}
+        <div class="info-row">
+          <div class="info-box">
+            <div class="info-box-title">Billed To</div>
+            <div class="info-box-content">
+              <strong>${client?.name || ""}</strong><br>
+              ${client?.address || ""}${client?.state ? `, ${client.state}` : ""}${client?.pin ? ` - ${client.pin}` : ""}<br>
+              ${client?.country || ""}<br>
+              ${client?.email ? `Email: ${client.email}<br>` : ""}
+              ${client?.contact ? `Phone: ${client.contact}` : ""}
+            </div>
           </div>
+          ${
+            bankAccount
+              ? `
+            <div class="info-box">
+              <div class="info-box-title">Banking Information</div>
+              <div class="info-box-content">
+                <strong>Bank:</strong> ${bankAccount.bankName}<br>
+                <strong>A/C No:</strong> ${bankAccount.accountNumber}<br>
+                ${bankAccount.accountHolderName ? `<strong>A/C Holder:</strong> ${bankAccount.accountHolderName}<br>` : ""}
+                ${bankAccount.branch ? `<strong>Branch:</strong> ${bankAccount.branch}<br>` : ""}
+                ${bankAccount.ifscSwift ? `<strong>IFSC/SWIFT:</strong> ${bankAccount.ifscSwift}<br>` : ""}
+                ${bankAccount.qrCodeUrl ? `<img src="${bankAccount.qrCodeUrl}" alt="QR Code" class="qr-code" />` : ""}
+              </div>
+            </div>
+          `
+              : ""
+          }
         </div>
 
         <table class="items-table">

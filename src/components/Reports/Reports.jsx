@@ -39,6 +39,7 @@ import {
   clientsAPI,
   scopeOfWorkAPI,
   organizationsAPI,
+  boqsAPI,
 } from "../../services/api";
 import {
   formatCurrency,
@@ -57,6 +58,7 @@ const REPORT_TABS = [
   { label: "Tax Summary", icon: "mdi:percent-box" },
   { label: "Services", icon: "mdi:briefcase-outline" },
   { label: "Outstanding", icon: "mdi:clock-alert-outline" },
+  { label: "BOQ", icon: "mdi:clipboard-list-outline" },
 ];
 
 const CHART_COLORS = [
@@ -77,6 +79,7 @@ const Reports = () => {
   const [invoices, setInvoices] = useState([]);
   const [clients, setClients] = useState([]);
   const [scopeOfWork, setScopeOfWork] = useState([]);
+  const [boqs, setBoqs] = useState([]);
 
   // Table state
   const [page, setPage] = useState(0);
@@ -92,13 +95,14 @@ const Reports = () => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [qRes, iRes, cRes, sRes, genSettings, orgRes] = await Promise.all([
+      const [qRes, iRes, cRes, sRes, genSettings, orgRes, bRes] = await Promise.all([
         quotationsAPI.getAll(),
         invoicesAPI.getAll(),
         clientsAPI.getAll(),
         scopeOfWorkAPI.getAll(),
         getGeneralSettings(),
         organizationsAPI.get(),
+        boqsAPI.getAll(),
       ]);
       setQuotations(qRes.data);
       setInvoices(iRes.data);
@@ -106,6 +110,7 @@ const Reports = () => {
       setScopeOfWork(sRes.data);
       setSettings(genSettings);
       setOrgProfile(orgRes.data);
+      setBoqs(bRes.data);
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
@@ -117,6 +122,7 @@ const Reports = () => {
   const filteredData = useMemo(() => {
     let filteredQ = [...quotations];
     let filteredI = [...invoices];
+    let filteredB = [...boqs];
 
     if (dateFilter !== "All") {
       let dateRange;
@@ -140,11 +146,15 @@ const Reports = () => {
           const d = new Date(i.date);
           return d >= start && d <= end;
         });
+        filteredB = filteredB.filter((b) => {
+          const d = new Date(b.date);
+          return d >= start && d <= end;
+        });
       }
     }
 
-    return { quotations: filteredQ, invoices: filteredI };
-  }, [quotations, invoices, dateFilter, customDateRange]);
+    return { quotations: filteredQ, invoices: filteredI, boqs: filteredB };
+  }, [quotations, invoices, boqs, dateFilter, customDateRange]);
 
   const handleDateFilterChange = (filter, range) => {
     setDateFilter(filter);
@@ -457,6 +467,64 @@ const Reports = () => {
     return { outstanding, agingBuckets, totalOutstanding };
   }, [filteredData, clientMap]);
 
+  // ───────────────────── BOQ REPORT ─────────────────────
+  const boqReportData = useMemo(() => {
+    const { boqs: fb } = filteredData;
+
+    const totalBOQs = fb.length;
+    const totalValue = fb.reduce((s, b) => s + (b.totalAmount || 0), 0);
+    const averageValue = totalBOQs > 0 ? totalValue / totalBOQs : 0;
+
+    // BOQs by status
+    const statusMap = { Draft: [], Sent: [], Approved: [], Rejected: [] };
+    fb.forEach((b) => {
+      const status = b.status || "Draft";
+      if (!statusMap[status]) statusMap[status] = [];
+      statusMap[status].push(b);
+    });
+
+    const byStatus = Object.entries(statusMap)
+      .filter(([_, items]) => items.length > 0)
+      .map(([status, items]) => ({
+        status,
+        count: items.length,
+        totalAmount: items.reduce((s, b) => s + (b.totalAmount || 0), 0),
+      }));
+
+    // BOQs by client
+    const clientBOQMap = {};
+    fb.forEach((b) => {
+      const cName = clientMap[b.clientId] || "Unknown";
+      if (!clientBOQMap[cName]) clientBOQMap[cName] = { name: cName, count: 0, amount: 0 };
+      clientBOQMap[cName].count += 1;
+      clientBOQMap[cName].amount += b.totalAmount || 0;
+    });
+    const byClient = Object.values(clientBOQMap).sort((a, b) => b.amount - a.amount);
+
+    // Items for table
+    const items = fb.map((b) => ({
+      id: b.id,
+      boqNumber: b.boqNumber || b.number || "",
+      client: clientMap[b.clientId] || "Unknown",
+      clientId: b.clientId,
+      date: b.date,
+      itemsCount: b.items ? b.items.length : 0,
+      totalAmount: b.totalAmount || 0,
+      status: b.status || "Draft",
+    }));
+
+    return {
+      totalBOQs,
+      totalValue,
+      averageValue,
+      byStatus,
+      byClient,
+      items,
+      approvedCount: (statusMap.Approved || []).length,
+      pendingCount: (statusMap.Draft || []).length + (statusMap.Sent || []).length,
+    };
+  }, [filteredData, clientMap]);
+
   // ───────────────────── SEARCH FILTERED DATA HELPERS ─────────────────────
   const getSearchFilteredClients = useCallback(() => {
     if (!searchQuery) return clientReportData;
@@ -516,6 +584,17 @@ const Reports = () => {
         (o.status && o.status.toLowerCase().includes(q))
     );
   }, [outstandingData.outstanding, searchQuery]);
+
+  const getSearchFilteredBOQs = useCallback(() => {
+    if (!searchQuery) return boqReportData.items;
+    const q = searchQuery.toLowerCase();
+    return boqReportData.items.filter(
+      (b) =>
+        (b.boqNumber && b.boqNumber.toLowerCase().includes(q)) ||
+        b.client.toLowerCase().includes(q) ||
+        (b.status && b.status.toLowerCase().includes(q))
+    );
+  }, [boqReportData.items, searchQuery]);
 
   // ───────────────────── EXPORT HELPERS ─────────────────────
   const getOrgName = () => orgProfile?.name || "Organization";
@@ -609,6 +688,16 @@ const Reports = () => {
         const outItems = getSearchFilteredOutstanding();
         outItems.forEach((o) => {
           csvContent += `${o.quotationNumber},"${o.client}",${formatDate(o.date)},${o.totalAmount.toFixed(2)},${o.paidAmount.toFixed(2)},${o.balance.toFixed(2)},${o.daysOld},${o.aging},${o.status}\n`;
+        });
+        break;
+      }
+      case 7: {
+        fileName = "boq_report";
+        addCsvHeader("BOQ Report");
+        csvContent += "BOQ Number,Client,Date,Items Count,Total Amount,Status\n";
+        const boqItems = getSearchFilteredBOQs();
+        boqItems.forEach((b) => {
+          csvContent += `${b.boqNumber},"${b.client}",${formatDate(b.date)},${b.itemsCount},${(b.totalAmount || 0).toFixed(2)},${b.status}\n`;
         });
         break;
       }
@@ -810,6 +899,23 @@ const Reports = () => {
         });
         break;
       }
+      case 7: {
+        const boqItems = getSearchFilteredBOQs();
+        doc.autoTable({
+          startY,
+          head: [["BOQ Number", "Client", "Date", "Items Count", "Total Amount", "Status"]],
+          body: boqItems.map((b) => [
+            b.boqNumber,
+            b.client,
+            formatDate(b.date),
+            b.itemsCount,
+            formatCurrency(b.totalAmount),
+            b.status,
+          ]),
+          ...tableOpts,
+        });
+        break;
+      }
       default:
         break;
     }
@@ -1006,6 +1112,16 @@ const Reports = () => {
       case "Performa": return styles.statusPerforma;
       case "Quotation": return styles.statusQuotation;
       default: return styles.statusPerforma;
+    }
+  };
+
+  const getBOQStatusClass = (status) => {
+    switch (status) {
+      case "Approved": return styles.statusApproved;
+      case "Sent": return styles.statusSent;
+      case "Rejected": return styles.statusRejected;
+      case "Draft": return styles.statusDraft;
+      default: return styles.statusDraft;
     }
   };
 
@@ -1742,6 +1858,125 @@ const Reports = () => {
     );
   };
 
+  const renderBOQReport = () => {
+    const boqStatusColors = {
+      Draft: "#9ca3af",
+      Sent: "#f59e0b",
+      Approved: "#10b981",
+      Rejected: "#ef4444",
+    };
+
+    const donutItems = boqReportData.byStatus.map((s) => ({
+      ...s,
+      color: boqStatusColors[s.status] || "#999",
+    }));
+
+    const filtered = getSearchFilteredBOQs();
+    const sorted = sortData(filtered);
+    const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    return (
+      <>
+        <Box className={styles.summaryRow}>
+          {renderSummaryItem("mdi:clipboard-list-outline", "#667eea", boqReportData.totalBOQs, "Total BOQs", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:currency-usd", "#764ba2", formatCurrency(boqReportData.totalValue), "Total Value", "rgba(118,75,162,0.06)")}
+          {renderSummaryItem("mdi:check-circle", "#10b981", boqReportData.approvedCount, "Approved", "rgba(16,185,129,0.06)")}
+          {renderSummaryItem("mdi:clock-outline", "#f59e0b", boqReportData.pendingCount, "Pending", "rgba(245,158,11,0.06)")}
+        </Box>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Typography variant="h6" className={styles.cardTitle}>
+              BOQ Status Distribution
+            </Typography>
+            {renderDonutChart(donutItems, "status", "totalAmount", "Statuses")}
+          </CardContent>
+        </Card>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
+                <Typography variant="h6" className={styles.cardTitle}>
+                  All BOQs
+                </Typography>
+                <Typography className={styles.cardSubtitle}>
+                  {boqReportData.totalBOQs} total BOQs
+                </Typography>
+              </Box>
+            </Box>
+            {renderSearchBar("Search by BOQ number, client or status...")}
+            {renderResultCount(filtered.length, boqReportData.items.length)}
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <TableSortLabel active={orderBy === "boqNumber"} direction={orderBy === "boqNumber" ? order : "asc"} onClick={() => handleSort("boqNumber")}>
+                        BOQ Number
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>Client</TableCell>
+                    <TableCell>
+                      <TableSortLabel active={orderBy === "date"} direction={orderBy === "date" ? order : "asc"} onClick={() => handleSort("date")}>
+                        Date
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel active={orderBy === "itemsCount"} direction={orderBy === "itemsCount" ? order : "asc"} onClick={() => handleSort("itemsCount")}>
+                        Items Count
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel active={orderBy === "totalAmount"} direction={orderBy === "totalAmount" ? order : "asc"} onClick={() => handleSort("totalAmount")}>
+                        Total Amount
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="center">Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginated.map((b) => (
+                    <TableRow key={b.id} hover>
+                      <TableCell>{b.boqNumber}</TableCell>
+                      <TableCell>{b.client}</TableCell>
+                      <TableCell>{formatDate(b.date)}</TableCell>
+                      <TableCell align="right">{b.itemsCount}</TableCell>
+                      <TableCell align="right">{formatCurrency(b.totalAmount)}</TableCell>
+                      <TableCell align="center">
+                        <span className={`${styles.statusChip} ${getBOQStatusClass(b.status)}`}>
+                          {b.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {paginated.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center">
+                        <Typography variant="body2" color="textSecondary">
+                          {searchQuery ? "No BOQs match your search" : "No BOQ data"}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={filtered.length}
+              page={page}
+              onPageChange={(_, p) => setPage(p)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+            />
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
+
   const renderTabContent = () => {
     if (loading) {
       return (
@@ -1771,6 +2006,7 @@ const Reports = () => {
       case 4: return renderTaxReport();
       case 5: return renderServicesReport();
       case 6: return renderOutstandingReport();
+      case 7: return renderBOQReport();
       default: return renderRevenueReport();
     }
   };

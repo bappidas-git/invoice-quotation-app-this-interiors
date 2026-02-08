@@ -74,12 +74,57 @@
   border-radius: 8px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .cardContent {
     padding: 32px 24px !important;
   }
 
   .logo {
     max-width: 150px;
+  }
+
+  .loginCard {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginContainer {
+    padding: 12px;
+  }
+
+  .cardContent {
+    padding: 24px 16px !important;
+  }
+
+  .logoContainer {
+    margin-bottom: 24px;
+    padding: 16px;
+  }
+
+  .logo {
+    max-width: 130px;
+  }
+
+  .title {
+    font-size: 1.25rem !important;
+  }
+
+  .subtitle {
+    margin-bottom: 24px !important;
+    font-size: 0.875rem;
+  }
+
+  .form {
+    gap: 16px;
+  }
+
+  .submitButton {
+    font-size: 14px !important;
+  }
+
+  .footer {
+    padding: 12px;
+    font-size: 0.8rem;
   }
 }

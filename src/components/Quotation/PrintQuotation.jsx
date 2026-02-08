@@ -43,27 +43,27 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
         .invoice-container {
           max-width: 800px;
           margin: 0 auto;
-          padding: 20px;
+          padding: 15px 20px;
         }
         .header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding-bottom: 20px;
+          padding-bottom: 12px;
           border-bottom: 3px solid #667eea;
-          margin-bottom: 30px;
+          margin-bottom: 15px;
         }
         .logo-section {
           flex: 1;
         }
         .logo {
-          max-height: 60px;
-          margin-bottom: 10px;
+          max-height: 50px;
+          margin-bottom: 6px;
         }
         .company-info {
-          font-size: 12px;
+          font-size: 10px;
           color: #666;
-          line-height: 1.4;
+          line-height: 1.3;
         }
         .document-title {
           text-align: right;
@@ -71,65 +71,65 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
         }
         .document-title h1 {
           color: #667eea;
-          font-size: 32px;
-          margin-bottom: 5px;
+          font-size: 28px;
+          margin-bottom: 3px;
         }
         .document-number {
-          font-size: 14px;
+          font-size: 12px;
           color: #666;
         }
         .info-section {
           display: flex;
-          gap: 20px;
-          margin-bottom: 30px;
+          gap: 12px;
+          margin-bottom: 15px;
         }
         .info-box {
           flex: 1;
           border: 1px solid #e0e0e0;
-          border-radius: 8px;
-          padding: 15px;
+          border-radius: 6px;
+          padding: 10px;
         }
         .section-title {
-          font-size: 14px;
+          font-size: 11px;
           color: #667eea;
           font-weight: bold;
-          margin-bottom: 10px;
+          margin-bottom: 6px;
           text-transform: uppercase;
         }
         .info-block {
-          font-size: 13px;
-          line-height: 1.6;
+          font-size: 11px;
+          line-height: 1.4;
           color: #333;
         }
         .info-block strong {
           color: #000;
         }
         .qr-code {
-          max-width: 100px;
-          max-height: 100px;
-          margin-top: 8px;
+          max-width: 70px;
+          max-height: 70px;
+          margin-top: 5px;
           border: 1px solid #e0e0e0;
           border-radius: 4px;
         }
         .items-table {
           width: 100%;
           border-collapse: collapse;
-          margin-bottom: 30px;
+          margin-bottom: 15px;
         }
         .items-table thead {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
         }
         .items-table th {
-          padding: 12px;
+          padding: 8px 10px;
           text-align: left;
-          font-size: 13px;
+          font-size: 11px;
           font-weight: 600;
         }
         .items-table td {
-          padding: 12px;
+          padding: 8px 10px;
           border-bottom: 1px solid #e0e0e0;
-          font-size: 13px;
+          font-size: 11px;
         }
         .items-table tbody tr:hover {
           background: #f8f9fa;
@@ -140,84 +140,84 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
         .summary-section {
           display: flex;
           justify-content: flex-end;
-          margin-bottom: 30px;
+          margin-bottom: 15px;
         }
         .summary-table {
-          width: 300px;
+          width: 280px;
         }
         .summary-row {
           display: flex;
           justify-content: space-between;
-          padding: 8px 0;
-          font-size: 14px;
+          padding: 5px 0;
+          font-size: 12px;
         }
         .summary-row.total {
-          font-size: 18px;
+          font-size: 15px;
           font-weight: bold;
           color: #667eea;
           border-top: 2px solid #667eea;
-          margin-top: 10px;
-          padding-top: 10px;
+          margin-top: 6px;
+          padding-top: 8px;
         }
         .payment-info-section {
-          margin-bottom: 30px;
-          padding: 15px;
+          margin-bottom: 15px;
+          padding: 8px 10px;
           background: #f3f0ff;
           border: 1px solid #d1c4e9;
-          border-radius: 8px;
+          border-radius: 6px;
         }
         .payment-info-title {
-          font-size: 14px;
+          font-size: 11px;
           font-weight: bold;
-          margin-bottom: 10px;
+          margin-bottom: 5px;
           color: #667eea;
           text-transform: uppercase;
         }
         .payment-info-grid {
           display: flex;
           flex-wrap: wrap;
-          gap: 15px;
+          gap: 8px;
         }
         .payment-entry {
           flex: 1;
-          min-width: 200px;
-          padding: 10px;
+          min-width: 180px;
+          padding: 8px;
           background: white;
-          border-radius: 6px;
+          border-radius: 4px;
           border: 1px solid #e0e0e0;
-          font-size: 13px;
-          line-height: 1.6;
+          font-size: 11px;
+          line-height: 1.4;
         }
         .notes-section {
-          margin-bottom: 30px;
-          padding: 15px;
+          margin-bottom: 15px;
+          padding: 10px;
           background: #f8f9fa;
-          border-radius: 8px;
+          border-radius: 6px;
         }
         .notes-title {
-          font-size: 14px;
+          font-size: 12px;
           font-weight: bold;
-          margin-bottom: 10px;
+          margin-bottom: 5px;
         }
         .notes-content {
-          font-size: 13px;
+          font-size: 11px;
           color: #666;
-          line-height: 1.6;
+          line-height: 1.4;
         }
         .footer {
           text-align: center;
-          padding-top: 20px;
+          padding-top: 12px;
           border-top: 1px solid #e0e0e0;
           color: #666;
-          font-size: 12px;
+          font-size: 10px;
         }
         .status-badge {
           display: inline-block;
-          padding: 4px 12px;
+          padding: 3px 10px;
           border-radius: 20px;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: bold;
-          margin-left: 10px;
+          margin-left: 8px;
         }
         .status-performa {
           background: #e3f2fd;
@@ -235,6 +235,9 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
           body {
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
+          }
+          .invoice-container {
+            padding: 10px 15px;
           }
         }
       </style>
@@ -457,7 +460,7 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
 
         <div class="footer">
           <p>Thank you for your business!</p>
-          <p style="margin-top: 10px;">This is a computer-generated document. No signature is required.</p>
+          <p style="margin-top: 5px;">This is a computer-generated document. No signature is required.</p>
         </div>
       </div>
     </body>

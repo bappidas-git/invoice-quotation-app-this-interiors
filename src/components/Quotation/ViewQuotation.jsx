@@ -61,6 +61,21 @@ const ViewQuotation = () => {
         }
       }
 
+      // Fallback: fetch default bank account if none was loaded
+      if (!quotationRes.data.bankAccountId) {
+        try {
+          const allBanksRes = await bankAccountsAPI.getAll();
+          const defaultBank = allBanksRes.data.find((b) => b.isDefault);
+          if (defaultBank) {
+            setBankAccount(defaultBank);
+          } else if (allBanksRes.data.length > 0) {
+            setBankAccount(allBanksRes.data[0]);
+          }
+        } catch (e) {
+          console.error("Error loading default bank account:", e);
+        }
+      }
+
       if (quotationRes.data.status === "Partially Paid" || quotationRes.data.status === "Fully Paid") {
         try {
           const invoicesRes = await invoicesAPI.getAll();

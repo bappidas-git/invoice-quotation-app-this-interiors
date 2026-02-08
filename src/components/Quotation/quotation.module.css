@@ -360,6 +360,14 @@
     font-size: 1.5rem !important;
   }
 
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  .createButton {
+    width: 100%;
+  }
+
   .dateFilterGroup button {
     padding: 4px 8px;
     font-size: 11px;
@@ -367,6 +375,31 @@
 
   .actions {
     flex-direction: column;
+  }
+
+  .itemsTable {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .totalSection {
+    padding: 12px;
+  }
+
+  .totalBreakdown {
+    max-width: 100%;
+  }
+
+  .paymentForm {
+    grid-template-columns: 1fr;
+  }
+
+  .datePickerContainer {
+    flex-direction: column;
+  }
+
+  .statCard {
+    border-radius: 8px !important;
   }
 }
 

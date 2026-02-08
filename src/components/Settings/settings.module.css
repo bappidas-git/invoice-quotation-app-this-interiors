@@ -79,4 +79,41 @@
     align-items: flex-start;
     gap: 12px;
   }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+
+  .dialogForm {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .calculationRow {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settingsPage {
+    padding: 8px;
+  }
+
+  .previewSection {
+    padding: 12px;
+  }
+
+  .tabsContainer {
+    overflow-x: auto;
+  }
 }
