@@ -407,6 +407,49 @@
       "createdAt": "2026-02-08T03:39:15.915Z",
       "updatedAt": "2026-02-08T03:39:15.915Z",
       "id": 8
+    },
+    {
+      "quotationNumber": "PI-2026-0008",
+      "clientId": 1,
+      "date": "2026-02-08T14:29:59.500Z",
+      "items": [
+        {
+          "scopeOfWork": "CAD drawings",
+          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
+          "amount": 200
+        },
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 500
+        },
+        {
+          "scopeOfWork": "Schematic & Interior Design Drawings",
+          "task": "Overall Layout Plans, Ceiling Designs (RCP), Furniture Placement Plans, Materials and Finishes Schedule, Lighting & Electrical Layouts, and Custom Joinery Concepts",
+          "amount": 800
+        },
+        {
+          "scopeOfWork": "Procurement Management (3 months included)",
+          "task": "3D renders",
+          "amount": 700
+        }
+      ],
+      "subtotal": 2200,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 2200,
+      "status": "Performa",
+      "paidAmount": 0,
+      "payments": [],
+      "currency": "AED",
+      "notes": "Test Performa",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "bankAccountId": 1,
+      "createdAt": "2026-02-08T14:31:29.837Z",
+      "updatedAt": "2026-02-08T14:31:29.837Z",
+      "id": 9
     }
   ],
   "invoices": [
