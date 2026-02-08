@@ -16,22 +16,22 @@
 
 .title {
   font-weight: 600 !important;
-  color: #1a1a1a;
+  color: #2F2F2F;
   margin-bottom: 4px !important;
 }
 
 .subtitle {
-  color: #666;
+  color: #6B6B6B;
 }
 
 .createButton {
-  background: linear-gradient(135deg, #c17f24 0%, #a0652a 100%) !important;
+  background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%) !important;
   color: white !important;
-  box-shadow: 0 4px 15px rgba(193, 127, 36, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(199, 138, 30, 0.3) !important;
 }
 
 .createButton:hover {
-  box-shadow: 0 6px 20px rgba(193, 127, 36, 0.5) !important;
+  box-shadow: 0 6px 20px rgba(199, 138, 30, 0.5) !important;
   transform: translateY(-2px);
 }
 
@@ -134,8 +134,8 @@
 }
 
 .lineItemCard:hover {
-  border-color: #c17f24 !important;
-  box-shadow: 0 2px 12px rgba(193, 127, 36, 0.08) !important;
+  border-color: #C78A1E !important;
+  box-shadow: 0 2px 12px rgba(199, 138, 30, 0.08) !important;
 }
 
 .lineItemHeader {
@@ -149,7 +149,7 @@
 
 .lineItemNumber {
   font-weight: 600 !important;
-  color: #c17f24;
+  color: #C78A1E;
   font-size: 0.8rem !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -202,8 +202,8 @@
   padding: 6px 12px;
   background: linear-gradient(
     135deg,
-    rgba(193, 127, 36, 0.06) 0%,
-    rgba(160, 101, 42, 0.06) 100%
+    rgba(199, 138, 30, 0.06) 0%,
+    rgba(184, 121, 22, 0.06) 100%
   );
   border-radius: 8px;
   min-height: 40px;
@@ -211,7 +211,7 @@
 
 .itemsTable {
   margin-top: 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #E5E5E5;
   border-radius: 8px !important;
   overflow: hidden;
 }
@@ -222,8 +222,8 @@
   padding: 20px;
   background: linear-gradient(
     135deg,
-    rgba(193, 127, 36, 0.05) 0%,
-    rgba(160, 101, 42, 0.05) 100%
+    rgba(199, 138, 30, 0.05) 0%,
+    rgba(184, 121, 22, 0.05) 100%
   );
   border-radius: 8px;
 }
@@ -242,7 +242,7 @@
 
 .totalRow:last-child {
   padding-top: 12px;
-  border-top: 2px solid #e0e0e0;
+  border-top: 2px solid #E5E5E5;
   margin-top: 8px;
 }
 
@@ -307,7 +307,7 @@
   height: 60px;
   object-fit: cover;
   border-radius: 4px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #E5E5E5;
   cursor: pointer;
 }
 
@@ -316,7 +316,7 @@
   height: 100px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #E5E5E5;
 }
 
 /* BOQ Settings Styles */

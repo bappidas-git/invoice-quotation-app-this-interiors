@@ -80,7 +80,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
           justify-content: space-between;
           align-items: flex-start;
           padding-bottom: 15px;
-          border-bottom: 3px solid #667eea;
+          border-bottom: 3px solid #C78A1E;
           margin-bottom: 20px;
         }
         .logo-section {
@@ -100,7 +100,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
           flex: 1;
         }
         .document-info h1 {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -125,7 +125,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
         }
         .info-box-title {
           font-size: 11px;
-          color: #667eea;
+          color: #C78A1E;
           font-weight: bold;
           margin-bottom: 6px;
           text-transform: uppercase;
@@ -151,7 +151,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
           font-size: 12px;
         }
         .items-table thead {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%);
           color: white;
         }
         .items-table th {
@@ -190,8 +190,8 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
         .summary-row.total {
           font-size: 16px;
           font-weight: bold;
-          color: #667eea;
-          border-top: 2px solid #667eea;
+          color: #C78A1E;
+          border-top: 2px solid #C78A1E;
           margin-top: 8px;
           padding-top: 10px;
         }
@@ -205,7 +205,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
           font-size: 13px;
           font-weight: bold;
           margin-bottom: 6px;
-          color: #667eea;
+          color: #C78A1E;
         }
         .notes-content {
           font-size: 12px;
@@ -223,7 +223,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
           font-size: 12px;
           font-weight: bold;
           margin-bottom: 6px;
-          color: #667eea;
+          color: #C78A1E;
           text-transform: uppercase;
         }
         .bank-grid {
@@ -244,7 +244,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
         }
         .footer .company-name {
           font-weight: bold;
-          color: #667eea;
+          color: #C78A1E;
           font-size: 12px;
           margin-bottom: 3px;
         }
@@ -256,7 +256,7 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
           font-weight: bold;
           margin-left: 8px;
         }
-        .status-draft { background: #e3f2fd; color: #1976d2; }
+        .status-draft { background: #e3f2fd; color: #C78A1E; }
         .status-sent { background: #fff3e0; color: #f57c00; }
         .status-approved { background: #e8f5e9; color: #2e7d32; }
         .status-rejected { background: #fce4ec; color: #c62828; }

@@ -73,7 +73,6 @@ const ClientList = () => {
       setQuotations(quotationsList);
       setInvoices(invoicesList);
 
-      // Calculate statistics
       const clientsWithQuotations = new Set(
         quotationsList.map((q) => q.clientId)
       );
@@ -203,8 +202,8 @@ const ClientList = () => {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
+      confirmButtonColor: "#C0392B",
+      cancelButtonColor: "#6B6B6B",
       confirmButtonText: "Yes, delete it!",
     });
 
@@ -247,13 +246,21 @@ const ClientList = () => {
       field: "email",
       label: "Email",
       sortable: true,
-      render: (value) => value || "-",
+      render: (value) => (
+        <Typography variant="body2" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200 }}>
+          {value || "-"}
+        </Typography>
+      ),
     },
     {
       field: "contact",
       label: "Contact",
       sortable: true,
-      render: (value) => value || "-",
+      render: (value) => (
+        <Typography variant="body2" sx={{ whiteSpace: "nowrap" }}>
+          {value || "-"}
+        </Typography>
+      ),
     },
     {
       field: "state",
@@ -263,12 +270,6 @@ const ClientList = () => {
         const parts = [value, row.country].filter(Boolean);
         return parts.length > 0 ? parts.join(", ") : "-";
       },
-    },
-    {
-      field: "createdAt",
-      label: "Added On",
-      sortable: true,
-      render: (value) => formatDate(value),
     },
   ];
 
@@ -306,6 +307,14 @@ const ClientList = () => {
             </Typography>
             <Typography variant="body2">
               {[row.address, row.pin].filter(Boolean).join(", ") || "-"}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="textSecondary">
+              Added On
+            </Typography>
+            <Typography variant="body2">
+              {formatDate(row.createdAt)}
             </Typography>
           </Box>
           <Box>
@@ -387,7 +396,7 @@ const ClientList = () => {
           <CardContent>
             <Typography variant="h6">{statistics.activeClients}</Typography>
             <Typography variant="body2">Active Clients</Typography>
-            <Typography variant="caption" color="primary">
+            <Typography variant="caption" sx={{ color: "#C78A1E" }}>
               With performa invoices
             </Typography>
           </CardContent>
@@ -398,7 +407,7 @@ const ClientList = () => {
               {formatCurrency(statistics.totalRevenue)}
             </Typography>
             <Typography variant="body2">Total Revenue</Typography>
-            <Typography variant="caption" color="success.main">
+            <Typography variant="caption" sx={{ color: "#2E7D32" }}>
               From all clients
             </Typography>
           </CardContent>
@@ -435,7 +444,6 @@ const ClientList = () => {
         emptyMessage="No clients found"
       />
 
-      {/* Add/Edit Client Dialog */}
       <Dialog
         open={dialogOpen}
         onClose={handleCloseDialog}
