@@ -354,7 +354,7 @@
       "serviceTaxAmount": 0,
       "totalAmount": 500,
       "status": "Partially Paid",
-      "paidAmount": 200,
+      "paidAmount": 300,
       "payments": [
         {
           "amount": 200,
@@ -362,6 +362,13 @@
           "paymentDate": "2026-02-08T02:58:12.608Z",
           "notes": "Advance Payment",
           "date": "2026-02-08T03:00:41.388Z"
+        },
+        {
+          "amount": 100,
+          "paymentMethod": "Credit Card",
+          "paymentDate": "2026-02-08T17:27:18.164Z",
+          "notes": "Test",
+          "date": "2026-02-08T17:27:55.404Z"
         }
       ],
       "currency": "AED",
@@ -370,7 +377,7 @@
       "serviceTaxPercent": 0,
       "taxLabel": "Tax",
       "createdAt": "2026-02-08T03:00:41.388Z",
-      "updatedAt": "2026-02-08T03:00:41.388Z",
+      "updatedAt": "2026-02-08T17:27:55.404Z",
       "id": 7
     },
     {
@@ -651,6 +658,33 @@
       "notes": "Invoice for full payment",
       "createdAt": "2026-02-08T03:39:16.056Z",
       "id": 7
+    },
+    {
+      "invoiceNumber": "INV-2026-0008",
+      "quotationId": 7,
+      "clientId": 3,
+      "date": "2026-02-08T17:27:55.533Z",
+      "items": [
+        {
+          "scopeOfWork": "Bill of Quantity/ FF&E",
+          "task": "Overall Layout Plans, Ceiling Designs (RCP), Furniture Placement Plans, Materials and Finishes Schedule, Lighting & Electrical Layouts, and Custom Joinery Concepts",
+          "amount": 100
+        }
+      ],
+      "subtotal": 100,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "totalAmount": 100,
+      "paidAmount": 100,
+      "paymentDate": "2026-02-08T17:27:18.164Z",
+      "paymentMethod": "Credit Card",
+      "currency": "AED",
+      "notes": "Test",
+      "createdAt": "2026-02-08T17:27:55.533Z",
+      "id": 8
     }
   ],
   "bankAccounts": [
