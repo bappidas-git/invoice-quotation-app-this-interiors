@@ -133,6 +133,40 @@ export const taxSettingsAPI = {
 };
 
 // ──────────────────────────────────────────────
+// BOQ Areas API
+// ──────────────────────────────────────────────
+export const boqAreasAPI = {
+  getAll: () => api.get("/boqAreas"),
+  getById: (id) => api.get(`/boqAreas/${id}`),
+  create: (data) => api.post("/boqAreas", data),
+  update: (id, data) => api.put(`/boqAreas/${id}`, data),
+  delete: (id) => api.delete(`/boqAreas/${id}`),
+};
+
+// ──────────────────────────────────────────────
+// BOQ Categories API
+// ──────────────────────────────────────────────
+export const boqCategoriesAPI = {
+  getAll: () => api.get("/boqCategories"),
+  getById: (id) => api.get(`/boqCategories/${id}`),
+  create: (data) => api.post("/boqCategories", data),
+  update: (id, data) => api.put(`/boqCategories/${id}`, data),
+  delete: (id) => api.delete(`/boqCategories/${id}`),
+};
+
+// ──────────────────────────────────────────────
+// BOQs API
+// ──────────────────────────────────────────────
+export const boqsAPI = {
+  getAll: () => api.get("/boqs"),
+  getById: (id) => api.get(`/boqs/${id}`),
+  create: (data) => api.post("/boqs", data),
+  update: (id, data) => api.put(`/boqs/${id}`, data),
+  delete: (id) => api.delete(`/boqs/${id}`),
+  getByClient: (clientId) => api.get(`/boqs?clientId=${clientId}`),
+};
+
+// ──────────────────────────────────────────────
 // General Settings API
 // ──────────────────────────────────────────────
 export const generalSettingsAPI = {

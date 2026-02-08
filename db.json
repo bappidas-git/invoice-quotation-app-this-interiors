@@ -657,6 +657,191 @@
       "showTaxBreakdown": false
     }
   ],
+  "boqAreas": [
+    {
+      "id": 1,
+      "name": "Entrance",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Hallway",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "Living Room",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "name": "Dining Room",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "name": "Master Bedroom",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "name": "Guest Bedroom",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "name": "Master Bathroom",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 8,
+      "name": "Guest Bathroom",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 9,
+      "name": "Kitchen",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 10,
+      "name": "Dresser",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 11,
+      "name": "Lobby",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 12,
+      "name": "Terrace",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    }
+  ],
+  "boqCategories": [
+    {
+      "id": 1,
+      "name": "Furniture",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Sofa",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "Coffee Table",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "name": "Side Table",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "name": "Chairs",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "name": "Dining Table",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "name": "Dining Chair",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 8,
+      "name": "Bed",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 9,
+      "name": "Lights and Lamps",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 10,
+      "name": "Carpets and Rugs",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 11,
+      "name": "Wallpaper",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 12,
+      "name": "Curtains and Sheers",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 13,
+      "name": "Pelmets",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 14,
+      "name": "Artworks",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 15,
+      "name": "Accessories",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 16,
+      "name": "Cushions",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 17,
+      "name": "Beddings",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    },
+    {
+      "id": 18,
+      "name": "Installation",
+      "isActive": true,
+      "createdAt": "2026-02-08T00:00:00.000Z"
+    }
+  ],
+  "boqs": [],
   "generalSettings": [
     {
       "id": 1,
@@ -664,6 +849,7 @@
       "currencySymbol": "AED",
       "quotationPrefix": "PI",
       "invoicePrefix": "INV",
+      "boqPrefix": "BOQ",
       "quotationValidDays": 30,
       "paymentTerms": "Net 30",
       "defaultPaymentMethod": "Online Payment",

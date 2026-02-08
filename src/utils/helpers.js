@@ -227,6 +227,14 @@ export const generateInvoiceNumber = async (lastNumber = 0) => {
   return `${prefix}-${year}-${nextNumber}`;
 };
 
+export const generateBoqNumber = async (lastNumber = 0) => {
+  const settings = await getGeneralSettings();
+  const prefix = settings?.boqPrefix || "BOQ";
+  const year = new Date().getFullYear();
+  const nextNumber = (lastNumber + 1).toString().padStart(4, "0");
+  return `${prefix}-${year}-${nextNumber}`;
+};
+
 export const calculateTotal = (items) => {
   return items.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 };
@@ -251,6 +259,7 @@ export default {
   filterByDateRange,
   generateQuotationNumber,
   generateInvoiceNumber,
+  generateBoqNumber,
   calculateTotal,
   calculateBalance,
   getQuotationValidUntil,

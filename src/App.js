@@ -28,6 +28,10 @@ import TaxSettings from "./components/Settings/TaxSettings";
 import GeneralSettings from "./components/Settings/GeneralSettings";
 import ScopeOfWork from "./components/Settings/ScopeOfWork";
 import Tasks from "./components/Settings/Tasks";
+import BOQList from "./components/BOQ/BOQList";
+import CreateBOQ from "./components/BOQ/CreateBOQ";
+import ViewBOQ from "./components/BOQ/ViewBOQ";
+import BOQSettings from "./components/BOQ/BOQSettings";
 
 // Services
 import authService from "./services/authService";
@@ -109,6 +113,11 @@ function App() {
                         path="/invoices/view/:id"
                         element={<ViewInvoice />}
                       />
+                      <Route path="/boq" element={<BOQList />} />
+                      <Route path="/boq/create" element={<CreateBOQ />} />
+                      <Route path="/boq/edit/:id" element={<CreateBOQ />} />
+                      <Route path="/boq/view/:id" element={<ViewBOQ />} />
+                      <Route path="/boq-settings" element={<BOQSettings />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />
                     </Routes>
