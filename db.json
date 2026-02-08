@@ -870,6 +870,45 @@
       "notes": "Test BOQ",
       "updatedAt": "2026-02-08T10:55:26.296Z",
       "id": 1
+    },
+    {
+      "boqNumber": "BOQ-2026-0002",
+      "clientId": 2,
+      "date": "2026-02-08T00:00:00.000Z",
+      "status": "Draft",
+      "items": [
+        {
+          "area": "Kitchen",
+          "imageUrl": "",
+          "category": "Lights and Lamps",
+          "itemName": "Kitchen Lamp",
+          "unitPrice": 10,
+          "quantity": 5,
+          "discount": 5
+        },
+        {
+          "area": "Dining Room",
+          "imageUrl": "https://i.ibb.co/jCd7f4G/Screenshot-2.png",
+          "category": "Furniture",
+          "itemName": "Dining Table",
+          "unitPrice": 1500,
+          "quantity": 1,
+          "discount": 10
+        }
+      ],
+      "subtotal": 1550,
+      "totalDiscount": 152.5,
+      "taxAmount": 0,
+      "taxPercent": 0,
+      "taxLabel": "Tax",
+      "serviceTaxAmount": 0,
+      "serviceTaxPercent": 0,
+      "totalAmount": 1397.5,
+      "currency": "AED",
+      "notes": "Dining Table",
+      "createdAt": "2026-02-08T11:13:26.250Z",
+      "updatedAt": "2026-02-08T11:13:26.250Z",
+      "id": 2
     }
   ],
   "generalSettings": [
