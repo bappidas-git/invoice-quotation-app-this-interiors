@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
-import { boqsAPI, clientsAPI } from "../../services/api";
+import { boqsAPI, clientsAPI, bankAccountsAPI } from "../../services/api";
 import {
   formatDate,
   formatCurrency,
@@ -34,6 +34,7 @@ const ViewBOQ = () => {
   const { id } = useParams();
   const [boq, setBoq] = useState(null);
   const [client, setClient] = useState(null);
+  const [bankAccount, setBankAccount] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,6 +50,19 @@ const ViewBOQ = () => {
         const clientRes = await clientsAPI.getById(boqRes.data.clientId);
         setClient(clientRes.data);
       }
+
+      // Fetch default bank account
+      try {
+        const allBanksRes = await bankAccountsAPI.getAll();
+        const defaultBank = allBanksRes.data.find((b) => b.isDefault);
+        if (defaultBank) {
+          setBankAccount(defaultBank);
+        } else if (allBanksRes.data.length > 0) {
+          setBankAccount(allBanksRes.data[0]);
+        }
+      } catch (e) {
+        console.error("Error loading bank account:", e);
+      }
     } catch (error) {
       console.error("Error fetching BOQ:", error);
     } finally {
@@ -60,7 +74,7 @@ const ViewBOQ = () => {
     try {
       const org = await getOrgProfile();
       const printWindow = window.open("", "_blank");
-      const printContent = PrintBOQ({ boq, client, organization: org });
+      const printContent = PrintBOQ({ boq, client, organization: org, bankAccount });
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.focus();

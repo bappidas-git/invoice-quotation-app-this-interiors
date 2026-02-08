@@ -403,6 +403,26 @@
   color: #6b7280;
 }
 
+.statusDraft {
+  background: rgba(156, 163, 175, 0.1);
+  color: #6b7280;
+}
+
+.statusSent {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.statusApproved {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.statusRejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
 /* Search Field */
 .searchField {
   width: 100%;

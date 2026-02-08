@@ -66,6 +66,21 @@ const ViewInvoice = () => {
           console.error("Error loading bank account:", e);
         }
       }
+
+      // Fallback: fetch default bank account if none was loaded
+      if (!invoiceRes.data.bankAccountId) {
+        try {
+          const allBanksRes = await bankAccountsAPI.getAll();
+          const defaultBank = allBanksRes.data.find((b) => b.isDefault);
+          if (defaultBank) {
+            setBankAccount(defaultBank);
+          } else if (allBanksRes.data.length > 0) {
+            setBankAccount(allBanksRes.data[0]);
+          }
+        } catch (e) {
+          console.error("Error loading default bank account:", e);
+        }
+      }
     } catch (error) {
       console.error("Error fetching invoice:", error);
     } finally {

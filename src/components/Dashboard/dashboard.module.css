@@ -142,10 +142,32 @@
   );
   border-radius: 10px;
   color: #667eea;
+  flex-shrink: 0;
+}
+
+.activityIconInvoice {
+  background: linear-gradient(
+    135deg,
+    rgba(46, 125, 50, 0.1) 0%,
+    rgba(16, 185, 129, 0.1) 100%
+  ) !important;
+  color: #2e7d32 !important;
 }
 
 .activityDetails {
   flex: 1;
+  min-width: 0;
+}
+
+.activityDate {
+  flex-shrink: 0;
+  font-size: 11px !important;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .quickActionsList {
@@ -182,10 +204,91 @@
   justify-content: center;
   border-radius: 8px;
   color: white;
+  flex-shrink: 0;
 }
 
 .contentGrid {
   margin-top: 0 !important;
+}
+
+/* BOQ Summary Styles */
+.boqSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.boqStatRow {
+  display: flex;
+  gap: 16px;
+}
+
+.boqStat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.boqStatIcon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.boqStatValue {
+  font-weight: 700 !important;
+  color: #1a1a1a;
+  line-height: 1.2 !important;
+}
+
+.boqAmountBar {
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(193, 127, 36, 0.08) 0%, rgba(193, 127, 36, 0.04) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(193, 127, 36, 0.15);
+}
+
+.boqAmountValue {
+  font-weight: 700 !important;
+  color: #c17f24;
+}
+
+.boqPendingBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: 8px;
+  color: #f59e0b;
+}
+
+.boqRecentList {
+  padding-top: 4px;
+}
+
+.boqRecentItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.boqRecentItem:hover {
+  background: rgba(0, 0, 0, 0.03);
 }
 
 /* Responsive Styles */
@@ -213,6 +316,11 @@
 
   .contentGrid {
     flex-direction: column-reverse;
+  }
+
+  .boqStatRow {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 
