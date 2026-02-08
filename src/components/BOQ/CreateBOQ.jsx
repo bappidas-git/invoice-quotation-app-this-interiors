@@ -7,12 +7,6 @@ import {
   Button,
   TextField,
   IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
   Dialog,
   DialogTitle,
@@ -477,173 +471,146 @@ const CreateBOQ = () => {
               </Box>
             </Box>
 
-            <TableContainer component={Paper} className={styles.itemsTable}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow sx={{ background: "#f5f5f5" }}>
-                    <TableCell width="13%">Area</TableCell>
-                    <TableCell width="14%">Image URL</TableCell>
-                    <TableCell width="13%">Category</TableCell>
-                    <TableCell width="16%">Item Name *</TableCell>
-                    <TableCell width="12%" align="right">Unit Price *</TableCell>
-                    <TableCell width="8%" align="center">Qty</TableCell>
-                    <TableCell width="8%" align="center">Disc %</TableCell>
-                    <TableCell width="12%" align="right">Line Total</TableCell>
-                    <TableCell width="4%" align="center" />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {items.map((item, index) => {
-                    const lineTotal =
-                      (parseFloat(item.unitPrice) || 0) *
-                      (parseFloat(item.quantity) || 0);
-                    const discountAmt =
-                      (lineTotal * (parseFloat(item.discount) || 0)) / 100;
-                    const finalTotal = lineTotal - discountAmt;
+            <Box className={styles.lineItemsList}>
+              {items.map((item, index) => {
+                const lineTotal =
+                  (parseFloat(item.unitPrice) || 0) *
+                  (parseFloat(item.quantity) || 0);
+                const discountAmt =
+                  (lineTotal * (parseFloat(item.discount) || 0)) / 100;
+                const finalTotal = lineTotal - discountAmt;
 
-                    return (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <FormControl fullWidth size="small">
-                            <Select
-                              value={item.area}
-                              onChange={(e) =>
-                                handleItemChange(index, "area", e.target.value)
-                              }
-                              displayEmpty
-                            >
-                              <MenuItem value="">
-                                <em>Select</em>
-                              </MenuItem>
-                              {areas.map((a) => (
-                                <MenuItem key={a.id} value={a.name}>
-                                  {a.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            size="small"
-                            placeholder="Paste URL"
-                            value={item.imageUrl}
-                            onChange={(e) =>
-                              handleItemChange(index, "imageUrl", e.target.value)
-                            }
-                            fullWidth
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <FormControl fullWidth size="small">
-                            <Select
-                              value={item.category}
-                              onChange={(e) =>
-                                handleItemChange(
-                                  index,
-                                  "category",
-                                  e.target.value
-                                )
-                              }
-                              displayEmpty
-                            >
-                              <MenuItem value="">
-                                <em>Select</em>
-                              </MenuItem>
-                              {categories.map((c) => (
-                                <MenuItem key={c.id} value={c.name}>
-                                  {c.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            size="small"
-                            placeholder="Item name"
-                            value={item.itemName}
-                            onChange={(e) =>
-                              handleItemChange(
-                                index,
-                                "itemName",
-                                e.target.value
-                              )
-                            }
-                            fullWidth
-                            required
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            size="small"
-                            type="number"
-                            placeholder="0.00"
-                            value={item.unitPrice}
-                            onChange={(e) =>
-                              handleItemChange(
-                                index,
-                                "unitPrice",
-                                e.target.value
-                              )
-                            }
-                            fullWidth
-                            inputProps={{ min: 0, step: 0.01 }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            size="small"
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) =>
-                              handleItemChange(
-                                index,
-                                "quantity",
-                                e.target.value
-                              )
-                            }
-                            fullWidth
-                            inputProps={{ min: 1 }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            size="small"
-                            type="number"
-                            value={item.discount}
-                            onChange={(e) =>
-                              handleItemChange(
-                                index,
-                                "discount",
-                                e.target.value
-                              )
-                            }
-                            fullWidth
-                            inputProps={{ min: 0, max: 100 }}
-                          />
-                        </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="body2" fontWeight="500">
-                            {formatCurrency(finalTotal, formData.currency)}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleRemoveItem(index)}
-                            disabled={items.length === 1}
-                          >
-                            <Icon icon="mdi:close" />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                return (
+                  <Paper key={index} className={styles.lineItemCard} variant="outlined">
+                    <Box className={styles.lineItemHeader}>
+                      <Typography variant="subtitle2" className={styles.lineItemNumber}>
+                        Item {index + 1}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleRemoveItem(index)}
+                        disabled={items.length === 1}
+                        className={styles.removeItemBtn}
+                      >
+                        <Icon icon="mdi:delete-outline" />
+                      </IconButton>
+                    </Box>
+
+                    {/* Row 1: Item Name, Area, Category */}
+                    <Box className={styles.lineItemRow}>
+                      <TextField
+                        label="Item Name *"
+                        size="small"
+                        placeholder="Enter item name"
+                        value={item.itemName}
+                        onChange={(e) =>
+                          handleItemChange(index, "itemName", e.target.value)
+                        }
+                        fullWidth
+                        required
+                        className={styles.lineItemFieldLarge}
+                      />
+                      <FormControl size="small" className={styles.lineItemFieldMedium}>
+                        <InputLabel>Area</InputLabel>
+                        <Select
+                          value={item.area}
+                          onChange={(e) =>
+                            handleItemChange(index, "area", e.target.value)
+                          }
+                          label="Area"
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          {areas.map((a) => (
+                            <MenuItem key={a.id} value={a.name}>
+                              {a.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl size="small" className={styles.lineItemFieldMedium}>
+                        <InputLabel>Category</InputLabel>
+                        <Select
+                          value={item.category}
+                          onChange={(e) =>
+                            handleItemChange(index, "category", e.target.value)
+                          }
+                          label="Category"
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          {categories.map((c) => (
+                            <MenuItem key={c.id} value={c.name}>
+                              {c.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+
+                    {/* Row 2: Image URL, Unit Price, Qty, Discount, Line Total */}
+                    <Box className={styles.lineItemRow}>
+                      <TextField
+                        label="Image URL"
+                        size="small"
+                        placeholder="Paste image URL"
+                        value={item.imageUrl}
+                        onChange={(e) =>
+                          handleItemChange(index, "imageUrl", e.target.value)
+                        }
+                        fullWidth
+                        className={styles.lineItemFieldLarge}
+                      />
+                      <TextField
+                        label="Unit Price *"
+                        size="small"
+                        type="number"
+                        placeholder="0.00"
+                        value={item.unitPrice}
+                        onChange={(e) =>
+                          handleItemChange(index, "unitPrice", e.target.value)
+                        }
+                        className={styles.lineItemFieldSmall}
+                        inputProps={{ min: 0, step: 0.01 }}
+                      />
+                      <TextField
+                        label="Qty"
+                        size="small"
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleItemChange(index, "quantity", e.target.value)
+                        }
+                        className={styles.lineItemFieldXSmall}
+                        inputProps={{ min: 1 }}
+                      />
+                      <TextField
+                        label="Disc %"
+                        size="small"
+                        type="number"
+                        value={item.discount}
+                        onChange={(e) =>
+                          handleItemChange(index, "discount", e.target.value)
+                        }
+                        className={styles.lineItemFieldXSmall}
+                        inputProps={{ min: 0, max: 100 }}
+                      />
+                      <Box className={styles.lineTotalBox}>
+                        <Typography variant="caption" color="text.secondary">
+                          Line Total
+                        </Typography>
+                        <Typography variant="subtitle1" fontWeight="600" color="primary">
+                          {formatCurrency(finalTotal, formData.currency)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Paper>
+                );
+              })}
+            </Box>
 
             <Button
               variant="outlined"
