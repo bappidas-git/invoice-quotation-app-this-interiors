@@ -83,7 +83,7 @@ const InvoiceList = () => {
           filteredInvoices = filteredInvoices.filter(
             (i) =>
               new Date(i.date) >= new Date(dateRange.startDate) &&
-              new Date(i.date) <= new Date(dateRange.endDate)
+              new Date(i.date) <= new Date(dateRange.endDate),
           );
         }
       }
@@ -229,7 +229,7 @@ const InvoiceList = () => {
 
   const paginatedInvoices = filteredInvoices.slice(
     page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * rowsPerPage + rowsPerPage,
   );
 
   const handleChangePage = (event, newPage) => setPage(newPage);
@@ -268,7 +268,10 @@ const InvoiceList = () => {
               <TextField
                 placeholder="Search by invoice number, client, or amount..."
                 value={searchTerm}
-                onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(0);
+                }}
                 className={styles.searchField}
                 InputProps={{
                   startAdornment: (
@@ -305,117 +308,131 @@ const InvoiceList = () => {
                 </Typography>
               </Box>
             ) : (
-              <TableContainer component={Paper} elevation={0}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Invoice No.</TableCell>
-                      <TableCell>Client</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Amount</TableCell>
-                      <TableCell>Paid</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell align="center">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {paginatedInvoices.map((invoice) => (
-                      <TableRow key={invoice.id} hover>
-                        <TableCell>
-                          <Typography variant="body2" fontWeight="500">
-                            {invoice.invoiceNumber || "N/A"}
-                          </Typography>
-                        </TableCell>
-
-                        <TableCell>{getClientName(invoice.clientId)}</TableCell>
-
-                        <TableCell>
-                          {invoice.date ? formatDate(invoice.date) : "-"}
-                        </TableCell>
-
-                        <TableCell>
-                          {formatCurrency(
-                            invoice.totalAmount || 0,
-                            invoice.currency ||
-                              generalSettings?.currency ||
-                              "AED"
-                          )}
-                        </TableCell>
-
-                        <TableCell>
-                          {formatCurrency(
-                            invoice.paidAmount || 0,
-                            invoice.currency ||
-                              generalSettings?.currency ||
-                              "AED"
-                          )}
-                        </TableCell>
-
-                        <TableCell>
-                          <Chip
-                            label={getStatusLabel(invoice)}
-                            size="small"
-                            color={getStatusColor(invoice)}
-                          />
-                        </TableCell>
-
-                        <TableCell align="center">
-                          <Tooltip title="View">
-                            <IconButton
-                              size="small"
-                              onClick={() =>
-                                navigate(`/invoices/view/${invoice.id}`)
-                              }
-                            >
-                              <Icon icon="mdi:eye" />
-                            </IconButton>
-                          </Tooltip>
-
-                          <Tooltip title="Print">
-                            <IconButton
-                              size="small"
-                              onClick={() => printInvoice(invoice)}
-                            >
-                              <Icon icon="mdi:printer" />
-                            </IconButton>
-                          </Tooltip>
-
-                          <Tooltip title="More Options">
-                            <IconButton
-                              size="small"
-                              onClick={(e) => handleMenuOpen(e, invoice)}
-                            >
-                              <Icon icon="mdi:dots-vertical" />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
+              <>
+                <TableContainer component={Paper} elevation={0}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Invoice No.</TableCell>
+                        <TableCell>Client</TableCell>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>Paid</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell align="center">Actions</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                      {paginatedInvoices.map((invoice) => (
+                        <TableRow key={invoice.id} hover>
+                          <TableCell>
+                            <Typography variant="body2" fontWeight="500">
+                              {invoice.invoiceNumber || "N/A"}
+                            </Typography>
+                          </TableCell>
 
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2 }}>
-                <FormControl size="small">
-                  <Select value={rowsPerPage} onChange={handleChangeRowsPerPage}>
-                    {[5, 10, 25, 50, 100].map((n) => (
-                      <MenuItem key={n} value={n}>
-                        {n} rows
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                          <TableCell>
+                            {getClientName(invoice.clientId)}
+                          </TableCell>
 
-                <TablePagination
-                  component="div"
-                  count={filteredInvoices.length}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  rowsPerPage={rowsPerPage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  rowsPerPageOptions={[]}
-                />
-              </Box>
+                          <TableCell>
+                            {invoice.date ? formatDate(invoice.date) : "-"}
+                          </TableCell>
+
+                          <TableCell>
+                            {formatCurrency(
+                              invoice.totalAmount || 0,
+                              invoice.currency ||
+                                generalSettings?.currency ||
+                                "AED",
+                            )}
+                          </TableCell>
+
+                          <TableCell>
+                            {formatCurrency(
+                              invoice.paidAmount || 0,
+                              invoice.currency ||
+                                generalSettings?.currency ||
+                                "AED",
+                            )}
+                          </TableCell>
+
+                          <TableCell>
+                            <Chip
+                              label={getStatusLabel(invoice)}
+                              size="small"
+                              color={getStatusColor(invoice)}
+                            />
+                          </TableCell>
+
+                          <TableCell align="center">
+                            <Tooltip title="View">
+                              <IconButton
+                                size="small"
+                                onClick={() =>
+                                  navigate(`/invoices/view/${invoice.id}`)
+                                }
+                              >
+                                <Icon icon="mdi:eye" />
+                              </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Print">
+                              <IconButton
+                                size="small"
+                                onClick={() => printInvoice(invoice)}
+                              >
+                                <Icon icon="mdi:printer" />
+                              </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="More Options">
+                              <IconButton
+                                size="small"
+                                onClick={(e) => handleMenuOpen(e, invoice)}
+                              >
+                                <Icon icon="mdi:dots-vertical" />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mt: 2,
+                  }}
+                >
+                  <FormControl size="small">
+                    <Select
+                      value={rowsPerPage}
+                      onChange={handleChangeRowsPerPage}
+                    >
+                      {[5, 10, 25, 50, 100].map((n) => (
+                        <MenuItem key={n} value={n}>
+                          {n} rows
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <TablePagination
+                    component="div"
+                    count={filteredInvoices.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[]}
+                  />
+                </Box>
+              </>
             )}
           </CardContent>
         </Card>
