@@ -13,12 +13,12 @@
 
 .title {
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
   margin-bottom: 4px !important;
 }
 
 .subtitle {
-  color: #6B6B6B;
+  color: #666;
 }
 
 .dateFilterGroup {
@@ -32,17 +32,17 @@
   border: none !important;
   padding: 8px 20px;
   font-weight: 500;
-  color: #6B6B6B;
+  color: #666;
   transition: all 0.3s ease;
 }
 
 .dateFilterGroup button:hover {
-  background: rgba(199, 138, 30, 0.08);
-  color: #C78A1E;
+  background: rgba(102, 126, 234, 0.08);
+  color: #667eea;
 }
 
 .activeFilter {
-  background: linear-gradient(135deg, #C78A1E 0%, #E6B65C 100%) !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: white !important;
 }
 
@@ -84,7 +84,7 @@
 
 .cardTitle {
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
 }
 
 .cardActions {
@@ -99,7 +99,7 @@
 }
 
 .activityHeader {
-  color: #6B6B6B;
+  color: #666;
   font-weight: 600 !important;
   margin-top: 16px;
   margin-bottom: 8px;
@@ -137,11 +137,11 @@
   justify-content: center;
   background: linear-gradient(
     135deg,
-    rgba(199, 138, 30, 0.1) 0%,
-    rgba(230, 182, 92, 0.1) 100%
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
   );
   border-radius: 10px;
-  color: #C78A1E;
+  color: #667eea;
   flex-shrink: 0;
 }
 
@@ -149,7 +149,7 @@
   background: linear-gradient(
     135deg,
     rgba(46, 125, 50, 0.1) 0%,
-    rgba(46, 125, 50, 0.1) 100%
+    rgba(16, 185, 129, 0.1) 100%
   ) !important;
   color: #2e7d32 !important;
 }
@@ -247,20 +247,20 @@
 
 .boqStatValue {
   font-weight: 700 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
   line-height: 1.2 !important;
 }
 
 .boqAmountBar {
   padding: 12px;
-  background: linear-gradient(135deg, rgba(199, 138, 30, 0.08) 0%, rgba(199, 138, 30, 0.04) 100%);
+  background: linear-gradient(135deg, rgba(193, 127, 36, 0.08) 0%, rgba(193, 127, 36, 0.04) 100%);
   border-radius: 10px;
-  border: 1px solid rgba(199, 138, 30, 0.15);
+  border: 1px solid rgba(193, 127, 36, 0.15);
 }
 
 .boqAmountValue {
   font-weight: 700 !important;
-  color: #C78A1E;
+  color: #c17f24;
 }
 
 .boqPendingBadge {
@@ -268,9 +268,9 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: rgba(199, 138, 30, 0.08);
+  background: rgba(245, 158, 11, 0.08);
   border-radius: 8px;
-  color: #C78A1E;
+  color: #f59e0b;
 }
 
 .boqRecentList {
@@ -289,21 +289,6 @@
 
 .boqRecentItem:hover {
   background: rgba(0, 0, 0, 0.03);
-}
-
-/* Activity Columns Layout */
-.activityColumns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.activityColumn {
-  min-width: 0;
-}
-
-.bottomGrid {
-  margin-top: 0;
 }
 
 /* Responsive Styles */
@@ -336,11 +321,6 @@
   .boqStatRow {
     flex-direction: column;
     gap: 8px;
-  }
-
-  .activityColumns {
-    grid-template-columns: 1fr;
-    gap: 16px;
   }
 }
 

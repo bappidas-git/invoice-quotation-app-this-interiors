@@ -7,6 +7,11 @@ import {
 } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
+// Components
+import Login from "./components/Auth/Login";
 import Layout from "./components/Layout/Layout";
 import Dashboard from "./components/Dashboard/Dashboard";
 import QuotationList from "./components/Quotation/QuotationList";
@@ -16,59 +21,30 @@ import PaymentUpdate from "./components/Quotation/PaymentUpdate";
 import InvoiceList from "./components/Invoice/InvoiceList";
 import ViewInvoice from "./components/Invoice/ViewInvoice";
 import ClientList from "./components/Clients/ClientList";
+import Reports from "./components/Reports/Reports";
+import Settings from "./components/Settings/Settings";
+import Organizations from "./components/Settings/Organizations";
+import TaxSettings from "./components/Settings/TaxSettings";
+import GeneralSettings from "./components/Settings/GeneralSettings";
+import ScopeOfWork from "./components/Settings/ScopeOfWork";
+import Tasks from "./components/Settings/Tasks";
 import BOQList from "./components/BOQ/BOQList";
 import CreateBOQ from "./components/BOQ/CreateBOQ";
 import ViewBOQ from "./components/BOQ/ViewBOQ";
 import BOQSettings from "./components/BOQ/BOQSettings";
-import Reports from "./components/Reports/Reports";
-import Settings from "./components/Settings/Settings";
-import Login from "./components/Auth/Login";
-import PrintQuotation from "./components/Quotation/PrintQuotation";
-import PrintInvoice from "./components/Invoice/PrintInvoice";
-import PrintBOQ from "./components/BOQ/PrintBOQ";
-import "./App.css";
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
+// Services
+import authService from "./services/authService";
 
+// Theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#C78A1E",
-      dark: "#B87916",
-      light: "#E6B65C",
+      main: "#1976d2",
     },
     secondary: {
-      main: "#E6B65C",
+      main: "#dc004e",
     },
-    error: {
-      main: "#C0392B",
-    },
-    warning: {
-      main: "#C78A1E",
-    },
-    success: {
-      main: "#2E7D32",
-    },
-    info: {
-      main: "#1F6FB2",
-    },
-    text: {
-      primary: "#2F2F2F",
-      secondary: "#6B6B6B",
-      disabled: "#9A9A9A",
-    },
-    background: {
-      default: "#FAFAFA",
-      paper: "#FFFFFF",
-    },
-    divider: "#E5E5E5",
   },
   typography: {
     fontFamily: "Roboto, Arial, sans-serif",
@@ -86,71 +62,72 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         },
       },
     },
   },
 });
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = authService.isAuthenticated();
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-
-          {/* Print routes - outside layout */}
-          <Route path="/quotations/print/:id" element={<PrintQuotation />} />
-          <Route path="/invoices/print/:id" element={<PrintInvoice />} />
-          <Route path="/boq/print/:id" element={<PrintBOQ />} />
-
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/quotations" element={<QuotationList />} />
-                    <Route
-                      path="/quotations/create"
-                      element={<CreateQuotation />}
-                    />
-                    <Route
-                      path="/quotations/edit/:id"
-                      element={<CreateQuotation />}
-                    />
-                    <Route
-                      path="/quotations/view/:id"
-                      element={<ViewQuotation />}
-                    />
-                    <Route
-                      path="/quotations/payment/:id"
-                      element={<PaymentUpdate />}
-                    />
-                    <Route path="/invoices" element={<InvoiceList />} />
-                    <Route
-                      path="/invoices/view/:id"
-                      element={<ViewInvoice />}
-                    />
-                    <Route path="/clients" element={<ClientList />} />
-                    <Route path="/boq" element={<BOQList />} />
-                    <Route path="/boq/create" element={<CreateBOQ />} />
-                    <Route path="/boq/edit/:id" element={<CreateBOQ />} />
-                    <Route path="/boq/view/:id" element={<ViewBOQ />} />
-                    <Route path="/boq-settings" element={<BOQSettings />} />
-                    <Route path="/reports" element={<Reports />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Router>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <CssBaseline />
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/quotations" element={<QuotationList />} />
+                      <Route
+                        path="/quotations/create"
+                        element={<CreateQuotation />}
+                      />
+                      <Route
+                        path="/quotations/edit/:id"
+                        element={<CreateQuotation />}
+                      />
+                      <Route
+                        path="/quotations/view/:id"
+                        element={<ViewQuotation />}
+                      />
+                      <Route
+                        path="/quotations/payment/:id"
+                        element={<PaymentUpdate />}
+                      />
+                      <Route path="/clients" element={<ClientList />} />
+                      <Route path="/invoices" element={<InvoiceList />} />
+                      <Route
+                        path="/invoices/view/:id"
+                        element={<ViewInvoice />}
+                      />
+                      <Route path="/boq" element={<BOQList />} />
+                      <Route path="/boq/create" element={<CreateBOQ />} />
+                      <Route path="/boq/edit/:id" element={<CreateBOQ />} />
+                      <Route path="/boq/view/:id" element={<ViewBOQ />} />
+                      <Route path="/boq-settings" element={<BOQSettings />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/settings" element={<Settings />} />
+                    </Routes>
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }

@@ -66,18 +66,18 @@
 }
 
 .newQuotationBtn {
-  background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%) !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: white !important;
   padding: 8px 20px !important;
   border-radius: 10px !important;
   font-weight: 500 !important;
   text-transform: none !important;
-  box-shadow: 0 4px 15px rgba(199, 138, 30, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
   transition: all 0.3s ease !important;
 }
 
 .newQuotationBtn:hover {
-  box-shadow: 0 6px 20px rgba(199, 138, 30, 0.5) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
   transform: translateY(-2px);
 }
 
@@ -106,7 +106,7 @@
 .drawerPaper {
   width: 280px;
   background: white !important;
-  border-right: 1px solid #E5E5E5 !important;
+  border-right: 1px solid #e0e0e0 !important;
   box-shadow: 2px 0 10px 0 rgba(0, 0, 0, 0.1) !important;
   margin-top: 70px;
   height: calc(100% - 70px);
@@ -144,11 +144,11 @@
 .activeNavItem {
   background: linear-gradient(
     135deg,
-    rgba(199, 138, 30, 0.1) 0%,
-    rgba(184, 121, 22, 0.1) 100%
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
   ) !important;
-  color: #C78A1E !important;
-  border-left: 3px solid #C78A1E !important;
+  color: #667eea !important;
+  border-left: 3px solid #667eea !important;
 }
 
 .navSubItem {
@@ -175,7 +175,7 @@
 }
 
 .divider {
-  background: #E5E5E5 !important;
+  background: #e0e0e0 !important;
   margin: 8px 0 !important;
 }
 
@@ -183,7 +183,7 @@
 .root {
   display: flex;
   min-height: 100vh;
-  background: #FAFAFA;
+  background: #f5f5f7;
 }
 
 .content {

@@ -18,12 +18,12 @@
 
 .title {
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
   margin-bottom: 4px !important;
 }
 
 .subtitle {
-  color: #6B6B6B;
+  color: #666;
 }
 
 .headerActions {
@@ -67,7 +67,7 @@
 }
 
 .tab:hover {
-  background: rgba(199, 138, 30, 0.08) !important;
+  background: rgba(102, 126, 234, 0.08) !important;
 }
 
 /* Metric Cards Grid */
@@ -99,11 +99,11 @@
 
 .cardTitle {
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
 }
 
 .cardSubtitle {
-  color: #6B6B6B;
+  color: #666;
   font-size: 13px;
 }
 
@@ -149,7 +149,7 @@
 
 .barLabel {
   font-size: 10px !important;
-  color: #9A9A9A;
+  color: #999;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -160,7 +160,7 @@
 .barValue {
   font-size: 10px !important;
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #333;
   text-align: center;
 }
 
@@ -187,7 +187,7 @@
 .horizontalBarName {
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: #2F2F2F;
+  color: #333;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -197,7 +197,7 @@
 .horizontalBarAmount {
   font-size: 13px !important;
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
 }
 
 .horizontalBarTrack {
@@ -241,12 +241,12 @@
 .donutCenterValue {
   font-size: 22px !important;
   font-weight: 700 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
 }
 
 .donutCenterLabel {
   font-size: 11px !important;
-  color: #9A9A9A;
+  color: #999;
 }
 
 .donutLegend {
@@ -286,7 +286,7 @@
 
 .legendLabel {
   font-size: 13px !important;
-  color: #6B6B6B;
+  color: #666;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -295,13 +295,13 @@
 .legendValue {
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
 }
 
 .legendPercent {
   font-size: 12px !important;
   font-weight: 600 !important;
-  color: #9A9A9A;
+  color: #999;
   flex-shrink: 0;
   min-width: 45px;
   text-align: right;
@@ -352,12 +352,12 @@
 .summaryValue {
   font-size: 20px !important;
   font-weight: 700 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
 }
 
 .summaryLabel {
   font-size: 12px !important;
-  color: #9A9A9A;
+  color: #999;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 500 !important;
@@ -370,7 +370,7 @@
 
 .tableSectionTitle {
   font-weight: 600 !important;
-  color: #2F2F2F;
+  color: #1a1a1a;
   margin-bottom: 16px !important;
 }
 
@@ -384,18 +384,18 @@
 }
 
 .statusFullyPaid {
-  background: rgba(46, 125, 50, 0.1);
-  color: #2E7D32;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
 }
 
 .statusPartiallyPaid {
-  background: rgba(199, 138, 30, 0.1);
-  color: #C78A1E;
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
 }
 
 .statusPerforma {
-  background: rgba(199, 138, 30, 0.1);
-  color: #C78A1E;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
 }
 
 .statusQuotation {
@@ -409,18 +409,18 @@
 }
 
 .statusSent {
-  background: rgba(199, 138, 30, 0.1);
-  color: #C78A1E;
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
 }
 
 .statusApproved {
-  background: rgba(46, 125, 50, 0.1);
-  color: #2E7D32;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
 }
 
 .statusRejected {
-  background: rgba(192, 57, 43, 0.1);
-  color: #C0392B;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
 }
 
 /* Search Field */
@@ -436,7 +436,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: #9A9A9A;
+  color: #999;
 }
 
 .emptyIcon {

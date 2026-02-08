@@ -50,7 +50,7 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
           justify-content: space-between;
           align-items: center;
           padding-bottom: 12px;
-          border-bottom: 3px solid #C78A1E;
+          border-bottom: 3px solid #667eea;
           margin-bottom: 15px;
         }
         .logo-section {
@@ -70,7 +70,7 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
           flex: 1;
         }
         .document-title h1 {
-          color: #C78A1E;
+          color: #667eea;
           font-size: 28px;
           margin-bottom: 3px;
         }
@@ -91,7 +91,7 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
         }
         .section-title {
           font-size: 11px;
-          color: #C78A1E;
+          color: #667eea;
           font-weight: bold;
           margin-bottom: 6px;
           text-transform: uppercase;
@@ -117,7 +117,7 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
           margin-bottom: 15px;
         }
         .items-table thead {
-          background: linear-gradient(135deg, #C78A1E 0%, #B87916 100%);
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
         }
         .items-table th {
@@ -154,8 +154,8 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
         .summary-row.total {
           font-size: 15px;
           font-weight: bold;
-          color: #C78A1E;
-          border-top: 2px solid #C78A1E;
+          color: #667eea;
+          border-top: 2px solid #667eea;
           margin-top: 6px;
           padding-top: 8px;
         }
@@ -170,7 +170,7 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
           font-size: 11px;
           font-weight: bold;
           margin-bottom: 5px;
-          color: #C78A1E;
+          color: #667eea;
           text-transform: uppercase;
         }
         .payment-info-grid {
@@ -221,7 +221,7 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
         }
         .status-performa {
           background: #e3f2fd;
-          color: #C78A1E;
+          color: #1976d2;
         }
         .status-partially {
           background: #fff3e0;

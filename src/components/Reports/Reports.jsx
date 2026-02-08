@@ -62,8 +62,8 @@ const REPORT_TABS = [
 ];
 
 const CHART_COLORS = [
-  "#C78A1E", "#E6B65C", "#6B6B6B", "#2E7D32", "#C0392B",
-  "#1F6FB2", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316",
+  "#667eea", "#764ba2", "#f59e0b", "#10b981", "#ef4444",
+  "#06b6d4", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316",
 ];
 
 const Reports = () => {
@@ -449,10 +449,10 @@ const Reports = () => {
 
     // Aging buckets
     const agingBuckets = {
-      "0-30 days": { count: 0, amount: 0, color: "#2E7D32" },
-      "31-60 days": { count: 0, amount: 0, color: "#C78A1E" },
-      "61-90 days": { count: 0, amount: 0, color: "#E6B65C" },
-      "90+ days": { count: 0, amount: 0, color: "#C0392B" },
+      "0-30 days": { count: 0, amount: 0, color: "#10b981" },
+      "31-60 days": { count: 0, amount: 0, color: "#f59e0b" },
+      "61-90 days": { count: 0, amount: 0, color: "#f97316" },
+      "90+ days": { count: 0, amount: 0, color: "#ef4444" },
     };
 
     outstanding.forEach((o) => {
@@ -731,7 +731,7 @@ const Reports = () => {
     doc.setFont(undefined, "normal");
     doc.text(`${tabName} Report`, pageWidth / 2, 28, { align: "center" });
 
-    doc.setDrawColor(199, 138, 30);
+    doc.setDrawColor(102, 126, 234);
     doc.setLineWidth(0.5);
     doc.line(14, 32, pageWidth - 14, 32);
 
@@ -774,9 +774,9 @@ const Reports = () => {
 
     const tableOpts = {
       theme: "grid",
-      headStyles: { fillColor: [199, 138, 30], fontStyle: "bold", fontSize: 8 },
+      headStyles: { fillColor: [102, 126, 234], fontStyle: "bold", fontSize: 8 },
       bodyStyles: { fontSize: 8 },
-      alternateRowStyles: { fillColor: [251, 243, 230] },
+      alternateRowStyles: { fillColor: [245, 247, 255] },
       margin: { bottom: 25 },
     };
 
@@ -935,7 +935,7 @@ const Reports = () => {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <Icon icon="mdi:magnify" width="20" color="#9A9A9A" />
+            <Icon icon="mdi:magnify" width="20" color="#999" />
           </InputAdornment>
         ),
         ...(searchQuery && {
@@ -944,7 +944,7 @@ const Reports = () => {
               <Icon
                 icon="mdi:close-circle"
                 width="18"
-                color="#9A9A9A"
+                color="#999"
                 style={{ cursor: "pointer" }}
                 onClick={() => { setSearchQuery(""); setPage(0); }}
               />
@@ -963,7 +963,7 @@ const Reports = () => {
     />
   );
 
-  const renderBarChart = (data, valueKey, labelKey, color = "#C78A1E") => {
+  const renderBarChart = (data, valueKey, labelKey, color = "#667eea") => {
     if (!data || data.length === 0) return renderEmpty("No data for chart");
     const maxVal = Math.max(...data.map((d) => d[valueKey])) || 1;
     return (
@@ -1139,10 +1139,10 @@ const Reports = () => {
   const renderRevenueReport = () => (
     <>
       <Box className={styles.summaryRow}>
-        {renderSummaryItem("mdi:file-document-edit", "#E6B65C", formatCurrency(revenueData.totalQuotationAmount), "Total Performa Value", "rgba(230,182,92,0.06)")}
-        {renderSummaryItem("mdi:receipt-text", "#C78A1E", formatCurrency(revenueData.totalInvoiceAmount), "Total Invoiced", "rgba(199,138,30,0.06)")}
-        {renderSummaryItem("mdi:cash-check", "#2E7D32", formatCurrency(revenueData.totalCollected), "Total Collected", "rgba(46,125,50,0.06)")}
-        {renderSummaryItem("mdi:cash-clock", "#C0392B", formatCurrency(revenueData.totalOutstanding), "Outstanding", "rgba(192,57,43,0.06)")}
+        {renderSummaryItem("mdi:file-document-edit", "#764ba2", formatCurrency(revenueData.totalQuotationAmount), "Total Performa Value", "rgba(118,75,162,0.06)")}
+        {renderSummaryItem("mdi:receipt-text", "#667eea", formatCurrency(revenueData.totalInvoiceAmount), "Total Invoiced", "rgba(102,126,234,0.06)")}
+        {renderSummaryItem("mdi:cash-check", "#10b981", formatCurrency(revenueData.totalCollected), "Total Collected", "rgba(16,185,129,0.06)")}
+        {renderSummaryItem("mdi:cash-clock", "#f59e0b", formatCurrency(revenueData.totalOutstanding), "Outstanding", "rgba(245,158,11,0.06)")}
       </Box>
 
       <Grid container spacing={3}>
@@ -1177,9 +1177,9 @@ const Reports = () => {
     return (
       <>
         <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:account-group", "#C78A1E", clients.length, "Total Clients", "rgba(199,138,30,0.06)")}
-          {renderSummaryItem("mdi:account-check", "#2E7D32", clientReportData.length, "Active Clients", "rgba(46,125,50,0.06)")}
-          {renderSummaryItem("mdi:trophy", "#E6B65C", clientReportData.length > 0 ? clientReportData[0].name : "N/A", "Top Client", "rgba(230,182,92,0.06)")}
+          {renderSummaryItem("mdi:account-group", "#667eea", clients.length, "Total Clients", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:account-check", "#10b981", clientReportData.length, "Active Clients", "rgba(16,185,129,0.06)")}
+          {renderSummaryItem("mdi:trophy", "#f59e0b", clientReportData.length > 0 ? clientReportData[0].name : "N/A", "Top Client", "rgba(245,158,11,0.06)")}
         </Box>
 
         <Card className={styles.glassCard}>
@@ -1253,7 +1253,7 @@ const Reports = () => {
                       <TableCell align="right">{formatCurrency(c.quotationAmount)}</TableCell>
                       <TableCell align="right">{formatCurrency(c.paidAmount)}</TableCell>
                       <TableCell align="right">
-                        <Typography style={{ color: c.outstanding > 0 ? "#C0392B" : "#2E7D32", fontWeight: 600, fontSize: "13px" }}>
+                        <Typography style={{ color: c.outstanding > 0 ? "#ef4444" : "#10b981", fontWeight: 600, fontSize: "13px" }}>
                           {formatCurrency(c.outstanding)}
                         </Typography>
                       </TableCell>
@@ -1288,10 +1288,10 @@ const Reports = () => {
 
   const renderStatusReport = () => {
     const statusColors = {
-      Performa: "#C78A1E",
-      "Partially Paid": "#E6B65C",
-      "Fully Paid": "#2E7D32",
-      Quotation: "#9A9A9A",
+      Performa: "#667eea",
+      "Partially Paid": "#f59e0b",
+      "Fully Paid": "#10b981",
+      Quotation: "#9ca3af",
     };
 
     const donutItems = statusData.breakdown.map((s) => ({
@@ -1306,7 +1306,7 @@ const Reports = () => {
     return (
       <>
         <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:file-document-multiple", "#C78A1E", statusData.total, "Total Performa", "rgba(199,138,30,0.06)")}
+          {renderSummaryItem("mdi:file-document-multiple", "#667eea", statusData.total, "Total Performa", "rgba(102,126,234,0.06)")}
           {statusData.breakdown.map((s, i) =>
             renderSummaryItem(
               s.status === "Fully Paid" ? "mdi:check-circle" : s.status === "Partially Paid" ? "mdi:progress-clock" : "mdi:file-document-outline",
@@ -1413,9 +1413,9 @@ const Reports = () => {
     return (
       <>
         <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:cash-multiple", "#2E7D32", formatCurrency(paymentData.totalCollected), "Total Collected", "rgba(46,125,50,0.06)")}
-          {renderSummaryItem("mdi:receipt-text-check", "#C78A1E", paymentData.invoiceCount, "Total Transactions", "rgba(199,138,30,0.06)")}
-          {renderSummaryItem("mdi:credit-card", "#E6B65C", paymentData.methods.length, "Payment Methods Used", "rgba(230,182,92,0.06)")}
+          {renderSummaryItem("mdi:cash-multiple", "#10b981", formatCurrency(paymentData.totalCollected), "Total Collected", "rgba(16,185,129,0.06)")}
+          {renderSummaryItem("mdi:receipt-text-check", "#667eea", paymentData.invoiceCount, "Total Transactions", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:credit-card", "#764ba2", paymentData.methods.length, "Payment Methods Used", "rgba(118,75,162,0.06)")}
         </Box>
 
         <Card className={styles.glassCard}>
@@ -1505,10 +1505,10 @@ const Reports = () => {
     return (
       <>
         <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:calculator", "#C78A1E", formatCurrency(taxData.totalSubtotalQ), "Total Subtotal (Performa)", "rgba(199,138,30,0.06)")}
-          {renderSummaryItem("mdi:percent-box", "#E6B65C", formatCurrency(taxData.totalTaxFromQuotations), "Tax Collected", "rgba(230,182,92,0.06)")}
-          {renderSummaryItem("mdi:percent-circle", "#6B6B6B", formatCurrency(taxData.totalServiceTaxFromQuotations), "Service Tax", "rgba(107,107,107,0.06)")}
-          {renderSummaryItem("mdi:sigma", "#2E7D32", formatCurrency(taxData.totalTax), "Total Tax Amount", "rgba(46,125,50,0.06)")}
+          {renderSummaryItem("mdi:calculator", "#667eea", formatCurrency(taxData.totalSubtotalQ), "Total Subtotal (Performa)", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:percent-box", "#f59e0b", formatCurrency(taxData.totalTaxFromQuotations), "Tax Collected", "rgba(245,158,11,0.06)")}
+          {renderSummaryItem("mdi:percent-circle", "#764ba2", formatCurrency(taxData.totalServiceTaxFromQuotations), "Service Tax", "rgba(118,75,162,0.06)")}
+          {renderSummaryItem("mdi:sigma", "#10b981", formatCurrency(taxData.totalTax), "Total Tax Amount", "rgba(16,185,129,0.06)")}
         </Box>
 
         <Card className={styles.glassCard}>
@@ -1622,9 +1622,9 @@ const Reports = () => {
     return (
       <>
         <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:briefcase-outline", "#C78A1E", servicesData.services.length, "Services Used", "rgba(199,138,30,0.06)")}
-          {renderSummaryItem("mdi:currency-usd", "#2E7D32", formatCurrency(servicesData.totalAmount), "Total Service Value", "rgba(46,125,50,0.06)")}
-          {renderSummaryItem("mdi:star", "#E6B65C", servicesData.services.length > 0 ? servicesData.services[0].name : "N/A", "Top Service", "rgba(230,182,92,0.06)")}
+          {renderSummaryItem("mdi:briefcase-outline", "#667eea", servicesData.services.length, "Services Used", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:currency-usd", "#10b981", formatCurrency(servicesData.totalAmount), "Total Service Value", "rgba(16,185,129,0.06)")}
+          {renderSummaryItem("mdi:star", "#f59e0b", servicesData.services.length > 0 ? servicesData.services[0].name : "N/A", "Top Service", "rgba(245,158,11,0.06)")}
         </Box>
 
         <Card className={styles.glassCard}>
@@ -1725,8 +1725,8 @@ const Reports = () => {
     return (
       <>
         <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:cash-clock", "#C0392B", formatCurrency(totalOutstanding), "Total Outstanding", "rgba(192,57,43,0.06)")}
-          {renderSummaryItem("mdi:file-alert", "#C78A1E", outstanding.length, "Pending Performa", "rgba(199,138,30,0.06)")}
+          {renderSummaryItem("mdi:cash-clock", "#ef4444", formatCurrency(totalOutstanding), "Total Outstanding", "rgba(239,68,68,0.06)")}
+          {renderSummaryItem("mdi:file-alert", "#f59e0b", outstanding.length, "Pending Performa", "rgba(245,158,11,0.06)")}
           {agingEntries.map(([bucket, data]) =>
             data.count > 0 ? (
               <React.Fragment key={bucket}>
@@ -1803,7 +1803,7 @@ const Reports = () => {
                             <TableCell>{formatDate(o.date)}</TableCell>
                             <TableCell align="right">{formatCurrency(o.totalAmount)}</TableCell>
                             <TableCell align="right">{formatCurrency(o.paidAmount)}</TableCell>
-                            <TableCell align="right" style={{ color: "#C0392B", fontWeight: 600 }}>
+                            <TableCell align="right" style={{ color: "#ef4444", fontWeight: 600 }}>
                               {formatCurrency(o.balance)}
                             </TableCell>
                             <TableCell align="right">{o.daysOld}</TableCell>
@@ -1860,10 +1860,10 @@ const Reports = () => {
 
   const renderBOQReport = () => {
     const boqStatusColors = {
-      Draft: "#9A9A9A",
-      Sent: "#C78A1E",
-      Approved: "#2E7D32",
-      Rejected: "#C0392B",
+      Draft: "#9ca3af",
+      Sent: "#f59e0b",
+      Approved: "#10b981",
+      Rejected: "#ef4444",
     };
 
     const donutItems = boqReportData.byStatus.map((s) => ({
@@ -1878,10 +1878,10 @@ const Reports = () => {
     return (
       <>
         <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:clipboard-list-outline", "#C78A1E", boqReportData.totalBOQs, "Total BOQs", "rgba(199,138,30,0.06)")}
-          {renderSummaryItem("mdi:currency-usd", "#E6B65C", formatCurrency(boqReportData.totalValue), "Total Value", "rgba(230,182,92,0.06)")}
-          {renderSummaryItem("mdi:check-circle", "#2E7D32", boqReportData.approvedCount, "Approved", "rgba(46,125,50,0.06)")}
-          {renderSummaryItem("mdi:clock-outline", "#C78A1E", boqReportData.pendingCount, "Pending", "rgba(199,138,30,0.06)")}
+          {renderSummaryItem("mdi:clipboard-list-outline", "#667eea", boqReportData.totalBOQs, "Total BOQs", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:currency-usd", "#764ba2", formatCurrency(boqReportData.totalValue), "Total Value", "rgba(118,75,162,0.06)")}
+          {renderSummaryItem("mdi:check-circle", "#10b981", boqReportData.approvedCount, "Approved", "rgba(16,185,129,0.06)")}
+          {renderSummaryItem("mdi:clock-outline", "#f59e0b", boqReportData.pendingCount, "Pending", "rgba(245,158,11,0.06)")}
         </Box>
 
         <Card className={styles.glassCard}>
@@ -2041,7 +2041,7 @@ const Reports = () => {
             className={styles.exportBtn}
             size="small"
             sx={{
-              background: "linear-gradient(135deg, #C78A1E 0%, #B87916 100%)",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
             }}
           >
             Export PDF
@@ -2058,7 +2058,7 @@ const Reports = () => {
           className={styles.tabs}
           TabIndicatorProps={{
             style: {
-              background: "linear-gradient(135deg, #C78A1E 0%, #B87916 100%)",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
               borderRadius: 4,
               height: 3,
             },
