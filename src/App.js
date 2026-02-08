@@ -20,6 +20,7 @@ import ViewQuotation from "./components/Quotation/ViewQuotation";
 import PaymentUpdate from "./components/Quotation/PaymentUpdate";
 import InvoiceList from "./components/Invoice/InvoiceList";
 import ViewInvoice from "./components/Invoice/ViewInvoice";
+import ClientList from "./components/Clients/ClientList";
 import Settings from "./components/Settings/Settings";
 import Organizations from "./components/Settings/Organizations";
 import TaxSettings from "./components/Settings/TaxSettings";
@@ -101,6 +102,7 @@ function App() {
                         path="/quotations/payment/:id"
                         element={<PaymentUpdate />}
                       />
+                      <Route path="/clients" element={<ClientList />} />
                       <Route path="/invoices" element={<InvoiceList />} />
                       <Route
                         path="/invoices/view/:id"
