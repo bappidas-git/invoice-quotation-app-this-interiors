@@ -6,6 +6,7 @@ import TaxSettings from "./TaxSettings";
 import GeneralSettings from "./GeneralSettings";
 import ScopeOfWork from "./ScopeOfWork";
 import Tasks from "./Tasks";
+import BankingSettings from "./BankingSettings";
 import styles from "./settings.module.css";
 
 const Settings = () => {
@@ -20,6 +21,11 @@ const Settings = () => {
       label: "Organization",
       icon: "mdi:office-building",
       component: <Organizations />,
+    },
+    {
+      label: "Banking & Payment",
+      icon: "mdi:bank",
+      component: <BankingSettings />,
     },
     {
       label: "Tax Settings",

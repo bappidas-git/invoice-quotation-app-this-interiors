@@ -28,10 +28,6 @@ const Organizations = () => {
     country: "",
     postalCode: "",
     registrationNumber: "",
-    bankName: "",
-    bankAccount: "",
-    bankBranch: "",
-    bankIFSC: "",
   });
   const [msg, setMsg] = useState(null);
 
@@ -213,44 +209,6 @@ const Organizations = () => {
                     label="Postal/ZIP Code"
                     value={org.postalCode}
                     onChange={handleChange("postalCode")}
-                    fullWidth
-                  />
-                </Grid>
-              </Grid>
-
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Banking Information
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    label="Bank Name"
-                    value={org.bankName}
-                    onChange={handleChange("bankName")}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    label="Account Number"
-                    value={org.bankAccount}
-                    onChange={handleChange("bankAccount")}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    label="Branch"
-                    value={org.bankBranch}
-                    onChange={handleChange("bankBranch")}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    label="IFSC/SWIFT Code"
-                    value={org.bankIFSC}
-                    onChange={handleChange("bankIFSC")}
                     fullWidth
                   />
                 </Grid>

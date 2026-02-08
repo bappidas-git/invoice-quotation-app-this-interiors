@@ -1,4 +1,4 @@
-const PrintInvoice = ({ invoice, client, organization }) => {
+const PrintInvoice = ({ invoice, client, organization, bankAccount }) => {
   const formatCurrency = (amount, currency = "AED") => {
     return `${currency} ${amount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -11,6 +11,16 @@ const PrintInvoice = ({ invoice, client, organization }) => {
       year: "numeric",
       month: "long",
       day: "numeric",
+    });
+  };
+
+  const formatDateTime = (date) => {
+    return new Date(date).toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -79,11 +89,14 @@ const PrintInvoice = ({ invoice, client, organization }) => {
         }
         .info-section {
           display: flex;
-          justify-content: space-between;
+          gap: 20px;
           margin-bottom: 30px;
         }
-        .bill-to, .invoice-info {
+        .info-box {
           flex: 1;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          padding: 15px;
         }
         .section-title {
           font-size: 14px;
@@ -99,6 +112,36 @@ const PrintInvoice = ({ invoice, client, organization }) => {
         }
         .info-block strong {
           color: #000;
+        }
+        .qr-code {
+          max-width: 100px;
+          max-height: 100px;
+          margin-top: 8px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+        }
+        .payment-info-section {
+          margin-bottom: 30px;
+          padding: 15px;
+          background: #e8f5e9;
+          border: 1px solid #c8e6c9;
+          border-radius: 8px;
+        }
+        .payment-info-title {
+          font-size: 14px;
+          font-weight: bold;
+          margin-bottom: 10px;
+          color: #2e7d32;
+          text-transform: uppercase;
+        }
+        .payment-info-grid {
+          display: flex;
+          gap: 30px;
+          font-size: 13px;
+          line-height: 1.6;
+        }
+        .payment-info-item {
+          flex: 1;
         }
         .items-table {
           width: 100%;
@@ -148,20 +191,20 @@ const PrintInvoice = ({ invoice, client, organization }) => {
           margin-top: 10px;
           padding-top: 10px;
         }
-        .payment-info {
+        .notes-section {
           margin-bottom: 30px;
           padding: 15px;
-          background: #e8f5e9;
+          background: #f8f9fa;
           border-radius: 8px;
         }
-        .payment-title {
+        .notes-title {
           font-size: 14px;
           font-weight: bold;
           margin-bottom: 10px;
-          color: #2e7d32;
         }
-        .payment-details {
+        .notes-content {
           font-size: 13px;
+          color: #666;
           line-height: 1.6;
         }
         .footer {
@@ -226,7 +269,7 @@ const PrintInvoice = ({ invoice, client, organization }) => {
         </div>
 
         <div class="info-section">
-          <div class="bill-to">
+          <div class="info-box">
             <div class="section-title">Bill To</div>
             <div class="info-block">
               <strong>${client?.name || ""}</strong><br>
@@ -239,7 +282,7 @@ const PrintInvoice = ({ invoice, client, organization }) => {
               ${client?.contact ? `Phone: ${client.contact}` : ""}
             </div>
           </div>
-          <div class="invoice-info">
+          <div class="info-box">
             <div class="section-title">Invoice Details</div>
             <div class="info-block">
               <strong>Invoice Date:</strong> ${formatDate(invoice.date)}<br>
@@ -248,6 +291,46 @@ const PrintInvoice = ({ invoice, client, organization }) => {
               )}<br>
               <strong>Payment Method:</strong> ${invoice.paymentMethod}<br>
               <strong>Currency:</strong> ${invoice.currency || "AED"}
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="section-title">Banking Information</div>
+            <div class="info-block">
+              ${
+                bankAccount
+                  ? `
+                <strong>Bank:</strong> ${bankAccount.bankName}<br>
+                <strong>A/C No:</strong> ${bankAccount.accountNumber}<br>
+                ${bankAccount.accountHolderName ? `<strong>A/C Holder:</strong> ${bankAccount.accountHolderName}<br>` : ""}
+                ${bankAccount.branch ? `<strong>Branch:</strong> ${bankAccount.branch}<br>` : ""}
+                ${bankAccount.ifscSwift ? `<strong>IFSC/SWIFT:</strong> ${bankAccount.ifscSwift}<br>` : ""}
+                ${bankAccount.qrCodeUrl ? `<img src="${bankAccount.qrCodeUrl}" alt="QR Code" class="qr-code" />` : ""}
+              `
+                  : "No bank account linked"
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-info-section">
+          <div class="payment-info-title">Payment Information</div>
+          <div class="payment-info-grid">
+            <div class="payment-info-item">
+              <strong>Amount Paid:</strong> ${formatCurrency(
+                invoice.paidAmount,
+                invoice.currency || "AED"
+              )}<br>
+              <strong>Payment Method:</strong> ${invoice.paymentMethod}
+            </div>
+            <div class="payment-info-item">
+              <strong>Payment Date:</strong> ${formatDateTime(
+                invoice.paymentDate
+              )}<br>
+              ${bankAccount ? `<strong>Bank:</strong> ${bankAccount.bankName}` : ""}
+            </div>
+            <div class="payment-info-item">
+              <strong>Currency:</strong> ${invoice.currency || "AED"}<br>
+              ${invoice.notes ? `<strong>Notes:</strong> ${invoice.notes}` : ""}
             </div>
           </div>
         </div>
@@ -315,28 +398,6 @@ const PrintInvoice = ({ invoice, client, organization }) => {
             </div>
           </div>
         </div>
-
-        <div class="payment-info">
-          <div class="payment-title">Payment Information</div>
-          <div class="payment-details">
-            <strong>Amount Paid:</strong> ${formatCurrency(
-              invoice.paidAmount
-            )}<br>
-            <strong>Payment Method:</strong> ${invoice.paymentMethod}<br>
-            <strong>Payment Date:</strong> ${formatDate(invoice.paymentDate)}
-          </div>
-        </div>
-
-        ${
-          invoice.notes
-            ? `
-          <div class="notes-section">
-            <div class="notes-title">Notes</div>
-            <div class="notes-content">${invoice.notes}</div>
-          </div>
-        `
-            : ""
-        }
 
         <div class="footer">
           <p>Thank you for your payment!</p>

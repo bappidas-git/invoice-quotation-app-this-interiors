@@ -18,7 +18,7 @@ import {
   Grid,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
-import { quotationsAPI, clientsAPI } from "../../services/api";
+import { quotationsAPI, clientsAPI, bankAccountsAPI, invoicesAPI } from "../../services/api";
 import { formatDate, formatCurrency, getOrgProfile } from "../../utils/helpers";
 import { QUOTATION_STATUS } from "../../utils/constants";
 import PrintQuotation from "./PrintQuotation";
@@ -30,6 +30,8 @@ const ViewQuotation = () => {
   const [quotation, setQuotation] = useState(null);
   const [client, setClient] = useState(null);
   const [organization, setOrganization] = useState(null);
+  const [bankAccount, setBankAccount] = useState(null);
+  const [relatedInvoices, setRelatedInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,6 +51,27 @@ const ViewQuotation = () => {
         const clientRes = await clientsAPI.getById(quotationRes.data.clientId);
         setClient(clientRes.data);
       }
+
+      if (quotationRes.data.bankAccountId) {
+        try {
+          const bankRes = await bankAccountsAPI.getById(quotationRes.data.bankAccountId);
+          setBankAccount(bankRes.data);
+        } catch (e) {
+          console.error("Error loading bank account:", e);
+        }
+      }
+
+      if (quotationRes.data.status === "Partially Paid" || quotationRes.data.status === "Fully Paid") {
+        try {
+          const invoicesRes = await invoicesAPI.getAll();
+          const related = invoicesRes.data.filter(
+            (inv) => inv.quotationId === parseInt(id)
+          );
+          setRelatedInvoices(related);
+        } catch (e) {
+          console.error("Error loading related invoices:", e);
+        }
+      }
     } catch (error) {
       console.error("Error fetching quotation:", error);
     } finally {
@@ -58,7 +81,7 @@ const ViewQuotation = () => {
 
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
-    const printContent = PrintQuotation({ quotation, client, organization });
+    const printContent = PrintQuotation({ quotation, client, organization, bankAccount });
 
     printWindow.document.write(printContent);
     printWindow.document.close();
@@ -136,8 +159,40 @@ const ViewQuotation = () => {
       </Box>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Card className={styles.detailsCard}>
+        <Grid item xs={12} md={4}>
+          <Card className={styles.clientCard} sx={{ height: "100%" }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Bill To
+              </Typography>
+              {client && (
+                <Box>
+                  <Typography variant="body1" fontWeight="600" gutterBottom>
+                    {client.name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {client.email}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {client.contact}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {client.address}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {client.state}, {client.pin}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {client.country}
+                  </Typography>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card className={styles.detailsCard} sx={{ height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Performa Invoice Details
@@ -189,32 +244,55 @@ const ViewQuotation = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card className={styles.clientCard}>
+          <Card sx={{ height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Client Information
+                Banking Information
               </Typography>
-              {client && (
+              {bankAccount ? (
                 <Box>
-                  <Typography variant="body1" fontWeight="600" gutterBottom>
-                    {client.name}
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Bank:</strong> {bankAccount.bankName}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    {client.email}
+                    <strong>A/C No:</strong> {bankAccount.accountNumber}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {client.contact}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {client.address}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {client.state}, {client.pin}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {client.country}
-                  </Typography>
+                  {bankAccount.accountHolderName && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>A/C Holder:</strong> {bankAccount.accountHolderName}
+                    </Typography>
+                  )}
+                  {bankAccount.branch && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>Branch:</strong> {bankAccount.branch}
+                    </Typography>
+                  )}
+                  {bankAccount.ifscSwift && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>IFSC/SWIFT:</strong> {bankAccount.ifscSwift}
+                    </Typography>
+                  )}
+                  {bankAccount.qrCodeUrl && (
+                    <Box sx={{ mt: 1 }}>
+                      <Box
+                        component="img"
+                        src={bankAccount.qrCodeUrl}
+                        alt="Payment QR Code"
+                        sx={{
+                          maxWidth: 120,
+                          maxHeight: 120,
+                          border: "1px solid #e0e0e0",
+                          borderRadius: 1,
+                        }}
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
+                    </Box>
+                  )}
                 </Box>
+              ) : (
+                <Typography variant="body2" color="textSecondary">
+                  No bank account selected
+                </Typography>
               )}
             </CardContent>
           </Card>
@@ -354,6 +432,54 @@ const ViewQuotation = () => {
                           </TableCell>
                           <TableCell>{payment.paymentMethod}</TableCell>
                           <TableCell>{payment.notes}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
+
+        {relatedInvoices.length > 0 && (
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Related Invoices
+                </Typography>
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Invoice Number</TableCell>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>Payment Method</TableCell>
+                        <TableCell>Action</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {relatedInvoices.map((inv) => (
+                        <TableRow key={inv.id}>
+                          <TableCell>{inv.invoiceNumber}</TableCell>
+                          <TableCell>{formatDate(inv.date)}</TableCell>
+                          <TableCell>
+                            {formatCurrency(inv.totalAmount)}
+                          </TableCell>
+                          <TableCell>{inv.paymentMethod}</TableCell>
+                          <TableCell>
+                            <Button
+                              size="small"
+                              startIcon={<Icon icon="mdi:eye" />}
+                              onClick={() =>
+                                navigate(`/invoices/view/${inv.id}`)
+                              }
+                            >
+                              View
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
