@@ -241,33 +241,7 @@
       "updatedAt": "2025-11-07T08:33:56.274Z",
       "id": 2
     },
-    {
-      "quotationNumber": "QT-2026-0003",
-      "clientId": 1,
-      "date": "2026-02-06T09:05:20.114Z",
-      "items": [
-        {
-          "scopeOfWork": "CAD drawings",
-          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
-          "amount": 100
-        }
-      ],
-      "subtotal": 100,
-      "taxAmount": 0,
-      "serviceTaxAmount": 0,
-      "totalAmount": 100,
-      "status": "Quotation",
-      "paidAmount": 0,
-      "payments": [],
-      "currency": "AED",
-      "notes": "Test ",
-      "taxPercent": 0,
-      "serviceTaxPercent": 0,
-      "taxLabel": "Tax",
-      "createdAt": "2026-02-06T09:05:56.272Z",
-      "updatedAt": "2026-02-06T09:05:56.272Z",
-      "id": 3
-    },
+
     {
       "quotationNumber": "QT-2026-0004",
       "clientId": 2,
