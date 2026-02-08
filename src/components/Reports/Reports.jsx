@@ -23,6 +23,8 @@ import {
   FormControl,
   Select,
   MenuItem,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
@@ -36,6 +38,7 @@ import {
   invoicesAPI,
   clientsAPI,
   scopeOfWorkAPI,
+  organizationsAPI,
 } from "../../services/api";
 import {
   formatCurrency,
@@ -67,6 +70,7 @@ const Reports = () => {
   const [dateFilter, setDateFilter] = useState("All");
   const [customDateRange, setCustomDateRange] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [orgProfile, setOrgProfile] = useState(null);
 
   // Raw data
   const [quotations, setQuotations] = useState([]);
@@ -79,6 +83,7 @@ const Reports = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [orderBy, setOrderBy] = useState("");
   const [order, setOrder] = useState("desc");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchAllData();
@@ -87,18 +92,20 @@ const Reports = () => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [qRes, iRes, cRes, sRes, genSettings] = await Promise.all([
+      const [qRes, iRes, cRes, sRes, genSettings, orgRes] = await Promise.all([
         quotationsAPI.getAll(),
         invoicesAPI.getAll(),
         clientsAPI.getAll(),
         scopeOfWorkAPI.getAll(),
         getGeneralSettings(),
+        organizationsAPI.get(),
       ]);
       setQuotations(qRes.data);
       setInvoices(iRes.data);
       setClients(cRes.data);
       setScopeOfWork(sRes.data);
       setSettings(genSettings);
+      setOrgProfile(orgRes.data);
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
@@ -149,6 +156,7 @@ const Reports = () => {
     setPage(0);
     setOrderBy("");
     setOrder("desc");
+    setSearchQuery("");
   };
 
   const handleSort = (property) => {
@@ -308,7 +316,6 @@ const Reports = () => {
         q.payments.forEach((p) => {
           const method = p.paymentMethod || "Other";
           // Only count if not already counted via invoices (avoid double counting)
-          // We'll skip this since invoices already capture payment info
         });
       }
     });
@@ -450,15 +457,96 @@ const Reports = () => {
     return { outstanding, agingBuckets, totalOutstanding };
   }, [filteredData, clientMap]);
 
+  // ───────────────────── SEARCH FILTERED DATA HELPERS ─────────────────────
+  const getSearchFilteredClients = useCallback(() => {
+    if (!searchQuery) return clientReportData;
+    const q = searchQuery.toLowerCase();
+    return clientReportData.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        (c.email && c.email.toLowerCase().includes(q))
+    );
+  }, [clientReportData, searchQuery]);
+
+  const getSearchFilteredStatusItems = useCallback(() => {
+    if (!searchQuery) return statusData.items;
+    const q = searchQuery.toLowerCase();
+    return statusData.items.filter(
+      (item) =>
+        (item.quotationNumber && item.quotationNumber.toLowerCase().includes(q)) ||
+        (clientMap[item.clientId] && clientMap[item.clientId].toLowerCase().includes(q)) ||
+        (item.status && item.status.toLowerCase().includes(q))
+    );
+  }, [statusData.items, searchQuery, clientMap]);
+
+  const getSearchFilteredPayments = useCallback(() => {
+    if (!searchQuery) return paymentData.methods;
+    const q = searchQuery.toLowerCase();
+    return paymentData.methods.filter((m) =>
+      m.method.toLowerCase().includes(q)
+    );
+  }, [paymentData.methods, searchQuery]);
+
+  const getSearchFilteredTax = useCallback(() => {
+    if (!searchQuery) return taxData.taxBreakdown;
+    const q = searchQuery.toLowerCase();
+    return taxData.taxBreakdown.filter(
+      (t) =>
+        (t.number && t.number.toLowerCase().includes(q)) ||
+        t.client.toLowerCase().includes(q)
+    );
+  }, [taxData.taxBreakdown, searchQuery]);
+
+  const getSearchFilteredServices = useCallback(() => {
+    if (!searchQuery) return servicesData.services;
+    const q = searchQuery.toLowerCase();
+    return servicesData.services.filter((s) =>
+      s.name.toLowerCase().includes(q)
+    );
+  }, [servicesData.services, searchQuery]);
+
+  const getSearchFilteredOutstanding = useCallback(() => {
+    if (!searchQuery) return outstandingData.outstanding;
+    const q = searchQuery.toLowerCase();
+    return outstandingData.outstanding.filter(
+      (o) =>
+        (o.quotationNumber && o.quotationNumber.toLowerCase().includes(q)) ||
+        o.client.toLowerCase().includes(q) ||
+        o.aging.toLowerCase().includes(q) ||
+        (o.status && o.status.toLowerCase().includes(q))
+    );
+  }, [outstandingData.outstanding, searchQuery]);
+
+  // ───────────────────── EXPORT HELPERS ─────────────────────
+  const getOrgName = () => orgProfile?.name || "Organization";
+  const getFilterLabel = () => {
+    let label = `Date Filter: ${dateFilter}`;
+    if (searchQuery) label += ` | Search: "${searchQuery}"`;
+    return label;
+  };
+
   // ───────────────────── CSV EXPORT ─────────────────────
   const exportCSV = () => {
     let csvContent = "";
     let fileName = "";
+    const orgName = getOrgName();
+    const generatedAt = format(new Date(), "dd/MM/yyyy HH:mm:ss");
+    const filterLabel = getFilterLabel();
+
+    // CSV Header rows
+    const addCsvHeader = (reportName) => {
+      csvContent += `"${orgName}"\n`;
+      csvContent += `"${reportName}"\n`;
+      csvContent += `"Generated: ${generatedAt}"\n`;
+      csvContent += `"${filterLabel}"\n`;
+      csvContent += `\n`;
+    };
 
     switch (activeTab) {
       case 0: {
         fileName = "revenue_report";
-        csvContent = "Month,Invoiced Amount,Collected Amount\n";
+        addCsvHeader("Revenue Report");
+        csvContent += "Month,Invoiced Amount,Collected Amount\n";
         revenueData.monthly.forEach((m) => {
           csvContent += `${m.label},${m.invoiced.toFixed(2)},${m.collected.toFixed(2)}\n`;
         });
@@ -466,49 +554,61 @@ const Reports = () => {
       }
       case 1: {
         fileName = "client_report";
-        csvContent = "Client,Email,Quotations,Quotation Amount,Invoices,Invoice Amount,Paid Amount,Outstanding\n";
-        clientReportData.forEach((c) => {
+        addCsvHeader("Client Report");
+        csvContent += "Client,Email,Quotations,Quotation Amount,Invoices,Invoice Amount,Paid Amount,Outstanding\n";
+        const clientData = getSearchFilteredClients();
+        clientData.forEach((c) => {
           csvContent += `"${c.name}","${c.email}",${c.quotations},${c.quotationAmount.toFixed(2)},${c.invoices},${c.invoiceAmount.toFixed(2)},${c.paidAmount.toFixed(2)},${c.outstanding.toFixed(2)}\n`;
         });
         break;
       }
       case 2: {
         fileName = "status_report";
-        csvContent = "Status,Count,Total Amount,Paid Amount\n";
-        statusData.breakdown.forEach((s) => {
-          csvContent += `${s.status},${s.count},${s.totalAmount.toFixed(2)},${s.paidAmount.toFixed(2)}\n`;
+        addCsvHeader("Status Report");
+        csvContent += "Quotation #,Client,Date,Amount,Status\n";
+        const statusItems = getSearchFilteredStatusItems();
+        statusItems.forEach((q) => {
+          csvContent += `${q.quotationNumber},"${clientMap[q.clientId] || "Unknown"}",${formatDate(q.date)},${(q.totalAmount || 0).toFixed(2)},${q.status || "Performa"}\n`;
         });
         break;
       }
       case 3: {
         fileName = "payment_method_report";
-        csvContent = "Payment Method,Transactions,Amount\n";
-        paymentData.methods.forEach((m) => {
-          csvContent += `${m.method},${m.count},${m.amount.toFixed(2)}\n`;
+        addCsvHeader("Payment Method Report");
+        csvContent += "Payment Method,Transactions,Amount,% of Total\n";
+        const payments = getSearchFilteredPayments();
+        payments.forEach((m) => {
+          csvContent += `${m.method},${m.count},${m.amount.toFixed(2)},${((m.amount / (paymentData.totalCollected || 1)) * 100).toFixed(1)}%\n`;
         });
         break;
       }
       case 4: {
         fileName = "tax_summary_report";
-        csvContent = "Number,Client,Date,Subtotal,Tax %,Tax Amount,Service Tax %,Service Tax Amount,Total\n";
-        taxData.taxBreakdown.forEach((t) => {
+        addCsvHeader("Tax Summary Report");
+        csvContent += "Number,Client,Date,Subtotal,Tax %,Tax Amount,Service Tax %,Service Tax Amount,Total\n";
+        const taxItems = getSearchFilteredTax();
+        taxItems.forEach((t) => {
           csvContent += `${t.number},"${t.client}",${formatDate(t.date)},${t.subtotal.toFixed(2)},${t.taxPercent},${t.taxAmount.toFixed(2)},${t.serviceTaxPercent},${t.serviceTaxAmount.toFixed(2)},${t.totalAmount.toFixed(2)}\n`;
         });
         break;
       }
       case 5: {
         fileName = "services_report";
-        csvContent = "Service/Scope of Work,Times Used,Total Amount\n";
-        servicesData.services.forEach((s) => {
-          csvContent += `"${s.name}",${s.count},${s.amount.toFixed(2)}\n`;
+        addCsvHeader("Services Report");
+        csvContent += "Service/Scope of Work,Times Used,Total Amount,% of Revenue\n";
+        const serviceItems = getSearchFilteredServices();
+        serviceItems.forEach((s) => {
+          csvContent += `"${s.name}",${s.count},${s.amount.toFixed(2)},${((s.amount / (servicesData.totalAmount || 1)) * 100).toFixed(1)}%\n`;
         });
         break;
       }
       case 6: {
         fileName = "outstanding_report";
-        csvContent = "Quotation #,Client,Date,Total,Paid,Balance,Days Old,Aging\n";
-        outstandingData.outstanding.forEach((o) => {
-          csvContent += `${o.quotationNumber},"${o.client}",${formatDate(o.date)},${o.totalAmount.toFixed(2)},${o.paidAmount.toFixed(2)},${o.balance.toFixed(2)},${o.daysOld},${o.aging}\n`;
+        addCsvHeader("Outstanding Report");
+        csvContent += "Quotation #,Client,Date,Total,Paid,Balance,Days Old,Aging,Status\n";
+        const outItems = getSearchFilteredOutstanding();
+        outItems.forEach((o) => {
+          csvContent += `${o.quotationNumber},"${o.client}",${formatDate(o.date)},${o.totalAmount.toFixed(2)},${o.paidAmount.toFixed(2)},${o.balance.toFixed(2)},${o.daysOld},${o.aging},${o.status}\n`;
         });
         break;
       }
@@ -528,14 +628,68 @@ const Reports = () => {
   const exportPDF = () => {
     const doc = new jsPDF();
     const tabName = REPORT_TABS[activeTab].label;
-    doc.setFontSize(18);
-    doc.text(`${tabName} Report`, 14, 22);
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Generated: ${format(new Date(), "dd/MM/yyyy HH:mm")}`, 14, 30);
-    doc.text(`Filter: ${dateFilter}`, 14, 36);
+    const orgName = getOrgName();
+    const generatedAt = format(new Date(), "dd/MM/yyyy HH:mm:ss");
+    const filterLabel = getFilterLabel();
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    let startY = 44;
+    // Professional Header
+    doc.setFontSize(18);
+    doc.setFont(undefined, "bold");
+    doc.text(orgName, pageWidth / 2, 18, { align: "center" });
+
+    doc.setFontSize(14);
+    doc.setFont(undefined, "normal");
+    doc.text(`${tabName} Report`, pageWidth / 2, 28, { align: "center" });
+
+    doc.setDrawColor(102, 126, 234);
+    doc.setLineWidth(0.5);
+    doc.line(14, 32, pageWidth - 14, 32);
+
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${generatedAt}`, 14, 38);
+    doc.text(filterLabel, 14, 43);
+
+    let startY = 50;
+
+    // Footer function for page numbers
+    const addFooter = () => {
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        const pg = doc.internal.pageSize;
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.setDrawColor(200);
+        doc.line(14, pg.getHeight() - 18, pageWidth - 14, pg.getHeight() - 18);
+        doc.text(
+          `Page ${i} of ${pageCount}`,
+          pageWidth / 2,
+          pg.getHeight() - 12,
+          { align: "center" }
+        );
+        doc.text(
+          `${orgName} - Confidential`,
+          14,
+          pg.getHeight() - 12
+        );
+        doc.text(
+          generatedAt,
+          pageWidth - 14,
+          pg.getHeight() - 12,
+          { align: "right" }
+        );
+      }
+    };
+
+    const tableOpts = {
+      theme: "grid",
+      headStyles: { fillColor: [102, 126, 234], fontStyle: "bold", fontSize: 8 },
+      bodyStyles: { fontSize: 8 },
+      alternateRowStyles: { fillColor: [245, 247, 255] },
+      margin: { bottom: 25 },
+    };
 
     switch (activeTab) {
       case 0: {
@@ -547,17 +701,18 @@ const Reports = () => {
             formatCurrency(m.invoiced),
             formatCurrency(m.collected),
           ]),
-          theme: "grid",
-          headStyles: { fillColor: [102, 126, 234] },
+          ...tableOpts,
         });
         break;
       }
       case 1: {
+        const clientData = getSearchFilteredClients();
         doc.autoTable({
           startY,
-          head: [["Client", "Quotations", "Qt. Amount", "Invoices", "Inv. Amount", "Paid", "Outstanding"]],
-          body: clientReportData.map((c) => [
+          head: [["Client", "Email", "Performa", "Amount", "Invoices", "Inv. Amount", "Paid", "Outstanding"]],
+          body: clientData.map((c) => [
             c.name,
+            c.email || "",
             c.quotations,
             formatCurrency(c.quotationAmount),
             c.invoices,
@@ -565,86 +720,93 @@ const Reports = () => {
             formatCurrency(c.paidAmount),
             formatCurrency(c.outstanding),
           ]),
-          theme: "grid",
-          headStyles: { fillColor: [102, 126, 234] },
+          ...tableOpts,
         });
         break;
       }
       case 2: {
+        const statusItems = getSearchFilteredStatusItems();
         doc.autoTable({
           startY,
-          head: [["Status", "Count", "Total Amount", "Paid Amount"]],
-          body: statusData.breakdown.map((s) => [
-            s.status,
-            s.count,
-            formatCurrency(s.totalAmount),
-            formatCurrency(s.paidAmount),
+          head: [["Quotation #", "Client", "Date", "Amount", "Status"]],
+          body: statusItems.map((q) => [
+            q.quotationNumber,
+            clientMap[q.clientId] || "Unknown",
+            formatDate(q.date),
+            formatCurrency(q.totalAmount),
+            q.status || "Performa",
           ]),
-          theme: "grid",
-          headStyles: { fillColor: [102, 126, 234] },
+          ...tableOpts,
         });
         break;
       }
       case 3: {
+        const payments = getSearchFilteredPayments();
         doc.autoTable({
           startY,
-          head: [["Payment Method", "Transactions", "Amount"]],
-          body: paymentData.methods.map((m) => [
+          head: [["Payment Method", "Transactions", "Amount", "% of Total"]],
+          body: payments.map((m) => [
             m.method,
             m.count,
             formatCurrency(m.amount),
+            `${((m.amount / (paymentData.totalCollected || 1)) * 100).toFixed(1)}%`,
           ]),
-          theme: "grid",
-          headStyles: { fillColor: [102, 126, 234] },
+          ...tableOpts,
         });
         break;
       }
       case 4: {
+        const taxItems = getSearchFilteredTax();
         doc.autoTable({
           startY,
-          head: [["Number", "Client", "Subtotal", "Tax", "Service Tax", "Total"]],
-          body: taxData.taxBreakdown.map((t) => [
+          head: [["Number", "Client", "Date", "Subtotal", "Tax %", "Tax Amt", "Svc Tax %", "Svc Tax Amt", "Total"]],
+          body: taxItems.map((t) => [
             t.number,
             t.client,
+            formatDate(t.date),
             formatCurrency(t.subtotal),
+            `${t.taxPercent}%`,
             formatCurrency(t.taxAmount),
+            `${t.serviceTaxPercent}%`,
             formatCurrency(t.serviceTaxAmount),
             formatCurrency(t.totalAmount),
           ]),
-          theme: "grid",
-          headStyles: { fillColor: [102, 126, 234] },
+          ...tableOpts,
         });
         break;
       }
       case 5: {
+        const serviceItems = getSearchFilteredServices();
         doc.autoTable({
           startY,
-          head: [["Service / Scope of Work", "Times Used", "Amount"]],
-          body: servicesData.services.map((s) => [
+          head: [["Service / Scope of Work", "Times Used", "Amount", "% of Revenue"]],
+          body: serviceItems.map((s) => [
             s.name,
             s.count,
             formatCurrency(s.amount),
+            `${((s.amount / (servicesData.totalAmount || 1)) * 100).toFixed(1)}%`,
           ]),
-          theme: "grid",
-          headStyles: { fillColor: [102, 126, 234] },
+          ...tableOpts,
         });
         break;
       }
       case 6: {
+        const outItems = getSearchFilteredOutstanding();
         doc.autoTable({
           startY,
-          head: [["Quotation #", "Client", "Date", "Total", "Paid", "Balance", "Aging"]],
-          body: outstandingData.outstanding.map((o) => [
+          head: [["Performa #", "Client", "Date", "Total", "Paid", "Balance", "Days", "Aging", "Status"]],
+          body: outItems.map((o) => [
             o.quotationNumber,
             o.client,
             formatDate(o.date),
             formatCurrency(o.totalAmount),
             formatCurrency(o.paidAmount),
             formatCurrency(o.balance),
+            o.daysOld,
             o.aging,
+            o.status,
           ]),
-          theme: "grid",
-          headStyles: { fillColor: [102, 126, 234] },
+          ...tableOpts,
         });
         break;
       }
@@ -652,10 +814,49 @@ const Reports = () => {
         break;
     }
 
+    addFooter();
     doc.save(`${REPORT_TABS[activeTab].label.toLowerCase()}_report_${format(new Date(), "yyyy-MM-dd")}.pdf`);
   };
 
   // ───────────────────── RENDER HELPERS ─────────────────────
+  const renderSearchBar = (placeholder) => (
+    <TextField
+      size="small"
+      placeholder={placeholder || "Search..."}
+      value={searchQuery}
+      onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
+      className={styles.searchField}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <Icon icon="mdi:magnify" width="20" color="#999" />
+          </InputAdornment>
+        ),
+        ...(searchQuery && {
+          endAdornment: (
+            <InputAdornment position="end">
+              <Icon
+                icon="mdi:close-circle"
+                width="18"
+                color="#999"
+                style={{ cursor: "pointer" }}
+                onClick={() => { setSearchQuery(""); setPage(0); }}
+              />
+            </InputAdornment>
+          ),
+        }),
+      }}
+      sx={{
+        mb: 2,
+        "& .MuiOutlinedInput-root": {
+          borderRadius: "10px",
+          background: "rgba(255,255,255,0.8)",
+          fontSize: "13px",
+        },
+      }}
+    />
+  );
+
   const renderBarChart = (data, valueKey, labelKey, color = "#667eea") => {
     if (!data || data.length === 0) return renderEmpty("No data for chart");
     const maxVal = Math.max(...data.map((d) => d[valueKey])) || 1;
@@ -808,6 +1009,15 @@ const Reports = () => {
     }
   };
 
+  const renderResultCount = (filtered, total) => {
+    if (!searchQuery) return null;
+    return (
+      <Typography variant="body2" color="textSecondary" sx={{ mb: 1, fontSize: "12px" }}>
+        Showing {filtered} of {total} results
+      </Typography>
+    );
+  };
+
   // ───────────────────── RENDER TAB CONTENT ─────────────────────
 
   const renderRevenueReport = () => (
@@ -842,9 +1052,11 @@ const Reports = () => {
   );
 
   const renderClientReport = () => {
-    const sorted = sortData(clientReportData);
+    const filtered = getSearchFilteredClients();
+    const sorted = sortData(filtered);
     const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     const maxAmount = Math.max(...clientReportData.map((c) => c.quotationAmount)) || 1;
+    const topClients = clientReportData.slice(0, 10);
 
     return (
       <>
@@ -854,93 +1066,106 @@ const Reports = () => {
           {renderSummaryItem("mdi:trophy", "#f59e0b", clientReportData.length > 0 ? clientReportData[0].name : "N/A", "Top Client", "rgba(245,158,11,0.06)")}
         </Box>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={5}>
-            <Card className={styles.glassCard}>
-              <CardContent>
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
                 <Typography variant="h6" className={styles.cardTitle}>
                   Revenue by Client
                 </Typography>
-                {renderHorizontalBars(clientReportData.slice(0, 8), "name", "quotationAmount", maxAmount)}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={7}>
-            <Card className={styles.glassCard}>
-              <CardContent>
+                <Typography className={styles.cardSubtitle}>
+                  Top {topClients.length} clients by revenue
+                </Typography>
+              </Box>
+            </Box>
+            {renderHorizontalBars(topClients, "name", "quotationAmount", maxAmount)}
+          </CardContent>
+        </Card>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
                 <Typography variant="h6" className={styles.cardTitle}>
                   Client Details
                 </Typography>
-                <TableContainer>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>
-                          <TableSortLabel active={orderBy === "name"} direction={orderBy === "name" ? order : "asc"} onClick={() => handleSort("name")}>
-                            Client
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell align="right">
-                          <TableSortLabel active={orderBy === "quotations"} direction={orderBy === "quotations" ? order : "asc"} onClick={() => handleSort("quotations")}>
-                            Performa
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell align="right">
-                          <TableSortLabel active={orderBy === "quotationAmount"} direction={orderBy === "quotationAmount" ? order : "asc"} onClick={() => handleSort("quotationAmount")}>
-                            Amount
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell align="right">
-                          <TableSortLabel active={orderBy === "paidAmount"} direction={orderBy === "paidAmount" ? order : "asc"} onClick={() => handleSort("paidAmount")}>
-                            Paid
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell align="right">
-                          <TableSortLabel active={orderBy === "outstanding"} direction={orderBy === "outstanding" ? order : "asc"} onClick={() => handleSort("outstanding")}>
-                            Outstanding
-                          </TableSortLabel>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {paginated.map((c) => (
-                        <TableRow key={c.id} hover>
-                          <TableCell>{c.name}</TableCell>
-                          <TableCell align="right">{c.quotations}</TableCell>
-                          <TableCell align="right">{formatCurrency(c.quotationAmount)}</TableCell>
-                          <TableCell align="right">{formatCurrency(c.paidAmount)}</TableCell>
-                          <TableCell align="right">
-                            <Typography style={{ color: c.outstanding > 0 ? "#ef4444" : "#10b981", fontWeight: 600, fontSize: "13px" }}>
-                              {formatCurrency(c.outstanding)}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {paginated.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={5} align="center">
-                            <Typography variant="body2" color="textSecondary">No client data</Typography>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                {clientReportData.length > rowsPerPage && (
-                  <TablePagination
-                    component="div"
-                    count={clientReportData.length}
-                    page={page}
-                    onPageChange={(_, p) => setPage(p)}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-                    rowsPerPageOptions={[5, 10, 25]}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                <Typography className={styles.cardSubtitle}>
+                  {clientReportData.length} active clients
+                </Typography>
+              </Box>
+            </Box>
+            {renderSearchBar("Search by client name or email...")}
+            {renderResultCount(filtered.length, clientReportData.length)}
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <TableSortLabel active={orderBy === "name"} direction={orderBy === "name" ? order : "asc"} onClick={() => handleSort("name")}>
+                        Client
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel active={orderBy === "quotations"} direction={orderBy === "quotations" ? order : "asc"} onClick={() => handleSort("quotations")}>
+                        Performa
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel active={orderBy === "quotationAmount"} direction={orderBy === "quotationAmount" ? order : "asc"} onClick={() => handleSort("quotationAmount")}>
+                        Amount
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel active={orderBy === "paidAmount"} direction={orderBy === "paidAmount" ? order : "asc"} onClick={() => handleSort("paidAmount")}>
+                        Paid
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel active={orderBy === "outstanding"} direction={orderBy === "outstanding" ? order : "asc"} onClick={() => handleSort("outstanding")}>
+                        Outstanding
+                      </TableSortLabel>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginated.map((c) => (
+                    <TableRow key={c.id} hover>
+                      <TableCell>{c.name}</TableCell>
+                      <TableCell>{c.email}</TableCell>
+                      <TableCell align="right">{c.quotations}</TableCell>
+                      <TableCell align="right">{formatCurrency(c.quotationAmount)}</TableCell>
+                      <TableCell align="right">{formatCurrency(c.paidAmount)}</TableCell>
+                      <TableCell align="right">
+                        <Typography style={{ color: c.outstanding > 0 ? "#ef4444" : "#10b981", fontWeight: 600, fontSize: "13px" }}>
+                          {formatCurrency(c.outstanding)}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {paginated.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center">
+                        <Typography variant="body2" color="textSecondary">
+                          {searchQuery ? "No clients match your search" : "No client data"}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={filtered.length}
+              page={page}
+              onPageChange={(_, p) => setPage(p)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+            />
+          </CardContent>
+        </Card>
       </>
     );
   };
@@ -958,7 +1183,8 @@ const Reports = () => {
       color: statusColors[s.status] || "#999",
     }));
 
-    const sorted = sortData(statusData.items);
+    const filtered = getSearchFilteredStatusItems();
+    const sorted = sortData(filtered);
     const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
@@ -976,29 +1202,221 @@ const Reports = () => {
           )}
         </Box>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={5}>
-            <Card className={styles.glassCard}>
-              <CardContent>
-                <Typography variant="h6" className={styles.cardTitle}>
-                  Status Distribution
-                </Typography>
-                {renderDonutChart(donutItems, "status", "totalAmount", "Statuses")}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={7}>
-            <Card className={styles.glassCard}>
-              <CardContent>
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Typography variant="h6" className={styles.cardTitle}>
+              Status Distribution
+            </Typography>
+            {renderDonutChart(donutItems, "status", "totalAmount", "Statuses")}
+          </CardContent>
+        </Card>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
                 <Typography variant="h6" className={styles.cardTitle}>
                   All Performa by Status
                 </Typography>
+                <Typography className={styles.cardSubtitle}>
+                  {statusData.total} total performa
+                </Typography>
+              </Box>
+            </Box>
+            {renderSearchBar("Search by number, client or status...")}
+            {renderResultCount(filtered.length, statusData.items.length)}
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <TableSortLabel active={orderBy === "quotationNumber"} direction={orderBy === "quotationNumber" ? order : "asc"} onClick={() => handleSort("quotationNumber")}>
+                        Number
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>Client</TableCell>
+                    <TableCell>
+                      <TableSortLabel active={orderBy === "date"} direction={orderBy === "date" ? order : "asc"} onClick={() => handleSort("date")}>
+                        Date
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel active={orderBy === "totalAmount"} direction={orderBy === "totalAmount" ? order : "asc"} onClick={() => handleSort("totalAmount")}>
+                        Amount
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="center">Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginated.map((q) => (
+                    <TableRow key={q.id} hover>
+                      <TableCell>{q.quotationNumber}</TableCell>
+                      <TableCell>{clientMap[q.clientId] || "Unknown"}</TableCell>
+                      <TableCell>{formatDate(q.date)}</TableCell>
+                      <TableCell align="right">{formatCurrency(q.totalAmount)}</TableCell>
+                      <TableCell align="center">
+                        <span className={`${styles.statusChip} ${getStatusClass(q.status)}`}>
+                          {q.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {paginated.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        <Typography variant="body2" color="textSecondary">
+                          {searchQuery ? "No performa match your search" : "No performa data"}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={filtered.length}
+              page={page}
+              onPageChange={(_, p) => setPage(p)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+            />
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
+
+  const renderPaymentReport = () => {
+    const maxAmount = Math.max(...paymentData.methods.map((m) => m.amount)) || 1;
+    const filtered = getSearchFilteredPayments();
+    const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    return (
+      <>
+        <Box className={styles.summaryRow}>
+          {renderSummaryItem("mdi:cash-multiple", "#10b981", formatCurrency(paymentData.totalCollected), "Total Collected", "rgba(16,185,129,0.06)")}
+          {renderSummaryItem("mdi:receipt-text-check", "#667eea", paymentData.invoiceCount, "Total Transactions", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:credit-card", "#764ba2", paymentData.methods.length, "Payment Methods Used", "rgba(118,75,162,0.06)")}
+        </Box>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Typography variant="h6" className={styles.cardTitle}>
+              Payment Method Distribution
+            </Typography>
+            {renderDonutChart(paymentData.methods, "method", "amount", "Methods")}
+          </CardContent>
+        </Card>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
+                <Typography variant="h6" className={styles.cardTitle}>
+                  Amount by Payment Method
+                </Typography>
+                <Typography className={styles.cardSubtitle}>
+                  Breakdown by payment method
+                </Typography>
+              </Box>
+            </Box>
+            {renderHorizontalBars(paymentData.methods, "method", "amount", maxAmount)}
+            <Box sx={{ mt: 3 }}>
+              {renderSearchBar("Search by payment method...")}
+              {renderResultCount(filtered.length, paymentData.methods.length)}
+              <TableContainer>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Method</TableCell>
+                      <TableCell align="right">Transactions</TableCell>
+                      <TableCell align="right">Amount</TableCell>
+                      <TableCell align="right">% of Total</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {paginated.map((m, i) => (
+                      <TableRow key={m.method} hover>
+                        <TableCell>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box style={{ width: 10, height: 10, borderRadius: "50%", background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                            {m.method}
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">{m.count}</TableCell>
+                        <TableCell align="right">{formatCurrency(m.amount)}</TableCell>
+                        <TableCell align="right">
+                          {((m.amount / (paymentData.totalCollected || 1)) * 100).toFixed(1)}%
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {paginated.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center">
+                          <Typography variant="body2" color="textSecondary">
+                            {searchQuery ? "No payment methods match your search" : "No payment data"}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                component="div"
+                count={filtered.length}
+                page={page}
+                onPageChange={(_, p) => setPage(p)}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+              />
+            </Box>
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
+
+  const renderTaxReport = () => {
+    const filtered = getSearchFilteredTax();
+    const sorted = sortData(filtered);
+    const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    return (
+      <>
+        <Box className={styles.summaryRow}>
+          {renderSummaryItem("mdi:calculator", "#667eea", formatCurrency(taxData.totalSubtotalQ), "Total Subtotal (Performa)", "rgba(102,126,234,0.06)")}
+          {renderSummaryItem("mdi:percent-box", "#f59e0b", formatCurrency(taxData.totalTaxFromQuotations), "Tax Collected", "rgba(245,158,11,0.06)")}
+          {renderSummaryItem("mdi:percent-circle", "#764ba2", formatCurrency(taxData.totalServiceTaxFromQuotations), "Service Tax", "rgba(118,75,162,0.06)")}
+          {renderSummaryItem("mdi:sigma", "#10b981", formatCurrency(taxData.totalTax), "Total Tax Amount", "rgba(16,185,129,0.06)")}
+        </Box>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
+                <Typography variant="h6" className={styles.cardTitle}>
+                  Tax Breakdown by Performa
+                </Typography>
+                <Typography className={styles.cardSubtitle}>
+                  {taxData.taxBreakdown.length} performa with tax
+                </Typography>
+              </Box>
+            </Box>
+            {taxData.taxBreakdown.length > 0 ? (
+              <>
+                {renderSearchBar("Search by performa number or client...")}
+                {renderResultCount(filtered.length, taxData.taxBreakdown.length)}
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
                         <TableCell>
-                          <TableSortLabel active={orderBy === "quotationNumber"} direction={orderBy === "quotationNumber" ? order : "asc"} onClick={() => handleSort("quotationNumber")}>
+                          <TableSortLabel active={orderBy === "number"} direction={orderBy === "number" ? order : "asc"} onClick={() => handleSort("number")}>
                             Number
                           </TableSortLabel>
                         </TableCell>
@@ -1009,183 +1427,81 @@ const Reports = () => {
                           </TableSortLabel>
                         </TableCell>
                         <TableCell align="right">
-                          <TableSortLabel active={orderBy === "totalAmount"} direction={orderBy === "totalAmount" ? order : "asc"} onClick={() => handleSort("totalAmount")}>
-                            Amount
+                          <TableSortLabel active={orderBy === "subtotal"} direction={orderBy === "subtotal" ? order : "asc"} onClick={() => handleSort("subtotal")}>
+                            Subtotal
                           </TableSortLabel>
                         </TableCell>
-                        <TableCell align="center">Status</TableCell>
+                        <TableCell align="right">Tax %</TableCell>
+                        <TableCell align="right">
+                          <TableSortLabel active={orderBy === "taxAmount"} direction={orderBy === "taxAmount" ? order : "asc"} onClick={() => handleSort("taxAmount")}>
+                            Tax Amount
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="right">Service Tax %</TableCell>
+                        <TableCell align="right">
+                          <TableSortLabel active={orderBy === "serviceTaxAmount"} direction={orderBy === "serviceTaxAmount" ? order : "asc"} onClick={() => handleSort("serviceTaxAmount")}>
+                            Service Tax
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="right">
+                          <TableSortLabel active={orderBy === "totalAmount"} direction={orderBy === "totalAmount" ? order : "asc"} onClick={() => handleSort("totalAmount")}>
+                            Total
+                          </TableSortLabel>
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paginated.map((q) => (
-                        <TableRow key={q.id} hover>
-                          <TableCell>{q.quotationNumber}</TableCell>
-                          <TableCell>{clientMap[q.clientId] || "Unknown"}</TableCell>
-                          <TableCell>{formatDate(q.date)}</TableCell>
-                          <TableCell align="right">{formatCurrency(q.totalAmount)}</TableCell>
-                          <TableCell align="center">
-                            <span className={`${styles.statusChip} ${getStatusClass(q.status)}`}>
-                              {q.status}
-                            </span>
+                      {paginated.map((t) => (
+                        <TableRow key={t.id} hover>
+                          <TableCell>{t.number}</TableCell>
+                          <TableCell>{t.client}</TableCell>
+                          <TableCell>{formatDate(t.date)}</TableCell>
+                          <TableCell align="right">{formatCurrency(t.subtotal)}</TableCell>
+                          <TableCell align="right">{t.taxPercent}%</TableCell>
+                          <TableCell align="right">{formatCurrency(t.taxAmount)}</TableCell>
+                          <TableCell align="right">{t.serviceTaxPercent}%</TableCell>
+                          <TableCell align="right">{formatCurrency(t.serviceTaxAmount)}</TableCell>
+                          <TableCell align="right" style={{ fontWeight: 600 }}>
+                            {formatCurrency(t.totalAmount)}
                           </TableCell>
                         </TableRow>
                       ))}
                       {paginated.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={5} align="center">
-                            <Typography variant="body2" color="textSecondary">No performa data</Typography>
+                          <TableCell colSpan={9} align="center">
+                            <Typography variant="body2" color="textSecondary">
+                              {searchQuery ? "No tax data matches your search" : "No performa with tax found"}
+                            </Typography>
                           </TableCell>
                         </TableRow>
                       )}
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {statusData.items.length > rowsPerPage && (
-                  <TablePagination
-                    component="div"
-                    count={statusData.items.length}
-                    page={page}
-                    onPageChange={(_, p) => setPage(p)}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-                    rowsPerPageOptions={[5, 10, 25]}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                <TablePagination
+                  component="div"
+                  count={filtered.length}
+                  page={page}
+                  onPageChange={(_, p) => setPage(p)}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                />
+              </>
+            ) : (
+              renderEmpty("No performa with tax found in the selected period")
+            )}
+          </CardContent>
+        </Card>
       </>
     );
   };
-
-  const renderPaymentReport = () => {
-    const maxAmount = Math.max(...paymentData.methods.map((m) => m.amount)) || 1;
-
-    return (
-      <>
-        <Box className={styles.summaryRow}>
-          {renderSummaryItem("mdi:cash-multiple", "#10b981", formatCurrency(paymentData.totalCollected), "Total Collected", "rgba(16,185,129,0.06)")}
-          {renderSummaryItem("mdi:receipt-text-check", "#667eea", paymentData.invoiceCount, "Total Transactions", "rgba(102,126,234,0.06)")}
-          {renderSummaryItem("mdi:credit-card", "#764ba2", paymentData.methods.length, "Payment Methods Used", "rgba(118,75,162,0.06)")}
-        </Box>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card className={styles.glassCard}>
-              <CardContent>
-                <Typography variant="h6" className={styles.cardTitle}>
-                  Payment Method Distribution
-                </Typography>
-                {renderDonutChart(paymentData.methods, "method", "amount", "Methods")}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Card className={styles.glassCard}>
-              <CardContent>
-                <Typography variant="h6" className={styles.cardTitle}>
-                  Amount by Payment Method
-                </Typography>
-                {renderHorizontalBars(paymentData.methods, "method", "amount", maxAmount)}
-                <Box sx={{ mt: 3 }}>
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Method</TableCell>
-                          <TableCell align="right">Transactions</TableCell>
-                          <TableCell align="right">Amount</TableCell>
-                          <TableCell align="right">% of Total</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {paymentData.methods.map((m, i) => (
-                          <TableRow key={m.method} hover>
-                            <TableCell>
-                              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Box style={{ width: 10, height: 10, borderRadius: "50%", background: CHART_COLORS[i % CHART_COLORS.length] }} />
-                                {m.method}
-                              </Box>
-                            </TableCell>
-                            <TableCell align="right">{m.count}</TableCell>
-                            <TableCell align="right">{formatCurrency(m.amount)}</TableCell>
-                            <TableCell align="right">
-                              {((m.amount / (paymentData.totalCollected || 1)) * 100).toFixed(1)}%
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </>
-    );
-  };
-
-  const renderTaxReport = () => (
-    <>
-      <Box className={styles.summaryRow}>
-        {renderSummaryItem("mdi:calculator", "#667eea", formatCurrency(taxData.totalSubtotalQ), "Total Subtotal (Performa)", "rgba(102,126,234,0.06)")}
-        {renderSummaryItem("mdi:percent-box", "#f59e0b", formatCurrency(taxData.totalTaxFromQuotations), "Tax Collected", "rgba(245,158,11,0.06)")}
-        {renderSummaryItem("mdi:percent-circle", "#764ba2", formatCurrency(taxData.totalServiceTaxFromQuotations), "Service Tax", "rgba(118,75,162,0.06)")}
-        {renderSummaryItem("mdi:sigma", "#10b981", formatCurrency(taxData.totalTax), "Total Tax Amount", "rgba(16,185,129,0.06)")}
-      </Box>
-
-      <Card className={styles.glassCard}>
-        <CardContent>
-          <Typography variant="h6" className={styles.cardTitle}>
-            Tax Breakdown by Performa
-          </Typography>
-          {taxData.taxBreakdown.length > 0 ? (
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Number</TableCell>
-                    <TableCell>Client</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell align="right">Subtotal</TableCell>
-                    <TableCell align="right">Tax %</TableCell>
-                    <TableCell align="right">Tax Amount</TableCell>
-                    <TableCell align="right">Service Tax %</TableCell>
-                    <TableCell align="right">Service Tax</TableCell>
-                    <TableCell align="right">Total</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {taxData.taxBreakdown.map((t) => (
-                    <TableRow key={t.id} hover>
-                      <TableCell>{t.number}</TableCell>
-                      <TableCell>{t.client}</TableCell>
-                      <TableCell>{formatDate(t.date)}</TableCell>
-                      <TableCell align="right">{formatCurrency(t.subtotal)}</TableCell>
-                      <TableCell align="right">{t.taxPercent}%</TableCell>
-                      <TableCell align="right">{formatCurrency(t.taxAmount)}</TableCell>
-                      <TableCell align="right">{t.serviceTaxPercent}%</TableCell>
-                      <TableCell align="right">{formatCurrency(t.serviceTaxAmount)}</TableCell>
-                      <TableCell align="right" style={{ fontWeight: 600 }}>
-                        {formatCurrency(t.totalAmount)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            renderEmpty("No performa with tax found in the selected period")
-          )}
-        </CardContent>
-      </Card>
-    </>
-  );
 
   const renderServicesReport = () => {
     const maxAmount = Math.max(...(servicesData.services.map((s) => s.amount) || [0])) || 1;
+    const topServices = servicesData.services.slice(0, 10);
+    const filtered = getSearchFilteredServices();
+    const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
       <>
@@ -1195,61 +1511,90 @@ const Reports = () => {
           {renderSummaryItem("mdi:star", "#f59e0b", servicesData.services.length > 0 ? servicesData.services[0].name : "N/A", "Top Service", "rgba(245,158,11,0.06)")}
         </Box>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card className={styles.glassCard}>
-              <CardContent>
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
                 <Typography variant="h6" className={styles.cardTitle}>
                   Revenue by Service
                 </Typography>
-                {renderDonutChart(servicesData.services, "name", "amount", "Services")}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Card className={styles.glassCard}>
-              <CardContent>
+                <Typography className={styles.cardSubtitle}>
+                  {servicesData.services.length > 10 ? `Top 10 of ${servicesData.services.length} services` : `${servicesData.services.length} services`}
+                </Typography>
+              </Box>
+            </Box>
+            {renderDonutChart(topServices, "name", "amount", "Services")}
+          </CardContent>
+        </Card>
+
+        <Card className={styles.glassCard}>
+          <CardContent>
+            <Box className={styles.cardHeader}>
+              <Box>
                 <Typography variant="h6" className={styles.cardTitle}>
                   Service Performance
                 </Typography>
-                {renderHorizontalBars(servicesData.services, "name", "amount", maxAmount)}
-                <Box sx={{ mt: 3 }}>
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Service / Scope of Work</TableCell>
-                          <TableCell align="right">Times Used</TableCell>
-                          <TableCell align="right">Total Amount</TableCell>
-                          <TableCell align="right">% of Revenue</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {servicesData.services.map((s, i) => (
-                          <TableRow key={s.name} hover>
-                            <TableCell>
-                              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Box style={{ width: 10, height: 10, borderRadius: "50%", background: CHART_COLORS[i % CHART_COLORS.length] }} />
-                                <Typography variant="body2" sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                  {s.name}
-                                </Typography>
-                              </Box>
-                            </TableCell>
-                            <TableCell align="right">{s.count}</TableCell>
-                            <TableCell align="right">{formatCurrency(s.amount)}</TableCell>
-                            <TableCell align="right">
-                              {((s.amount / (servicesData.totalAmount || 1)) * 100).toFixed(1)}%
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                <Typography className={styles.cardSubtitle}>
+                  All services / scope of work
+                </Typography>
+              </Box>
+            </Box>
+            {renderHorizontalBars(topServices, "name", "amount", maxAmount)}
+            <Box sx={{ mt: 3 }}>
+              {renderSearchBar("Search by service / scope of work...")}
+              {renderResultCount(filtered.length, servicesData.services.length)}
+              <TableContainer>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Service / Scope of Work</TableCell>
+                      <TableCell align="right">Times Used</TableCell>
+                      <TableCell align="right">Total Amount</TableCell>
+                      <TableCell align="right">% of Revenue</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {paginated.map((s, i) => (
+                      <TableRow key={s.name} hover>
+                        <TableCell>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box style={{ width: 10, height: 10, borderRadius: "50%", background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                            <Typography variant="body2" sx={{ maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {s.name}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">{s.count}</TableCell>
+                        <TableCell align="right">{formatCurrency(s.amount)}</TableCell>
+                        <TableCell align="right">
+                          {((s.amount / (servicesData.totalAmount || 1)) * 100).toFixed(1)}%
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {paginated.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center">
+                          <Typography variant="body2" color="textSecondary">
+                            {searchQuery ? "No services match your search" : "No service data"}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                component="div"
+                count={filtered.length}
+                page={page}
+                onPageChange={(_, p) => setPage(p)}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+              />
+            </Box>
+          </CardContent>
+        </Card>
       </>
     );
   };
@@ -1257,7 +1602,8 @@ const Reports = () => {
   const renderOutstandingReport = () => {
     const { outstanding, agingBuckets, totalOutstanding } = outstandingData;
     const agingEntries = Object.entries(agingBuckets);
-    const sorted = sortData(outstanding);
+    const filtered = getSearchFilteredOutstanding();
+    const sorted = sortData(filtered);
     const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
@@ -1294,6 +1640,8 @@ const Reports = () => {
             </Box>
             {outstanding.length > 0 ? (
               <>
+                {renderSearchBar("Search by performa #, client, aging or status...")}
+                {renderResultCount(filtered.length, outstanding.length)}
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
@@ -1363,20 +1711,27 @@ const Reports = () => {
                           </TableRow>
                         );
                       })}
+                      {paginated.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={9} align="center">
+                            <Typography variant="body2" color="textSecondary">
+                              {searchQuery ? "No outstanding performa match your search" : "No outstanding data"}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {outstanding.length > rowsPerPage && (
-                  <TablePagination
-                    component="div"
-                    count={outstanding.length}
-                    page={page}
-                    onPageChange={(_, p) => setPage(p)}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-                    rowsPerPageOptions={[5, 10, 25]}
-                  />
-                )}
+                <TablePagination
+                  component="div"
+                  count={filtered.length}
+                  page={page}
+                  onPageChange={(_, p) => setPage(p)}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                />
               </>
             ) : (
               renderEmpty("No outstanding performa found - all payments are up to date!")
