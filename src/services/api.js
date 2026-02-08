@@ -8,7 +8,43 @@ const api = axios.create({
   },
 });
 
+// Request interceptor - attach auth token to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor - handle 401 unauthorized globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("auth_token");
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// ──────────────────────────────────────────────
+// Auth API
+// ──────────────────────────────────────────────
+export const authAPI = {
+  login: (credentials) => api.post("/auth/login", credentials),
+  logout: () => api.post("/auth/logout"),
+};
+
+// ──────────────────────────────────────────────
 // Clients API
+// ──────────────────────────────────────────────
 export const clientsAPI = {
   getAll: () => api.get("/clients"),
   getById: (id) => api.get(`/clients/${id}`),
@@ -17,7 +53,9 @@ export const clientsAPI = {
   delete: (id) => api.delete(`/clients/${id}`),
 };
 
+// ──────────────────────────────────────────────
 // Scope of Work API
+// ──────────────────────────────────────────────
 export const scopeOfWorkAPI = {
   getAll: () => api.get("/scopeOfWork"),
   getById: (id) => api.get(`/scopeOfWork/${id}`),
@@ -26,7 +64,9 @@ export const scopeOfWorkAPI = {
   delete: (id) => api.delete(`/scopeOfWork/${id}`),
 };
 
+// ──────────────────────────────────────────────
 // Tasks API
+// ──────────────────────────────────────────────
 export const tasksAPI = {
   getAll: () => api.get("/tasks"),
   getById: (id) => api.get(`/tasks/${id}`),
@@ -37,7 +77,9 @@ export const tasksAPI = {
   delete: (id) => api.delete(`/tasks/${id}`),
 };
 
+// ──────────────────────────────────────────────
 // Quotations API
+// ──────────────────────────────────────────────
 export const quotationsAPI = {
   getAll: () => api.get("/quotations"),
   getById: (id) => api.get(`/quotations/${id}`),
@@ -49,7 +91,9 @@ export const quotationsAPI = {
     api.get(`/quotations?date_gte=${startDate}&date_lte=${endDate}`),
 };
 
+// ──────────────────────────────────────────────
 // Invoices API
+// ──────────────────────────────────────────────
 export const invoicesAPI = {
   getAll: () => api.get("/invoices"),
   getById: (id) => api.get(`/invoices/${id}`),
@@ -61,96 +105,28 @@ export const invoicesAPI = {
   getByClient: (clientId) => api.get(`/invoices?clientId=${clientId}`),
 };
 
-// Settings APIs (DB based)
+// ──────────────────────────────────────────────
+// Organization Settings API
+// ──────────────────────────────────────────────
 export const organizationsAPI = {
-  get: async () => {
-    try {
-      const response = await api.get("/organizationSettings/1");
-      return response.data;
-    } catch (error) {
-      // If no settings exist, return default
-      return null;
-    }
-  },
-  set: async (payload) => {
-    try {
-      const existing = await api.get("/organizationSettings/1");
-      const response = await api.put("/organizationSettings/1", {
-        ...payload,
-        id: 1,
-      });
-      return response.data;
-    } catch (error) {
-      // If doesn't exist, create it
-      const response = await api.post("/organizationSettings", {
-        ...payload,
-        id: 1,
-      });
-      return response.data;
-    }
-  },
+  get: () => api.get("/organizationSettings/1"),
+  update: (data) => api.put("/organizationSettings/1", { ...data, id: 1 }),
 };
 
+// ──────────────────────────────────────────────
+// Tax Settings API
+// ──────────────────────────────────────────────
 export const taxSettingsAPI = {
-  get: async () => {
-    try {
-      const response = await api.get("/taxSettings/1");
-      return response.data;
-    } catch (error) {
-      return null;
-    }
-  },
-  set: async (payload) => {
-    try {
-      const existing = await api.get("/taxSettings/1");
-      const response = await api.put("/taxSettings/1", { ...payload, id: 1 });
-      return response.data;
-    } catch (error) {
-      const response = await api.post("/taxSettings", { ...payload, id: 1 });
-      return response.data;
-    }
-  },
+  get: () => api.get("/taxSettings/1"),
+  update: (data) => api.put("/taxSettings/1", { ...data, id: 1 }),
 };
 
+// ──────────────────────────────────────────────
+// General Settings API
+// ──────────────────────────────────────────────
 export const generalSettingsAPI = {
-  get: async () => {
-    try {
-      const response = await api.get("/generalSettings/1");
-      return response.data;
-    } catch (error) {
-      // Return defaults if no settings
-      return {
-        currency: "AED",
-        currencySymbol: "AED",
-        quotationPrefix: "QT",
-        invoicePrefix: "INV",
-        quotationValidDays: 30,
-        paymentTerms: "Net 30",
-        defaultPaymentMethod: "Bank Transfer",
-        fiscalYearStart: "01-01",
-        dateFormat: "DD/MM/YYYY",
-        timeZone: "Asia/Dubai",
-        numberFormat: "1,000.00",
-        decimalPlaces: 2,
-      };
-    }
-  },
-  set: async (payload) => {
-    try {
-      const existing = await api.get("/generalSettings/1");
-      const response = await api.put("/generalSettings/1", {
-        ...payload,
-        id: 1,
-      });
-      return response.data;
-    } catch (error) {
-      const response = await api.post("/generalSettings", {
-        ...payload,
-        id: 1,
-      });
-      return response.data;
-    }
-  },
+  get: () => api.get("/generalSettings/1"),
+  update: (data) => api.put("/generalSettings/1", { ...data, id: 1 }),
 };
 
 export default api;

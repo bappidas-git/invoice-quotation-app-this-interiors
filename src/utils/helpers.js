@@ -24,6 +24,22 @@ let settingsCache = {
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+// Default settings used when API call fails
+const DEFAULT_GENERAL_SETTINGS = {
+  currency: "AED",
+  currencySymbol: "AED",
+  quotationPrefix: "QT",
+  invoicePrefix: "INV",
+  quotationValidDays: 30,
+  paymentTerms: "Net 30",
+  defaultPaymentMethod: "Bank Transfer",
+  fiscalYearStart: "01-01",
+  dateFormat: "DD/MM/YYYY",
+  timeZone: "Asia/Dubai",
+  numberFormat: "1,000.00",
+  decimalPlaces: 2,
+};
+
 export const getOrgProfile = async () => {
   if (
     settingsCache.organization &&
@@ -32,10 +48,14 @@ export const getOrgProfile = async () => {
   ) {
     return settingsCache.organization;
   }
-  const data = await organizationsAPI.get();
-  settingsCache.organization = data;
-  settingsCache.lastFetch = Date.now();
-  return data;
+  try {
+    const response = await organizationsAPI.get();
+    settingsCache.organization = response.data;
+    settingsCache.lastFetch = Date.now();
+    return response.data;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getTaxSettings = async () => {
@@ -46,9 +66,13 @@ export const getTaxSettings = async () => {
   ) {
     return settingsCache.tax;
   }
-  const data = await taxSettingsAPI.get();
-  settingsCache.tax = data;
-  return data;
+  try {
+    const response = await taxSettingsAPI.get();
+    settingsCache.tax = response.data;
+    return response.data;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getGeneralSettings = async () => {
@@ -59,9 +83,13 @@ export const getGeneralSettings = async () => {
   ) {
     return settingsCache.general;
   }
-  const data = await generalSettingsAPI.get();
-  settingsCache.general = data;
-  return data;
+  try {
+    const response = await generalSettingsAPI.get();
+    settingsCache.general = response.data;
+    return response.data;
+  } catch (error) {
+    return DEFAULT_GENERAL_SETTINGS;
+  }
 };
 
 // Clear cache when settings are updated

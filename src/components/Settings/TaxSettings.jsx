@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { taxSettingsAPI } from "../../services/api";
-import { formatCurrency } from "../../utils/helpers";
+import { formatCurrency, clearSettingsCache } from "../../utils/helpers";
 import styles from "./settings.module.css";
 
 const TaxSettings = () => {
@@ -38,9 +38,13 @@ const TaxSettings = () => {
   }, []);
 
   const loadTaxSettings = async () => {
-    const saved = await taxSettingsAPI.get();
-    if (saved) {
-      setTaxSettings(saved);
+    try {
+      const response = await taxSettingsAPI.get();
+      if (response.data) {
+        setTaxSettings(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading tax settings:", error);
     }
   };
 
@@ -68,11 +72,12 @@ const TaxSettings = () => {
 
   const handleSave = async () => {
     try {
-      await taxSettingsAPI.set({
+      await taxSettingsAPI.update({
         ...taxSettings,
         taxPercent: Number(taxSettings.taxPercent) || 0,
         serviceTaxPercent: Number(taxSettings.serviceTaxPercent) || 0,
       });
+      clearSettingsCache();
       setMsg({ type: "success", text: "Tax settings saved successfully." });
     } catch (error) {
       setMsg({ type: "error", text: "Failed to save tax settings." });

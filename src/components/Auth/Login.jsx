@@ -24,6 +24,7 @@ const Login = () => {
   });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -33,14 +34,21 @@ const Login = () => {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = authService.login(formData.email, formData.password);
-
-    if (result.success) {
-      navigate("/");
-    } else {
-      setError(result.message);
+    setLoading(true);
+    setError("");
+    try {
+      const result = await authService.login(formData.email, formData.password);
+      if (result.success) {
+        navigate("/");
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,8 +144,9 @@ const Login = () => {
                 size="large"
                 className={styles.submitButton}
                 startIcon={<Icon icon="mdi:login" />}
+                disabled={loading}
               >
-                Sign In
+                {loading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
 
