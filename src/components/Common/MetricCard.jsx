@@ -6,7 +6,7 @@ import styles from "./metricCard.module.css";
 
 const MetricCard = ({ title, value, amount, icon, color, bgGradient }) => {
   return (
-    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} style={{ height: "100%" }}>
       <Card className={styles.metricCard} style={{ background: bgGradient }}>
         <CardContent className={styles.cardContent}>
           <Box className={styles.cardHeader}>
@@ -24,11 +24,9 @@ const MetricCard = ({ title, value, amount, icon, color, bgGradient }) => {
             {value}
           </Typography>
 
-          {amount && (
-            <Typography variant="body2" className={styles.amount}>
-              {amount}
-            </Typography>
-          )}
+          <Typography variant="body2" className={styles.amount}>
+            {amount || "\u00A0"}
+          </Typography>
 
           <Typography variant="caption" className={styles.title}>
             {title}

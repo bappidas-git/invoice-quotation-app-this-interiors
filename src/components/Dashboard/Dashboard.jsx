@@ -102,8 +102,8 @@ const Dashboard = () => {
         partiallyPaidAmount,
         dueAmount: dueAmount > 0 ? dueAmount : 0,
         totalClients: clients.data.length,
-        recentQuotations: filteredQuotations.slice(0, 5),
-        recentInvoices: filteredInvoices.slice(0, 5),
+        recentQuotations: filteredQuotations.slice(0, 3),
+        recentInvoices: filteredInvoices.slice(0, 3),
       });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -209,6 +209,7 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              style={{ height: "100%" }}
             >
               {loading ? (
                 <Skeleton variant="rectangular" height={140} />
