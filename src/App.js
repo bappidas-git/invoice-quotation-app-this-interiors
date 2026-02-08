@@ -21,6 +21,7 @@ import PaymentUpdate from "./components/Quotation/PaymentUpdate";
 import InvoiceList from "./components/Invoice/InvoiceList";
 import ViewInvoice from "./components/Invoice/ViewInvoice";
 import ClientList from "./components/Clients/ClientList";
+import Reports from "./components/Reports/Reports";
 import Settings from "./components/Settings/Settings";
 import Organizations from "./components/Settings/Organizations";
 import TaxSettings from "./components/Settings/TaxSettings";
@@ -108,6 +109,7 @@ function App() {
                         path="/invoices/view/:id"
                         element={<ViewInvoice />}
                       />
+                      <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />
                     </Routes>
                   </Layout>
