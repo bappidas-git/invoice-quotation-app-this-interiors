@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { generalSettingsAPI } from "../../services/api";
+import { clearSettingsCache } from "../../utils/helpers";
 import styles from "./settings.module.css";
 
 const GeneralSettings = () => {
@@ -75,9 +76,13 @@ const GeneralSettings = () => {
   }, []);
 
   const loadSettings = async () => {
-    const saved = await generalSettingsAPI.get();
-    if (saved) {
-      setSettings(saved);
+    try {
+      const response = await generalSettingsAPI.get();
+      if (response.data) {
+        setSettings(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading general settings:", error);
     }
   };
 
@@ -101,7 +106,8 @@ const GeneralSettings = () => {
 
   const handleSave = async () => {
     try {
-      await generalSettingsAPI.set(settings);
+      await generalSettingsAPI.update(settings);
+      clearSettingsCache();
       setMsg({ type: "success", text: "General settings saved successfully." });
 
       // Reload the page to apply new settings

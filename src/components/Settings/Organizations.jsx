@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { organizationsAPI } from "../../services/api";
+import { clearSettingsCache } from "../../utils/helpers";
 import styles from "./settings.module.css";
 
 const Organizations = () => {
@@ -39,9 +40,13 @@ const Organizations = () => {
   }, []);
 
   const loadOrganization = async () => {
-    const saved = await organizationsAPI.get();
-    if (saved) {
-      setOrg(saved);
+    try {
+      const response = await organizationsAPI.get();
+      if (response.data) {
+        setOrg(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading organization:", error);
     }
   };
 
@@ -60,7 +65,8 @@ const Organizations = () => {
     }
 
     try {
-      await organizationsAPI.set(org);
+      await organizationsAPI.update(org);
+      clearSettingsCache();
       setMsg({
         type: "success",
         text: "Organization details saved successfully.",
