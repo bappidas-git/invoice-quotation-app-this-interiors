@@ -308,10 +308,16 @@ const CreateQuotation = () => {
               ? payment.paymentDate.toISOString()
               : payment.paymentDate,
         })),
+        createdAt: quotation.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
-      await quotationsAPI.update(id, quotationData);
+      if (isEdit) {
+        await quotationsAPI.update(id, quotationData);
+      } else {
+        const response = await quotationsAPI.create(quotationData);
+        updatedQuotation.id = response.data.id;
+      }
       await createInvoice(remainingAmount, updatedQuotation);
 
       Swal.fire({
