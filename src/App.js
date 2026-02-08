@@ -26,12 +26,13 @@ import Login from "./components/Auth/Login";
 import PrintQuotation from "./components/Quotation/PrintQuotation";
 import PrintInvoice from "./components/Invoice/PrintInvoice";
 import PrintBOQ from "./components/BOQ/PrintBOQ";
+import authService from "./services/authService";
 import "./App.css";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
+  const isAuthenticated = authService.isAuthenticated();
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   return children;
