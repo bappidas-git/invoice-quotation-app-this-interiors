@@ -105,8 +105,10 @@ const PaymentUpdate = () => {
 
     // Calculate tax breakdown for confirmation
     const paymentRatio = paymentDetails.amount / quotation.totalAmount;
-    const subtotalPortion =
-      (quotation.subtotal || quotation.totalAmount) * paymentRatio;
+    // Use after-discount subtotal as the proportional base
+    const afterDiscountSubtotal =
+      (quotation.subtotal || 0) - (quotation.discountAmount || 0);
+    const subtotalPortion = afterDiscountSubtotal * paymentRatio;
     const taxPortion = (quotation.taxAmount || 0) * paymentRatio;
     const serviceTaxPortion = (quotation.serviceTaxAmount || 0) * paymentRatio;
 
@@ -189,8 +191,11 @@ const PaymentUpdate = () => {
         // Calculate proportional amounts for invoice
         const invoicePaymentRatio =
           paymentDetails.amount / quotation.totalAmount;
+        // Use after-discount subtotal as the proportional base
+        const invoiceAfterDiscountSubtotal =
+          (quotation.subtotal || 0) - (quotation.discountAmount || 0);
         const invoiceSubtotal =
-          (quotation.subtotal || quotation.totalAmount) * invoicePaymentRatio;
+          invoiceAfterDiscountSubtotal * invoicePaymentRatio;
         const invoiceTaxAmount =
           (quotation.taxAmount || 0) * invoicePaymentRatio;
         const invoiceServiceTaxAmount =
@@ -491,7 +496,7 @@ const PaymentUpdate = () => {
                     <Typography variant="body2">Subtotal:</Typography>
                     <Typography variant="body2">
                       {formatCurrency(
-                        (quotation.subtotal || quotation.totalAmount) *
+                        ((quotation.subtotal || 0) - (quotation.discountAmount || 0)) *
                           (paymentDetails.amount / quotation.totalAmount)
                       )}
                     </Typography>
