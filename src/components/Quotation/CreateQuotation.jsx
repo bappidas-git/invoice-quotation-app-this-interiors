@@ -499,9 +499,10 @@ const CreateQuotation = () => {
       const currentQuotation = quotationData || quotation;
 
       const paymentRatio = amount / currentQuotation.totalAmount;
-      const invoiceSubtotal =
-        (currentQuotation.subtotal || currentQuotation.totalAmount) *
-        paymentRatio;
+      // Use after-discount subtotal as the proportional base, NOT the pre-discount gross subtotal
+      const afterDiscountSubtotal =
+        (currentQuotation.subtotal || 0) - (currentQuotation.discountAmount || 0);
+      const invoiceSubtotal = afterDiscountSubtotal * paymentRatio;
       const invoiceTaxAmount = (currentQuotation.taxAmount || 0) * paymentRatio;
       const invoiceServiceTaxAmount =
         (currentQuotation.serviceTaxAmount || 0) * paymentRatio;
