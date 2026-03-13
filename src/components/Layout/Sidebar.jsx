@@ -79,8 +79,12 @@ const Sidebar = ({ open, onClose }) => {
     }
   };
 
+  // Better active route matching: exact match for "/" and prefix match for others
   const isActive = (path) => {
-    return location.pathname === path;
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname === path || location.pathname.startsWith(path + "/");
   };
 
   const sidebarContent = (

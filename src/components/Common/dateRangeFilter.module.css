@@ -3,6 +3,7 @@
   background: rgba(255, 255, 255, 0.8);
   border-radius: 8px !important;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .dateFilterGroup button {
@@ -34,6 +35,14 @@
   .dateFilterGroup {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dateFilterGroup button {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 10px;
+    font-size: 12px;
   }
 
   .datePickerContainer {
@@ -43,7 +52,7 @@
 
 @media (max-width: 480px) {
   .dateFilterGroup button {
-    padding: 4px 8px;
+    padding: 5px 6px;
     font-size: 11px;
   }
 }

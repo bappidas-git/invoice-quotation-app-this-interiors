@@ -12,18 +12,18 @@
   width: 100%;
   overflow-x: auto;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
 .table td,
 .table th {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 12px 16px;
 }
 
 .tableRow {
@@ -48,7 +48,7 @@
   display: flex;
   gap: 6px;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .tableFooter {
@@ -72,16 +72,87 @@
   justify-content: flex-end;
 }
 
+/* Mobile card view */
+.mobileCardList {
+  display: none;
+}
+
+.mobileCard {
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background 0.2s ease;
+}
+
+.mobileCard:last-child {
+  border-bottom: none;
+}
+
+.mobileCard:active {
+  background: rgba(102, 126, 234, 0.04);
+}
+
+.mobileCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mobileCardPrimary {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileCardActions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.mobileCardFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.mobileCardField {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mobileCardFieldLabel {
+  font-size: 11px !important;
+  color: #999 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 500 !important;
+}
+
+.mobileCardFieldValue {
+  font-size: 13px !important;
+  color: #333;
+}
+
+.mobileExpandedContent {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.desktopTable {
+  display: block;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  .tableContainer {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .desktopTable {
+    display: none;
   }
 
-  .table {
-    table-layout: auto;
-    min-width: 600px;
+  .mobileCardList {
+    display: block;
   }
 
   .tableFooter {
@@ -94,12 +165,12 @@
     justify-content: center;
   }
 
-  .actions {
-    min-width: auto;
-  }
-
   .expandedContent {
     padding: 12px;
+  }
+
+  .tableWrapper {
+    margin-bottom: 24px;
   }
 }
 
@@ -113,9 +184,8 @@
     padding: 8px 12px;
   }
 
-  .actions {
-    flex-direction: column;
-    gap: 4px;
+  .mobileCard {
+    padding: 12px;
   }
 
   .expandedContent {

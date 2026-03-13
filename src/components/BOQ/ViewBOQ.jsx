@@ -379,8 +379,8 @@ const ViewBOQ = () => {
           <Typography variant="subtitle1" fontWeight="600" gutterBottom>
             Line Items
           </Typography>
-          <TableContainer component={Paper} elevation={0}>
-            <Table>
+          <TableContainer component={Paper} elevation={0} sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+            <Table sx={{ minWidth: 800 }}>
               <TableHead>
                 <TableRow sx={{ background: "#f5f5f5" }}>
                   <TableCell>#</TableCell>
@@ -449,7 +449,7 @@ const ViewBOQ = () => {
 
           {/* Summary */}
           <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-            <Box sx={{ width: 350 }}>
+            <Box sx={{ width: { xs: "100%", sm: 350 } }}>
               <Box
                 sx={{
                   display: "flex",

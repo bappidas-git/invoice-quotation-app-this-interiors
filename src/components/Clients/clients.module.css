@@ -36,7 +36,7 @@
 /* Statistics Cards */
 .statistics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 24px;
 }
@@ -111,7 +111,7 @@
   }
 
   .statistics {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .summaryGrid {
@@ -135,6 +135,10 @@
 
   .createButton {
     width: 100%;
+  }
+
+  .statistics {
+    grid-template-columns: 1fr;
   }
 
   .statCard {

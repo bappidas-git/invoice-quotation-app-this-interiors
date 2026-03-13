@@ -244,6 +244,83 @@ const InvoiceList = () => {
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
   };
 
+  const getCurrencyForInvoice = (invoice) =>
+    invoice.currency || generalSettings?.currency || "AED";
+
+  // Mobile card view for invoices
+  const renderMobileCards = () => (
+    <Box className={styles.mobileInvoiceList}>
+      {paginatedInvoices.map((invoice) => (
+        <Box key={invoice.id} className={styles.mobileInvoiceCard}>
+          <Box className={styles.mobileInvoiceHeader}>
+            <Box className={styles.mobileInvoicePrimary}>
+              <Typography variant="body2" fontWeight="600">
+                {invoice.invoiceNumber || "N/A"}
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
+                {getClientName(invoice.clientId)}
+              </Typography>
+            </Box>
+            <Box className={styles.mobileInvoiceActions}>
+              <Tooltip title="View">
+                <IconButton
+                  size="small"
+                  onClick={() => navigate(`/invoices/view/${invoice.id}`)}
+                >
+                  <Icon icon="mdi:eye" width="18" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Print">
+                <IconButton
+                  size="small"
+                  onClick={() => printInvoice(invoice)}
+                >
+                  <Icon icon="mdi:printer" width="18" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="More">
+                <IconButton
+                  size="small"
+                  onClick={(e) => handleMenuOpen(e, invoice)}
+                >
+                  <Icon icon="mdi:dots-vertical" width="18" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+          <Box className={styles.mobileInvoiceFields}>
+            <Box className={styles.mobileInvoiceField}>
+              <Typography className={styles.mobileFieldLabel}>Date</Typography>
+              <Typography className={styles.mobileFieldValue}>
+                {invoice.date ? formatDate(invoice.date) : "-"}
+              </Typography>
+            </Box>
+            <Box className={styles.mobileInvoiceField}>
+              <Typography className={styles.mobileFieldLabel}>Amount</Typography>
+              <Typography className={styles.mobileFieldValue}>
+                {formatCurrency(invoice.totalAmount || 0, getCurrencyForInvoice(invoice))}
+              </Typography>
+            </Box>
+            <Box className={styles.mobileInvoiceField}>
+              <Typography className={styles.mobileFieldLabel}>Paid</Typography>
+              <Typography className={styles.mobileFieldValue}>
+                {formatCurrency(invoice.paidAmount || 0, getCurrencyForInvoice(invoice))}
+              </Typography>
+            </Box>
+            <Box className={styles.mobileInvoiceField}>
+              <Typography className={styles.mobileFieldLabel}>Status</Typography>
+              <Chip
+                label={getStatusLabel(invoice)}
+                size="small"
+                color={getStatusColor(invoice)}
+              />
+            </Box>
+          </Box>
+        </Box>
+      ))}
+    </Box>
+  );
+
   return (
     <Box className={styles.invoiceList}>
       <motion.div
@@ -309,97 +386,99 @@ const InvoiceList = () => {
               </Box>
             ) : (
               <>
-                <TableContainer component={Paper} elevation={0}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Invoice No.</TableCell>
-                        <TableCell>Client</TableCell>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Amount</TableCell>
-                        <TableCell>Paid</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell align="center">Actions</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {paginatedInvoices.map((invoice) => (
-                        <TableRow key={invoice.id} hover>
-                          <TableCell>
-                            <Typography variant="body2" fontWeight="500">
-                              {invoice.invoiceNumber || "N/A"}
-                            </Typography>
-                          </TableCell>
-
-                          <TableCell>
-                            {getClientName(invoice.clientId)}
-                          </TableCell>
-
-                          <TableCell>
-                            {invoice.date ? formatDate(invoice.date) : "-"}
-                          </TableCell>
-
-                          <TableCell>
-                            {formatCurrency(
-                              invoice.totalAmount || 0,
-                              invoice.currency ||
-                                generalSettings?.currency ||
-                                "AED",
-                            )}
-                          </TableCell>
-
-                          <TableCell>
-                            {formatCurrency(
-                              invoice.paidAmount || 0,
-                              invoice.currency ||
-                                generalSettings?.currency ||
-                                "AED",
-                            )}
-                          </TableCell>
-
-                          <TableCell>
-                            <Chip
-                              label={getStatusLabel(invoice)}
-                              size="small"
-                              color={getStatusColor(invoice)}
-                            />
-                          </TableCell>
-
-                          <TableCell align="center">
-                            <Tooltip title="View">
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  navigate(`/invoices/view/${invoice.id}`)
-                                }
-                              >
-                                <Icon icon="mdi:eye" />
-                              </IconButton>
-                            </Tooltip>
-
-                            <Tooltip title="Print">
-                              <IconButton
-                                size="small"
-                                onClick={() => printInvoice(invoice)}
-                              >
-                                <Icon icon="mdi:printer" />
-                              </IconButton>
-                            </Tooltip>
-
-                            <Tooltip title="More Options">
-                              <IconButton
-                                size="small"
-                                onClick={(e) => handleMenuOpen(e, invoice)}
-                              >
-                                <Icon icon="mdi:dots-vertical" />
-                              </IconButton>
-                            </Tooltip>
-                          </TableCell>
+                {/* Desktop table */}
+                <Box className={styles.desktopTable}>
+                  <TableContainer component={Paper} elevation={0}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Invoice No.</TableCell>
+                          <TableCell>Client</TableCell>
+                          <TableCell>Date</TableCell>
+                          <TableCell>Amount</TableCell>
+                          <TableCell>Paid</TableCell>
+                          <TableCell>Status</TableCell>
+                          <TableCell align="center">Actions</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {paginatedInvoices.map((invoice) => (
+                          <TableRow key={invoice.id} hover>
+                            <TableCell>
+                              <Typography variant="body2" fontWeight="500">
+                                {invoice.invoiceNumber || "N/A"}
+                              </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                              {getClientName(invoice.clientId)}
+                            </TableCell>
+
+                            <TableCell>
+                              {invoice.date ? formatDate(invoice.date) : "-"}
+                            </TableCell>
+
+                            <TableCell>
+                              {formatCurrency(
+                                invoice.totalAmount || 0,
+                                getCurrencyForInvoice(invoice),
+                              )}
+                            </TableCell>
+
+                            <TableCell>
+                              {formatCurrency(
+                                invoice.paidAmount || 0,
+                                getCurrencyForInvoice(invoice),
+                              )}
+                            </TableCell>
+
+                            <TableCell>
+                              <Chip
+                                label={getStatusLabel(invoice)}
+                                size="small"
+                                color={getStatusColor(invoice)}
+                              />
+                            </TableCell>
+
+                            <TableCell align="center">
+                              <Tooltip title="View">
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    navigate(`/invoices/view/${invoice.id}`)
+                                  }
+                                >
+                                  <Icon icon="mdi:eye" />
+                                </IconButton>
+                              </Tooltip>
+
+                              <Tooltip title="Print">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => printInvoice(invoice)}
+                                >
+                                  <Icon icon="mdi:printer" />
+                                </IconButton>
+                              </Tooltip>
+
+                              <Tooltip title="More Options">
+                                <IconButton
+                                  size="small"
+                                  onClick={(e) => handleMenuOpen(e, invoice)}
+                                >
+                                  <Icon icon="mdi:dots-vertical" />
+                                </IconButton>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+
+                {/* Mobile card view */}
+                {renderMobileCards()}
 
                 <Box
                   sx={{
@@ -407,6 +486,8 @@ const InvoiceList = () => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     mt: 2,
+                    flexWrap: "wrap",
+                    gap: 1,
                   }}
                 >
                   <FormControl size="small">

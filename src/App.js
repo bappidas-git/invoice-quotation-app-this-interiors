@@ -68,6 +68,27 @@ const theme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          margin: 16,
+          maxHeight: "calc(100vh - 32px)",
+          "@media (max-width: 480px)": {
+            margin: 8,
+            width: "calc(100% - 16px)",
+            maxWidth: "100%",
+          },
+        },
+      },
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+        },
+      },
+    },
   },
 });
 
