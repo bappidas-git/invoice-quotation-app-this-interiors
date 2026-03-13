@@ -20,10 +20,12 @@ import {
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { boqsAPI, clientsAPI, bankAccountsAPI, boqInvoicesAPI } from "../../services/api";
+import Swal from "sweetalert2";
 import {
   formatDate,
   formatCurrency,
   getOrgProfile,
+  generateBoqInvoiceNumber,
 } from "../../utils/helpers";
 import { BOQ_STATUS } from "../../utils/constants";
 import PrintBOQ from "./PrintBOQ";
@@ -37,6 +39,7 @@ const ViewBOQ = () => {
   const [bankAccount, setBankAccount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [boqInvoiceId, setBoqInvoiceId] = useState(null);
+  const [generatingInvoice, setGeneratingInvoice] = useState(false);
 
   useEffect(() => {
     fetchBOQ();
@@ -80,6 +83,54 @@ const ViewBOQ = () => {
       console.error("Error fetching BOQ:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateInvoice = async () => {
+    setGeneratingInvoice(true);
+    try {
+      const allBoqInvoicesRes = await boqInvoicesAPI.getAll();
+      const allBoqInvoices = allBoqInvoicesRes.data || [];
+      const boqInvoiceNumber = await generateBoqInvoiceNumber(allBoqInvoices.length);
+
+      const boqInvoiceData = {
+        boqInvoiceNumber,
+        boqId: String(boq.id),
+        boqNumber: boq.boqNumber,
+        clientId: boq.clientId,
+        date: new Date().toISOString(),
+        items: boq.items,
+        subtotal: boq.subtotal,
+        totalDiscount: boq.totalDiscount,
+        taxAmount: boq.taxAmount,
+        taxPercent: boq.taxPercent,
+        taxLabel: boq.taxLabel,
+        serviceTaxAmount: boq.serviceTaxAmount || 0,
+        serviceTaxPercent: boq.serviceTaxPercent || 0,
+        totalAmount: boq.totalAmount,
+        currency: boq.currency,
+        notes: boq.notes,
+        status: "Approved",
+        createdAt: new Date().toISOString(),
+      };
+
+      const res = await boqInvoicesAPI.create(boqInvoiceData);
+      setBoqInvoiceId(res.data.id);
+
+      Swal.fire({
+        icon: "success",
+        title: "BOQ Invoice Generated",
+        text: `Invoice ${boqInvoiceNumber} has been created successfully.`,
+      });
+    } catch (error) {
+      console.error("Error generating BOQ invoice:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to generate BOQ invoice. Please try again.",
+      });
+    } finally {
+      setGeneratingInvoice(false);
     }
   };
 
@@ -147,21 +198,43 @@ const ViewBOQ = () => {
           </Box>
         </Box>
         <Box className={styles.headerActions}>
-          {boqInvoiceId && (
-            <Button
-              variant="contained"
-              startIcon={<Icon icon="mdi:file-check" />}
-              onClick={() => navigate(`/boq-invoices/view/${boqInvoiceId}`)}
-              sx={{
-                background: "linear-gradient(135deg, #43a047 0%, #1b5e20 100%)",
-                color: "white",
-                "&:hover": {
-                  background: "linear-gradient(135deg, #388e3c 0%, #1b5e20 100%)",
-                },
-              }}
-            >
-              View BOQ Invoice
-            </Button>
+          {boq.status === BOQ_STATUS.APPROVED && (
+            boqInvoiceId ? (
+              <Button
+                variant="contained"
+                startIcon={<Icon icon="mdi:file-check" />}
+                onClick={() => navigate(`/boq-invoices/view/${boqInvoiceId}`)}
+                sx={{
+                  background: "linear-gradient(135deg, #43a047 0%, #1b5e20 100%)",
+                  color: "white",
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #388e3c 0%, #1b5e20 100%)",
+                  },
+                }}
+              >
+                View BOQ Invoice
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                startIcon={
+                  generatingInvoice
+                    ? <CircularProgress size={18} color="inherit" />
+                    : <Icon icon="mdi:file-plus" />
+                }
+                onClick={handleGenerateInvoice}
+                disabled={generatingInvoice}
+                sx={{
+                  background: "linear-gradient(135deg, #f57c00 0%, #e65100 100%)",
+                  color: "white",
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #ef6c00 0%, #e65100 100%)",
+                  },
+                }}
+              >
+                {generatingInvoice ? "Generating..." : "Generate BOQ Invoice"}
+              </Button>
+            )
           )}
           {boq.status !== BOQ_STATUS.APPROVED && (
             <Button
