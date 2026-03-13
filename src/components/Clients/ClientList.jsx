@@ -247,6 +247,7 @@ const ClientList = () => {
     {
       field: "name",
       label: "Client Name",
+      width: "18%",
       sortable: true,
       render: (value) => (
         <Typography variant="body2" fontWeight="600">
@@ -257,18 +258,31 @@ const ClientList = () => {
     {
       field: "email",
       label: "Email",
+      width: "24%",
       sortable: true,
-      render: (value) => value || "-",
+      render: (value) => (
+        <Tooltip title={value || ""} disableHoverListener={!value}>
+          <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {value || "-"}
+          </span>
+        </Tooltip>
+      ),
     },
     {
       field: "contact",
       label: "Contact",
+      width: "16%",
       sortable: true,
-      render: (value) => value || "-",
+      render: (value) => (
+        <span style={{ whiteSpace: "nowrap" }}>
+          {value || "-"}
+        </span>
+      ),
     },
     {
       field: "state",
       label: "Location",
+      width: "16%",
       sortable: true,
       render: (value, row) => {
         const parts = [value, row.country].filter(Boolean);
@@ -278,6 +292,7 @@ const ClientList = () => {
     {
       field: "createdAt",
       label: "Added On",
+      width: "14%",
       sortable: true,
       render: (value) => formatDate(value),
     },
