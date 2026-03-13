@@ -1,0 +1,15 @@
+{
+  "/settings/organization": "/organizationSettings/1",
+  "/settings/tax": "/taxSettings/1",
+  "/settings/general": "/generalSettings/1",
+  "/scope-of-work": "/scopeOfWork",
+  "/scope-of-work/:id": "/scopeOfWork/:id",
+  "/bank-accounts": "/bankAccounts",
+  "/bank-accounts/:id": "/bankAccounts/:id",
+  "/boq-areas": "/boqAreas",
+  "/boq-areas/:id": "/boqAreas/:id",
+  "/boq-categories": "/boqCategories",
+  "/boq-categories/:id": "/boqCategories/:id",
+  "/boq-invoices": "/boqInvoices",
+  "/boq-invoices/:id": "/boqInvoices/:id"
+}
