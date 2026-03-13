@@ -599,6 +599,50 @@
       "createdAt": "2026-02-19T10:57:40.305Z",
       "updatedAt": "2026-02-19T10:57:40.305Z",
       "id": 12
+    },
+    {
+      "quotationNumber": "PI-2026-0012",
+      "clientId": 1,
+      "date": "2026-03-13T11:09:12.415Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Overall Layout Plans, Ceiling Designs (RCP), Furniture Placement Plans, Materials and Finishes Schedule, Lighting & Electrical Layouts, and Custom Joinery Concepts",
+          "amount": 1000
+        },
+        {
+          "scopeOfWork": "Up to 12x 3D Visualizations & Renderings - 2 Rooms",
+          "task": "Furniture, Fixtures & Equipment (FF&E) Selections List",
+          "amount": 2000
+        }
+      ],
+      "subtotal": 3000,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 2500,
+      "status": "Partially Paid",
+      "paidAmount": 1500,
+      "payments": [
+        {
+          "amount": 1500,
+          "paymentMethod": "Cash",
+          "paymentDate": "2026-03-14T11:14:25.000Z",
+          "notes": "Advance Payment",
+          "date": "2026-03-13T11:16:04.234Z"
+        }
+      ],
+      "currency": "AED",
+      "notes": "Payment Received on 14 March of 1500 AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "bankAccountId": 1,
+      "discountType": "flat",
+      "discountValue": 500,
+      "discountAmount": 500,
+      "createdAt": "2026-03-13T11:11:59.629Z",
+      "updatedAt": "2026-03-13T11:16:04.234Z",
+      "id": 13
     }
   ],
   "invoices": [
@@ -938,6 +982,39 @@
       "notes": "dsfsdf",
       "createdAt": "2026-02-19T11:45:36.282Z",
       "id": 12
+    },
+    {
+      "invoiceNumber": "INV-2026-0013",
+      "quotationId": 13,
+      "clientId": 1,
+      "date": "2026-03-13T11:16:04.353Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Overall Layout Plans, Ceiling Designs (RCP), Furniture Placement Plans, Materials and Finishes Schedule, Lighting & Electrical Layouts, and Custom Joinery Concepts",
+          "amount": 600
+        },
+        {
+          "scopeOfWork": "Up to 12x 3D Visualizations & Renderings - 2 Rooms",
+          "task": "Furniture, Fixtures & Equipment (FF&E) Selections List",
+          "amount": 1200
+        }
+      ],
+      "subtotal": 1800,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 1500,
+      "paidAmount": 1500,
+      "paymentDate": "2026-03-14T11:14:25.000Z",
+      "paymentMethod": "Cash",
+      "currency": "AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "notes": "Advance Payment",
+      "bankAccountId": 1,
+      "createdAt": "2026-03-13T11:16:04.353Z",
+      "id": 13
     }
   ],
   "bankAccounts": [
