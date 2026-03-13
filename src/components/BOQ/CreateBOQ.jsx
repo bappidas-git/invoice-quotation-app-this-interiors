@@ -297,44 +297,37 @@ const CreateBOQ = () => {
 
         // Auto-create BOQ Invoice when status changes to Approved
         if (formData.status === BOQ_STATUS.APPROVED) {
-          try {
-            // Check if a BOQ invoice already exists for this BOQ
-            const existingInvoicesRes = await boqInvoicesAPI.getByBoqId(id);
-            const existingInvoices = existingInvoicesRes.data || [];
+          // Check if a BOQ invoice already exists for this BOQ (idempotency guard)
+          const existingInvoicesRes = await boqInvoicesAPI.getByBoqId(String(id));
+          const existingInvoices = existingInvoicesRes.data || [];
 
-            if (existingInvoices.length === 0) {
-              // Generate BOQ invoice number
-              const allBoqInvoicesRes = await boqInvoicesAPI.getAll();
-              const allBoqInvoices = allBoqInvoicesRes.data || [];
-              const lastInvoiceNumber = allBoqInvoices.length;
-              const boqInvoiceNumber = await generateBoqInvoiceNumber(lastInvoiceNumber);
+          if (existingInvoices.length === 0) {
+            const allBoqInvoicesRes = await boqInvoicesAPI.getAll();
+            const allBoqInvoices = allBoqInvoicesRes.data || [];
+            const boqInvoiceNumber = await generateBoqInvoiceNumber(allBoqInvoices.length);
 
-              const boqInvoiceData = {
-                boqInvoiceNumber,
-                boqId: id,
-                boqNumber: formData.boqNumber,
-                clientId: Number(formData.clientId),
-                date: new Date().toISOString(),
-                items: boqData.items,
-                subtotal: totals.subtotal,
-                totalDiscount: totals.totalDiscount,
-                taxAmount: totals.taxAmount,
-                taxPercent: totals.taxPercent,
-                taxLabel: totals.taxLabel,
-                serviceTaxAmount: totals.serviceTaxAmount || 0,
-                serviceTaxPercent: totals.serviceTaxPercent || 0,
-                totalAmount: totals.totalAmount,
-                currency: formData.currency,
-                notes: formData.notes,
-                status: "Approved",
-                createdAt: new Date().toISOString(),
-              };
+            const boqInvoiceData = {
+              boqInvoiceNumber,
+              boqId: String(id),
+              boqNumber: formData.boqNumber,
+              clientId: Number(formData.clientId),
+              date: new Date().toISOString(),
+              items: boqData.items,
+              subtotal: totals.subtotal,
+              totalDiscount: totals.totalDiscount,
+              taxAmount: totals.taxAmount,
+              taxPercent: totals.taxPercent,
+              taxLabel: totals.taxLabel,
+              serviceTaxAmount: totals.serviceTaxAmount || 0,
+              serviceTaxPercent: totals.serviceTaxPercent || 0,
+              totalAmount: totals.totalAmount,
+              currency: formData.currency,
+              notes: formData.notes,
+              status: "Approved",
+              createdAt: new Date().toISOString(),
+            };
 
-              await boqInvoicesAPI.create(boqInvoiceData);
-            }
-          } catch (invoiceError) {
-            console.error("Error creating BOQ invoice:", invoiceError);
-            // Do not block main BOQ save if invoice creation fails
+            await boqInvoicesAPI.create(boqInvoiceData);
           }
         }
 

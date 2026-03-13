@@ -1307,5 +1307,6 @@
       "numberFormat": "1,000.00",
       "decimalPlaces": 2
     }
-  ]
+  ],
+  "boqInvoices": []
 }
