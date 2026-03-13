@@ -1,7 +1,6 @@
 {
   "clients": [
     {
-      "id": 1,
       "name": "John Doe",
       "email": "john@example.com",
       "contact": "+971501234567",
@@ -9,7 +8,12 @@
       "pin": "12345",
       "state": "Dubai",
       "country": "UAE",
-      "createdAt": "2024-01-15T10:30:00Z"
+      "companyName": "ABC Info Limited",
+      "taxNumber": "348534963272323",
+      "showCompanyInDocuments": true,
+      "showTaxInDocuments": true,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "id": 1
     },
     {
       "name": "Bhaswar Bhuyan",
@@ -19,6 +23,10 @@
       "pin": "781001",
       "state": "Assam",
       "country": "India",
+      "companyName": "XYZ Pvt. Limited",
+      "taxNumber": "767563243243242",
+      "showCompanyInDocuments": false,
+      "showTaxInDocuments": false,
       "createdAt": "2025-11-07T08:16:15.426Z",
       "id": 2
     },
@@ -30,8 +38,27 @@
       "pin": "781032",
       "state": "Assam",
       "country": "India",
+      "companyName": "TCS Pvt. Limited",
+      "taxNumber": "3424234235546456",
+      "showCompanyInDocuments": false,
+      "showTaxInDocuments": false,
       "createdAt": "2026-02-08T02:59:16.663Z",
       "id": 3
+    },
+    {
+      "name": "Susmit Sarma",
+      "email": "susmit@assamdigital.com",
+      "contact": "9898989898",
+      "address": "Zoo Road Tiniali, Chandmari, Guwahati",
+      "pin": "781003",
+      "state": "Assam",
+      "country": "India",
+      "companyName": "Assam Digital",
+      "taxNumber": "12361237913298712",
+      "showCompanyInDocuments": true,
+      "showTaxInDocuments": true,
+      "createdAt": "2026-03-13T09:58:35.691Z",
+      "id": 4
     }
   ],
   "scopeOfWork": [
