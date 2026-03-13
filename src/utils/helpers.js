@@ -30,6 +30,8 @@ const DEFAULT_GENERAL_SETTINGS = {
   currencySymbol: "AED",
   quotationPrefix: "QT",
   invoicePrefix: "INV",
+  boqPrefix: "BOQ",
+  boqInvoicePrefix: "BOQINV",
   quotationValidDays: 30,
   paymentTerms: "Net 30",
   defaultPaymentMethod: "Bank Transfer",
