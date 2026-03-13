@@ -20,6 +20,12 @@
   table-layout: fixed;
 }
 
+.table td,
+.table th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .tableRow {
   transition: all 0.3s ease;
 }
