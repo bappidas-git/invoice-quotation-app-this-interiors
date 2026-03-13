@@ -39,8 +39,8 @@
       "id": 1,
       "name": "CAD drawings",
       "createdAt": "2024-01-10T10:00:00Z",
-      "isActive": true,
-      "updatedAt": "2025-11-01T06:14:16.925Z"
+      "isActive": false,
+      "updatedAt": "2026-03-13T09:16:38.428Z"
     },
     {
       "id": 2,
@@ -98,8 +98,8 @@
       "scopeOfWorkId": 1,
       "description": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
       "createdAt": "2024-01-10T10:00:00Z",
-      "isActive": true,
-      "updatedAt": "2025-11-01T06:06:55.446Z"
+      "isActive": false,
+      "updatedAt": "2026-03-13T09:16:44.039Z"
     },
     {
       "id": 2,
@@ -963,15 +963,16 @@
     {
       "id": 1,
       "name": "Entrance",
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-02-08T00:00:00.000Z",
-      "updatedAt": "2026-02-19T12:15:18.355Z"
+      "updatedAt": "2026-03-13T09:15:12.841Z"
     },
     {
       "id": 2,
       "name": "Hallway",
       "isActive": true,
-      "createdAt": "2026-02-08T00:00:00.000Z"
+      "createdAt": "2026-02-08T00:00:00.000Z",
+      "updatedAt": "2026-03-13T09:15:04.891Z"
     },
     {
       "id": 3,
@@ -1034,8 +1035,9 @@
     {
       "id": 1,
       "name": "Furniture",
-      "isActive": true,
-      "createdAt": "2026-02-08T00:00:00.000Z"
+      "isActive": false,
+      "createdAt": "2026-02-08T00:00:00.000Z",
+      "updatedAt": "2026-03-13T09:15:41.643Z"
     },
     {
       "id": 2,
@@ -1308,5 +1310,121 @@
       "decimalPlaces": 2
     }
   ],
-  "boqInvoices": []
+  "boqInvoices": [
+    {
+      "boqInvoiceNumber": "BOQINV-2026-0001",
+      "boqId": "4",
+      "boqNumber": "BOQ-2026-0004",
+      "clientId": 1,
+      "date": "2026-03-13T08:19:01.946Z",
+      "items": [
+        {
+          "area": "Living Room",
+          "imageUrl": "https://placehold.co/600x400/orange/white?text=Sofa",
+          "category": "Sofa",
+          "itemName": "Sofa",
+          "unitPrice": 1000,
+          "quantity": 2,
+          "discount": 200,
+          "discountType": "flat",
+          "procurementSource": "Purchased from XYZ shop at 800 AED/piece"
+        },
+        {
+          "area": "Master Bedroom",
+          "imageUrl": "https://placehold.co/600x400/orange/white?text=Bed",
+          "category": "Bed",
+          "itemName": "King Size Bed",
+          "unitPrice": 3000,
+          "quantity": 1,
+          "discount": 500,
+          "discountType": "flat",
+          "procurementSource": "Purchased Online www.bed.com at 2000 AED"
+        }
+      ],
+      "subtotal": 5000,
+      "totalDiscount": 700,
+      "taxAmount": 0,
+      "taxPercent": 0,
+      "taxLabel": "Tax",
+      "serviceTaxAmount": 0,
+      "serviceTaxPercent": 0,
+      "totalAmount": 4300,
+      "currency": "AED",
+      "notes": "Need to send to Client today",
+      "status": "Approved",
+      "createdAt": "2026-03-13T08:19:01.946Z",
+      "id": 1
+    },
+    {
+      "boqInvoiceNumber": "BOQINV-2026-0002",
+      "boqId": "3",
+      "boqNumber": "BOQ-2026-0003",
+      "clientId": 1,
+      "date": "2026-03-13T08:38:38.139Z",
+      "items": [
+        {
+          "area": "Living Room",
+          "imageUrl": "https://res.cloudinary.com/dzbiw7t4i/image/upload/v1767606785/samples/chair-and-coffee-table.jpg",
+          "category": "Furniture",
+          "itemName": "Dining Table Round",
+          "unitPrice": 50,
+          "quantity": 10,
+          "discount": 0
+        },
+        {
+          "area": "Living Room",
+          "imageUrl": "https://res.cloudinary.com/dzbiw7t4i/image/upload/v1767606786/samples/cup-on-a-table.jpg",
+          "category": "Furniture",
+          "itemName": "Sofa",
+          "unitPrice": 100,
+          "quantity": 2,
+          "discount": 5
+        }
+      ],
+      "subtotal": 700,
+      "totalDiscount": 10,
+      "taxAmount": 0,
+      "taxPercent": 0,
+      "taxLabel": "Tax",
+      "serviceTaxAmount": 0,
+      "serviceTaxPercent": 0,
+      "totalAmount": 690,
+      "currency": "AED",
+      "notes": "Test Notes",
+      "status": "Approved",
+      "createdAt": "2026-03-13T08:38:38.139Z",
+      "id": 2
+    },
+    {
+      "boqInvoiceNumber": "BOQINV-2026-0003",
+      "boqId": "1",
+      "boqNumber": "BOQ-2026-0001",
+      "clientId": 1,
+      "date": "2026-03-13T09:13:40.363Z",
+      "items": [
+        {
+          "area": "Entrance",
+          "imageUrl": "",
+          "category": "Dining Chair",
+          "itemName": "Test",
+          "unitPrice": 3000,
+          "quantity": 31,
+          "discount": 10
+        }
+      ],
+      "subtotal": 93000,
+      "totalDiscount": 9300,
+      "taxAmount": 0,
+      "taxPercent": 0,
+      "taxLabel": "Tax",
+      "serviceTaxAmount": 0,
+      "serviceTaxPercent": 0,
+      "totalAmount": 83700,
+      "currency": "AED",
+      "notes": "Test BOQ",
+      "status": "Approved",
+      "createdAt": "2026-03-13T09:13:40.363Z",
+      "id": 3
+    }
+  ]
 }
