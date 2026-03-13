@@ -1,6 +1,6 @@
 # THIS Interiors — Laravel Backend API Specification
 
-**Document version:** 1.0
+**Document version:** 2.0 (Final — post frontend audit)
 **Frontend stack:** React 18, Axios, JSON (camelCase)
 **Backend stack:** Laravel 10+, MySQL 8.0+, Laravel Sanctum
 **Prepared for:** Backend Developer
@@ -91,6 +91,27 @@ For not found, return **404**:
 { "message": "Resource not found" }
 ```
 
+### 1.9 ⚠️ IMPORTANT — Ignore `createdAt`, `updatedAt`, and `id` in POST/PUT request bodies
+
+The React frontend sends `createdAt` and `updatedAt` ISO timestamp strings in the body of **every** POST and PUT request, for all resources (quotations, invoices, clients, tasks, BOQs, BOQ invoices, boq-areas, boq-categories, etc.). Some PUT requests also send the record `id` in the body (in addition to the URL parameter).
+
+**You MUST ignore all three of these client-sent fields.** Use server-side timestamps via Eloquent's automatic timestamp management. Never use `createdAt`/`updatedAt` from the request body; never overwrite the record's primary key from the body.
+
+**Recommended implementation pattern:**
+
+```php
+// In every controller's store() and update() method:
+$data = $request->except(['createdAt', 'updatedAt', 'id']);
+
+// OR rely on $fillable not including timestamps:
+protected $fillable = [
+    'name', 'email', /* ... all actual fields ... */
+    // Do NOT include 'created_at', 'updated_at', or 'id' in $fillable
+];
+```
+
+This rule applies to **all** resources without exception.
+
 ---
 
 ## 2. Authentication
@@ -153,22 +174,22 @@ No auth token required for this endpoint.
 
 ### Database table: `clients`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| name | varchar(255) | No | — | Required |
-| email | varchar(255) | Yes | null | |
-| contact | varchar(100) | Yes | null | Phone number |
-| address | text | Yes | null | |
-| pin | varchar(20) | Yes | null | Postal/ZIP code |
-| state | varchar(100) | Yes | null | |
-| country | varchar(100) | Yes | null | |
-| company_name | varchar(255) | Yes | null | Trade/company name |
-| tax_number | varchar(100) | Yes | null | TRN / VAT registration number |
-| show_company_in_documents | tinyint(1) | No | 0 | Cast to bool |
-| show_tax_in_documents | tinyint(1) | No | 0 | Cast to bool |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column                    | Type                    | Nullable | Default           | Notes                         |
+| ------------------------- | ----------------------- | -------- | ----------------- | ----------------------------- |
+| id                        | bigint unsigned, PK, AI | No       | —                 |                               |
+| name                      | varchar(255)            | No       | —                 | Required                      |
+| email                     | varchar(255)            | Yes      | null              |                               |
+| contact                   | varchar(100)            | Yes      | null              | Phone number                  |
+| address                   | text                    | Yes      | null              |                               |
+| pin                       | varchar(20)             | Yes      | null              | Postal/ZIP code               |
+| state                     | varchar(100)            | Yes      | null              |                               |
+| country                   | varchar(100)            | Yes      | null              |                               |
+| company_name              | varchar(255)            | Yes      | null              | Trade/company name            |
+| tax_number                | varchar(100)            | Yes      | null              | TRN / VAT registration number |
+| show_company_in_documents | tinyint(1)              | No       | 0                 | Cast to bool                  |
+| show_tax_in_documents     | tinyint(1)              | No       | 0                 | Cast to bool                  |
+| created_at                | timestamp               | No       | CURRENT_TIMESTAMP |                               |
+| updated_at                | timestamp               | No       | CURRENT_TIMESTAMP |                               |
 
 ### API Resource shape (camelCase):
 
@@ -193,15 +214,17 @@ No auth token required for this endpoint.
 
 ### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/clients` | Return all clients as plain array |
-| GET | `/clients/{id}` | Return single client |
-| POST | `/clients` | Create client |
-| PUT | `/clients/{id}` | Full update |
-| DELETE | `/clients/{id}` | Delete, return 204 No Content |
+| Method | URL             | Description                       |
+| ------ | --------------- | --------------------------------- |
+| GET    | `/clients`      | Return all clients as plain array |
+| GET    | `/clients/{id}` | Return single client              |
+| POST   | `/clients`      | Create client                     |
+| PUT    | `/clients/{id}` | Full update                       |
+| DELETE | `/clients/{id}` | Delete, return 204 No Content     |
 
 **POST/PUT accepted fields:** `name` (required), `email`, `contact`, `address`, `pin`, `state`, `country`, `companyName`, `taxNumber`, `showCompanyInDocuments`, `showTaxInDocuments`
+
+**Note:** The frontend also sends `createdAt` in POST bodies. Ignore it per Rule 1.9.
 
 ---
 
@@ -209,14 +232,14 @@ No auth token required for this endpoint.
 
 ### Database table: `scope_of_work`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| name | varchar(255) | No | — | Required |
-| description | text | Yes | null | |
-| is_active | tinyint(1) | No | 1 | Cast to bool |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column      | Type                    | Nullable | Default           | Notes        |
+| ----------- | ----------------------- | -------- | ----------------- | ------------ |
+| id          | bigint unsigned, PK, AI | No       | —                 |              |
+| name        | varchar(255)            | No       | —                 | Required     |
+| description | text                    | Yes      | null              |              |
+| is_active   | tinyint(1)              | No       | 1                 | Cast to bool |
+| created_at  | timestamp               | No       | CURRENT_TIMESTAMP |              |
+| updated_at  | timestamp               | No       | CURRENT_TIMESTAMP |              |
 
 ### API Resource shape:
 
@@ -233,12 +256,12 @@ No auth token required for this endpoint.
 
 ### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/scope-of-work` | Return all as plain array |
-| GET | `/scope-of-work/{id}` | Return single |
-| POST | `/scope-of-work` | Create |
-| PUT | `/scope-of-work/{id}` | Full update |
+| Method | URL                   | Description                   |
+| ------ | --------------------- | ----------------------------- |
+| GET    | `/scope-of-work`      | Return all as plain array     |
+| GET    | `/scope-of-work/{id}` | Return single                 |
+| POST   | `/scope-of-work`      | Create                        |
+| PUT    | `/scope-of-work/{id}` | Full update                   |
 | DELETE | `/scope-of-work/{id}` | Delete, return 204 No Content |
 
 **POST/PUT accepted fields:** `name` (required), `description`, `isActive`
@@ -249,15 +272,15 @@ No auth token required for this endpoint.
 
 ### Database table: `tasks`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| scope_of_work_id | bigint unsigned, FK | No | — | References scope_of_work.id |
-| description | text | No | — | Required. This is the task label shown in the UI |
-| estimated_hours | decimal(6,2) | Yes | null | |
-| is_active | tinyint(1) | No | 1 | Cast to bool |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column           | Type                    | Nullable | Default           | Notes                                            |
+| ---------------- | ----------------------- | -------- | ----------------- | ------------------------------------------------ |
+| id               | bigint unsigned, PK, AI | No       | —                 |                                                  |
+| scope_of_work_id | bigint unsigned, FK     | No       | —                 | References scope_of_work.id                      |
+| description      | text                    | No       | —                 | Required. This is the task label shown in the UI |
+| estimated_hours  | decimal(6,2)            | Yes      | null              |                                                  |
+| is_active        | tinyint(1)              | No       | 1                 | Cast to bool                                     |
+| created_at       | timestamp               | No       | CURRENT_TIMESTAMP |                                                  |
+| updated_at       | timestamp               | No       | CURRENT_TIMESTAMP |                                                  |
 
 ### API Resource shape:
 
@@ -275,13 +298,13 @@ No auth token required for this endpoint.
 
 ### Endpoints
 
-| Method | URL | Query Params | Description |
-|---|---|---|---|
-| GET | `/tasks` | `?scopeOfWorkId={id}` (optional) | Return all tasks; if param present, filter by scope |
-| GET | `/tasks/{id}` | — | Return single task |
-| POST | `/tasks` | — | Create |
-| PUT | `/tasks/{id}` | — | Full update |
-| DELETE | `/tasks/{id}` | — | Delete, return 204 No Content |
+| Method | URL           | Query Params                     | Description                                         |
+| ------ | ------------- | -------------------------------- | --------------------------------------------------- |
+| GET    | `/tasks`      | `?scopeOfWorkId={id}` (optional) | Return all tasks; if param present, filter by scope |
+| GET    | `/tasks/{id}` | —                                | Return single task                                  |
+| POST   | `/tasks`      | —                                | Create                                              |
+| PUT    | `/tasks/{id}` | —                                | Full update                                         |
+| DELETE | `/tasks/{id}` | —                                | Delete, return 204 No Content                       |
 
 **Query param spelling:** The frontend sends `?scopeOfWorkId=` (camelCase). Accept exactly this casing.
 
@@ -295,31 +318,31 @@ No auth token required for this endpoint.
 
 Line items and payment history are stored as JSON columns. This avoids complex joins and exactly matches the frontend data model.
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| quotation_number | varchar(50), unique | No | — | Format: PI-2026-0001 |
-| client_id | bigint unsigned, FK | No | — | References clients.id |
-| date | datetime | No | — | |
-| items | json | No | '[]' | Array of item objects (see below) |
-| subtotal | decimal(14,2) | No | 0.00 | |
-| discount_type | varchar(20) | Yes | null | "percent" or "flat" |
-| discount_value | decimal(10,2) | Yes | null | Input value (% number or flat amount) |
-| discount_amount | decimal(14,2) | No | 0.00 | Computed discount in currency |
-| tax_amount | decimal(14,2) | No | 0.00 | |
-| service_tax_amount | decimal(14,2) | No | 0.00 | |
-| total_amount | decimal(14,2) | No | 0.00 | |
-| status | varchar(50) | No | 'Performa' | See status values below |
-| paid_amount | decimal(14,2) | No | 0.00 | |
-| payments | json | No | '[]' | Array of payment objects (see below) |
-| currency | varchar(10) | No | 'AED' | |
-| notes | text | Yes | null | |
-| tax_percent | decimal(5,2) | No | 0.00 | |
-| service_tax_percent | decimal(5,2) | No | 0.00 | |
-| tax_label | varchar(50) | Yes | null | e.g. "VAT" |
-| bank_account_id | bigint unsigned, FK | Yes | null | References bank_accounts.id |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column              | Type                    | Nullable | Default           | Notes                                 |
+| ------------------- | ----------------------- | -------- | ----------------- | ------------------------------------- |
+| id                  | bigint unsigned, PK, AI | No       | —                 |                                       |
+| quotation_number    | varchar(50), unique     | No       | —                 | Format: PI-2026-0001                  |
+| client_id           | bigint unsigned, FK     | No       | —                 | References clients.id                 |
+| date                | datetime                | No       | —                 |                                       |
+| items               | json                    | No       | '[]'              | Array of item objects (see below)     |
+| subtotal            | decimal(14,2)           | No       | 0.00              |                                       |
+| discount_type       | varchar(20)             | Yes      | null              | "percent" or "flat"                   |
+| discount_value      | decimal(10,2)           | Yes      | null              | Input value (% number or flat amount) |
+| discount_amount     | decimal(14,2)           | No       | 0.00              | Computed discount in currency         |
+| tax_amount          | decimal(14,2)           | No       | 0.00              |                                       |
+| service_tax_amount  | decimal(14,2)           | No       | 0.00              |                                       |
+| total_amount        | decimal(14,2)           | No       | 0.00              |                                       |
+| status              | varchar(50)             | No       | 'Performa'        | See status values below               |
+| paid_amount         | decimal(14,2)           | No       | 0.00              |                                       |
+| payments            | json                    | No       | '[]'              | Array of payment objects (see below)  |
+| currency            | varchar(10)             | No       | 'AED'             |                                       |
+| notes               | text                    | Yes      | null              |                                       |
+| tax_percent         | decimal(5,2)            | No       | 0.00              |                                       |
+| service_tax_percent | decimal(5,2)            | No       | 0.00              |                                       |
+| tax_label           | varchar(50)             | Yes      | null              | e.g. "VAT"                            |
+| bank_account_id     | bigint unsigned, FK     | Yes      | null              | References bank_accounts.id           |
+| created_at          | timestamp               | No       | CURRENT_TIMESTAMP |                                       |
+| updated_at          | timestamp               | No       | CURRENT_TIMESTAMP |                                       |
 
 ### Status values (store exactly as shown, these are case-sensitive strings):
 
@@ -334,7 +357,7 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 {
   "scopeOfWork": "CAD Drawings",
   "task": "Space Planning, Detailed Layouts, Concept Design",
-  "amount": 5000.00
+  "amount": 5000.0
 }
 ```
 
@@ -342,7 +365,7 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ```json
 {
-  "amount": 2500.00,
+  "amount": 2500.0,
   "paymentMethod": "Bank Transfer",
   "paymentDate": "2026-01-20T10:00:00.000Z",
   "date": "2026-01-20T10:00:00.000Z",
@@ -359,22 +382,26 @@ Line items and payment history are stored as JSON columns. This avoids complex j
   "clientId": 1,
   "date": "2026-01-15T00:00:00.000Z",
   "items": [
-    { "scopeOfWork": "CAD Drawings", "task": "Space Planning", "amount": 5000.00 }
+    {
+      "scopeOfWork": "CAD Drawings",
+      "task": "Space Planning",
+      "amount": 5000.0
+    }
   ],
-  "subtotal": 5000.00,
+  "subtotal": 5000.0,
   "discountType": "percent",
   "discountValue": 10,
-  "discountAmount": 500.00,
-  "taxAmount": 225.00,
-  "serviceTaxAmount": 0.00,
-  "totalAmount": 4725.00,
+  "discountAmount": 500.0,
+  "taxAmount": 225.0,
+  "serviceTaxAmount": 0.0,
+  "totalAmount": 4725.0,
   "status": "Performa",
-  "paidAmount": 0.00,
+  "paidAmount": 0.0,
   "payments": [],
   "currency": "AED",
   "notes": "",
-  "taxPercent": 5.00,
-  "serviceTaxPercent": 0.00,
+  "taxPercent": 5.0,
+  "serviceTaxPercent": 0.0,
   "taxLabel": "VAT",
   "bankAccountId": 1,
   "createdAt": "2026-01-15T10:00:00.000Z",
@@ -384,15 +411,17 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Endpoints
 
-| Method | URL | Query Params | Description |
-|---|---|---|---|
-| GET | `/quotations` | `?status=Performa`, `?start_date=YYYY-MM-DD`, `?end_date=YYYY-MM-DD` | Return all; apply filters if params present |
-| GET | `/quotations/{id}` | — | Return single quotation |
-| POST | `/quotations` | — | Create |
-| PUT | `/quotations/{id}` | — | Full update |
-| DELETE | `/quotations/{id}` | — | Delete, return 204 No Content |
+| Method | URL                | Query Params                                                         | Description                                 |
+| ------ | ------------------ | -------------------------------------------------------------------- | ------------------------------------------- |
+| GET    | `/quotations`      | `?status=Performa`, `?start_date=YYYY-MM-DD`, `?end_date=YYYY-MM-DD` | Return all; apply filters if params present |
+| GET    | `/quotations/{id}` | —                                                                    | Return single quotation                     |
+| POST   | `/quotations`      | —                                                                    | Create                                      |
+| PUT    | `/quotations/{id}` | —                                                                    | Full update                                 |
+| DELETE | `/quotations/{id}` | —                                                                    | Delete, return 204 No Content               |
 
-**Date filtering:** Filter on the `date` column. `start_date` is inclusive (>=), `end_date` is inclusive (<=). Both can be combined. **Status filtering:** Exact string match. URL-encoded as needed (e.g. `%22Partially%20Paid%22`).
+**Date filtering:** Filter on the `date` column. `start_date` is inclusive (>=), `end_date` is inclusive (<=). Both can be combined.
+
+**Status filtering:** Exact string match. URL-encoded as needed (e.g. `Partially%20Paid`).
 
 ---
 
@@ -400,29 +429,29 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Database table: `invoices`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| invoice_number | varchar(50), unique | No | — | Format: INV-2026-0001 |
-| quotation_id | bigint unsigned, FK | Yes | null | References quotations.id |
-| client_id | bigint unsigned, FK | No | — | References clients.id |
-| date | datetime | No | — | |
-| items | json | No | '[]' | Same item shape as quotations |
-| subtotal | decimal(14,2) | No | 0.00 | |
-| tax_amount | decimal(14,2) | No | 0.00 | |
-| service_tax_amount | decimal(14,2) | No | 0.00 | |
-| total_amount | decimal(14,2) | No | 0.00 | |
-| paid_amount | decimal(14,2) | No | 0.00 | |
-| payment_date | datetime | Yes | null | |
-| payment_method | varchar(100) | Yes | null | |
-| currency | varchar(10) | No | 'AED' | |
-| tax_percent | decimal(5,2) | No | 0.00 | |
-| service_tax_percent | decimal(5,2) | No | 0.00 | |
-| tax_label | varchar(50) | Yes | null | |
-| notes | text | Yes | null | |
-| bank_account_id | bigint unsigned, FK | Yes | null | References bank_accounts.id |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column              | Type                    | Nullable | Default           | Notes                         |
+| ------------------- | ----------------------- | -------- | ----------------- | ----------------------------- |
+| id                  | bigint unsigned, PK, AI | No       | —                 |                               |
+| invoice_number      | varchar(50), unique     | No       | —                 | Format: INV-2026-0001         |
+| quotation_id        | bigint unsigned, FK     | Yes      | null              | References quotations.id      |
+| client_id           | bigint unsigned, FK     | No       | —                 | References clients.id         |
+| date                | datetime                | No       | —                 |                               |
+| items               | json                    | No       | '[]'              | Same item shape as quotations |
+| subtotal            | decimal(14,2)           | No       | 0.00              |                               |
+| tax_amount          | decimal(14,2)           | No       | 0.00              |                               |
+| service_tax_amount  | decimal(14,2)           | No       | 0.00              |                               |
+| total_amount        | decimal(14,2)           | No       | 0.00              |                               |
+| paid_amount         | decimal(14,2)           | No       | 0.00              |                               |
+| payment_date        | datetime                | Yes      | null              |                               |
+| payment_method      | varchar(100)            | Yes      | null              |                               |
+| currency            | varchar(10)             | No       | 'AED'             |                               |
+| tax_percent         | decimal(5,2)            | No       | 0.00              |                               |
+| service_tax_percent | decimal(5,2)            | No       | 0.00              |                               |
+| tax_label           | varchar(50)             | Yes      | null              |                               |
+| notes               | text                    | Yes      | null              |                               |
+| bank_account_id     | bigint unsigned, FK     | Yes      | null              | References bank_accounts.id   |
+| created_at          | timestamp               | No       | CURRENT_TIMESTAMP |                               |
+| updated_at          | timestamp               | No       | CURRENT_TIMESTAMP |                               |
 
 ### API Resource shape:
 
@@ -434,18 +463,22 @@ Line items and payment history are stored as JSON columns. This avoids complex j
   "clientId": 1,
   "date": "2026-01-20T00:00:00.000Z",
   "items": [
-    { "scopeOfWork": "CAD Drawings", "task": "Space Planning", "amount": 2500.00 }
+    {
+      "scopeOfWork": "CAD Drawings",
+      "task": "Space Planning",
+      "amount": 2500.0
+    }
   ],
   "subtotal": 2380.95,
   "taxAmount": 119.05,
-  "serviceTaxAmount": 0.00,
-  "totalAmount": 2500.00,
-  "paidAmount": 2500.00,
+  "serviceTaxAmount": 0.0,
+  "totalAmount": 2500.0,
+  "paidAmount": 2500.0,
   "paymentDate": "2026-01-20T10:00:00.000Z",
   "paymentMethod": "Bank Transfer",
   "currency": "AED",
-  "taxPercent": 5.00,
-  "serviceTaxPercent": 0.00,
+  "taxPercent": 5.0,
+  "serviceTaxPercent": 0.0,
   "taxLabel": "VAT",
   "notes": "First installment",
   "bankAccountId": 1,
@@ -456,15 +489,19 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Endpoints
 
-| Method | URL | Query Params | Description |
-|---|---|---|---|
-| GET | `/invoices` | `?clientId={id}`, `?start_date=YYYY-MM-DD`, `?end_date=YYYY-MM-DD` | Return all; filter if params present |
-| GET | `/invoices/{id}` | — | Return single invoice |
-| POST | `/invoices` | — | Create |
-| PUT | `/invoices/{id}` | — | Full update |
-| DELETE | `/invoices/{id}` | — | Delete, return 204 No Content |
+| Method | URL              | Query Params                                                                            | Description                          |
+| ------ | ---------------- | --------------------------------------------------------------------------------------- | ------------------------------------ |
+| GET    | `/invoices`      | `?clientId={id}`, `?quotationId={id}`, `?start_date=YYYY-MM-DD`, `?end_date=YYYY-MM-DD` | Return all; filter if params present |
+| GET    | `/invoices/{id}` | —                                                                                       | Return single invoice                |
+| POST   | `/invoices`      | —                                                                                       | Create                               |
+| PUT    | `/invoices/{id}` | —                                                                                       | Full update                          |
+| DELETE | `/invoices/{id}` | —                                                                                       | Delete, return 204 No Content        |
 
-**Query param:** `?clientId=` is camelCase — accept exactly this casing.
+**Query params — all camelCase, accept exactly these casings:**
+
+- `?clientId=` — filter invoices by client
+- `?quotationId=` — filter invoices belonging to a specific quotation. The ViewQuotation screen uses `invoicesAPI.getAll()` and filters client-side today, but implementing this server-side filter is recommended for performance.
+- `?start_date=` / `?end_date=` — filter on the `date` column, both inclusive
 
 ---
 
@@ -472,18 +509,18 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Database table: `bank_accounts`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| bank_name | varchar(255) | No | — | Required |
-| account_number | varchar(100) | No | — | Required |
-| account_holder_name | varchar(255) | Yes | null | |
-| branch | varchar(255) | Yes | null | |
-| ifsc_swift | varchar(100) | Yes | null | |
-| qr_code_url | varchar(1000) | Yes | null | URL to payment QR code image |
-| is_default | tinyint(1) | No | 0 | Cast to bool |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column              | Type                    | Nullable | Default           | Notes                        |
+| ------------------- | ----------------------- | -------- | ----------------- | ---------------------------- |
+| id                  | bigint unsigned, PK, AI | No       | —                 |                              |
+| bank_name           | varchar(255)            | No       | —                 | Required                     |
+| account_number      | varchar(100)            | No       | —                 | Required                     |
+| account_holder_name | varchar(255)            | Yes      | null              |                              |
+| branch              | varchar(255)            | Yes      | null              |                              |
+| ifsc_swift          | varchar(100)            | Yes      | null              |                              |
+| qr_code_url         | varchar(1000)           | Yes      | null              | URL to payment QR code image |
+| is_default          | tinyint(1)              | No       | 0                 | Cast to bool                 |
+| created_at          | timestamp               | No       | CURRENT_TIMESTAMP |                              |
+| updated_at          | timestamp               | No       | CURRENT_TIMESTAMP |                              |
 
 ### API Resource shape:
 
@@ -504,12 +541,12 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/bank-accounts` | Return all as plain array |
-| GET | `/bank-accounts/{id}` | Return single |
-| POST | `/bank-accounts` | Create |
-| PUT | `/bank-accounts/{id}` | Full update |
+| Method | URL                   | Description                   |
+| ------ | --------------------- | ----------------------------- |
+| GET    | `/bank-accounts`      | Return all as plain array     |
+| GET    | `/bank-accounts/{id}` | Return single                 |
+| POST   | `/bank-accounts`      | Create                        |
+| PUT    | `/bank-accounts/{id}` | Full update                   |
 | DELETE | `/bank-accounts/{id}` | Delete, return 204 No Content |
 
 **POST/PUT accepted fields:** `bankName` (required), `accountNumber` (required), `accountHolderName`, `branch`, `ifscSwift`, `qrCodeUrl`, `isDefault`
@@ -520,13 +557,13 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Database table: `boq_areas`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| name | varchar(255) | No | — | Required |
-| is_active | tinyint(1) | No | 1 | Cast to bool |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column     | Type                    | Nullable | Default           | Notes        |
+| ---------- | ----------------------- | -------- | ----------------- | ------------ |
+| id         | bigint unsigned, PK, AI | No       | —                 |              |
+| name       | varchar(255)            | No       | —                 | Required     |
+| is_active  | tinyint(1)              | No       | 1                 | Cast to bool |
+| created_at | timestamp               | No       | CURRENT_TIMESTAMP |              |
+| updated_at | timestamp               | No       | CURRENT_TIMESTAMP |              |
 
 ### API Resource shape:
 
@@ -542,15 +579,17 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/boq-areas` | Return all as plain array |
-| GET | `/boq-areas/{id}` | Return single |
-| POST | `/boq-areas` | Create |
-| PUT | `/boq-areas/{id}` | Full update |
+| Method | URL               | Description                   |
+| ------ | ----------------- | ----------------------------- |
+| GET    | `/boq-areas`      | Return all as plain array     |
+| GET    | `/boq-areas/{id}` | Return single                 |
+| POST   | `/boq-areas`      | Create                        |
+| PUT    | `/boq-areas/{id}` | Full update                   |
 | DELETE | `/boq-areas/{id}` | Delete, return 204 No Content |
 
 **POST/PUT accepted fields:** `name` (required), `isActive`
+
+**Note:** The PUT body from the frontend spreads the full area object, which means it also sends `id`, `createdAt`, and `updatedAt`. Ignore all three per Rule 1.9. Only use `name` and `isActive` from the request body.
 
 ---
 
@@ -558,13 +597,13 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Database table: `boq_categories`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| name | varchar(255) | No | — | Required |
-| is_active | tinyint(1) | No | 1 | Cast to bool |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column     | Type                    | Nullable | Default           | Notes        |
+| ---------- | ----------------------- | -------- | ----------------- | ------------ |
+| id         | bigint unsigned, PK, AI | No       | —                 |              |
+| name       | varchar(255)            | No       | —                 | Required     |
+| is_active  | tinyint(1)              | No       | 1                 | Cast to bool |
+| created_at | timestamp               | No       | CURRENT_TIMESTAMP |              |
+| updated_at | timestamp               | No       | CURRENT_TIMESTAMP |              |
 
 ### API Resource shape:
 
@@ -578,17 +617,19 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 }
 ```
 
-### Endpoints — identical pattern to BOQ Areas, at `/boq-categories`
+### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/boq-categories` | Return all as plain array |
-| GET | `/boq-categories/{id}` | Return single |
-| POST | `/boq-categories` | Create |
-| PUT | `/boq-categories/{id}` | Full update |
+| Method | URL                    | Description                   |
+| ------ | ---------------------- | ----------------------------- |
+| GET    | `/boq-categories`      | Return all as plain array     |
+| GET    | `/boq-categories/{id}` | Return single                 |
+| POST   | `/boq-categories`      | Create                        |
+| PUT    | `/boq-categories/{id}` | Full update                   |
 | DELETE | `/boq-categories/{id}` | Delete, return 204 No Content |
 
 **POST/PUT accepted fields:** `name` (required), `isActive`
+
+**Note:** Same as BOQ Areas — the PUT body also sends `id`, `createdAt`, `updatedAt`. Ignore all three per Rule 1.9.
 
 ---
 
@@ -596,26 +637,26 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Database table: `boqs`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| boq_number | varchar(50), unique | No | — | Format: BOQ-2026-0001 |
-| client_id | bigint unsigned, FK | No | — | References clients.id |
-| date | datetime | No | — | |
-| status | varchar(50) | No | 'Draft' | See status values below |
-| items | json | No | '[]' | Array of BOQ item objects (see below) |
-| subtotal | decimal(14,2) | No | 0.00 | Sum of all line item amounts before tax |
-| total_discount | decimal(14,2) | No | 0.00 | Sum of all per-item discount amounts |
-| tax_amount | decimal(14,2) | No | 0.00 | |
-| tax_percent | decimal(5,2) | No | 0.00 | |
-| tax_label | varchar(50) | Yes | null | |
-| service_tax_amount | decimal(14,2) | No | 0.00 | |
-| service_tax_percent | decimal(5,2) | No | 0.00 | |
-| total_amount | decimal(14,2) | No | 0.00 | |
-| currency | varchar(10) | No | 'AED' | |
-| notes | text | Yes | null | |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column              | Type                    | Nullable | Default           | Notes                                   |
+| ------------------- | ----------------------- | -------- | ----------------- | --------------------------------------- |
+| id                  | bigint unsigned, PK, AI | No       | —                 |                                         |
+| boq_number          | varchar(50), unique     | No       | —                 | Format: BOQ-2026-0001                   |
+| client_id           | bigint unsigned, FK     | No       | —                 | References clients.id                   |
+| date                | datetime                | No       | —                 |                                         |
+| status              | varchar(50)             | No       | 'Draft'           | See status values below                 |
+| items               | json                    | No       | '[]'              | Array of BOQ item objects (see below)   |
+| subtotal            | decimal(14,2)           | No       | 0.00              | Sum of all line item amounts before tax |
+| total_discount      | decimal(14,2)           | No       | 0.00              | Sum of all per-item discount amounts    |
+| tax_amount          | decimal(14,2)           | No       | 0.00              |                                         |
+| tax_percent         | decimal(5,2)            | No       | 0.00              |                                         |
+| tax_label           | varchar(50)             | Yes      | null              |                                         |
+| service_tax_amount  | decimal(14,2)           | No       | 0.00              |                                         |
+| service_tax_percent | decimal(5,2)            | No       | 0.00              |                                         |
+| total_amount        | decimal(14,2)           | No       | 0.00              |                                         |
+| currency            | varchar(10)             | No       | 'AED'             |                                         |
+| notes               | text                    | Yes      | null              |                                         |
+| created_at          | timestamp               | No       | CURRENT_TIMESTAMP |                                         |
+| updated_at          | timestamp               | No       | CURRENT_TIMESTAMP |                                         |
 
 ### BOQ status values:
 
@@ -632,7 +673,7 @@ Line items and payment history are stored as JSON columns. This avoids complex j
   "imageUrl": "",
   "category": "Furniture",
   "itemName": "L-shaped sofa set",
-  "unitPrice": 12000.00,
+  "unitPrice": 12000.0,
   "quantity": 1,
   "discount": 10,
   "discountType": "percent",
@@ -640,7 +681,7 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 }
 ```
 
-`discountType` is `"percent"` or `"flat"`. `procurementSource` is an internal-only field. It is stored in the database but must **NEVER** appear in client-facing print documents. The internal print template shows it; the client print template hides it.
+`discountType` is `"percent"` or `"flat"`. `procurementSource` is an internal-only field. It is stored in the database and included in all API responses, but must **NEVER** appear in client-facing print documents. The internal print template shows it; the client print template hides it.
 
 ### API Resource shape:
 
@@ -657,21 +698,21 @@ Line items and payment history are stored as JSON columns. This avoids complex j
       "imageUrl": "",
       "category": "Furniture",
       "itemName": "L-shaped sofa set",
-      "unitPrice": 12000.00,
+      "unitPrice": 12000.0,
       "quantity": 1,
       "discount": 10,
       "discountType": "percent",
       "procurementSource": "IKEA UAE"
     }
   ],
-  "subtotal": 12000.00,
-  "totalDiscount": 1200.00,
-  "taxAmount": 540.00,
-  "taxPercent": 5.00,
+  "subtotal": 12000.0,
+  "totalDiscount": 1200.0,
+  "taxAmount": 540.0,
+  "taxPercent": 5.0,
   "taxLabel": "VAT",
-  "serviceTaxAmount": 0.00,
-  "serviceTaxPercent": 0.00,
-  "totalAmount": 11340.00,
+  "serviceTaxAmount": 0.0,
+  "serviceTaxPercent": 0.0,
+  "totalAmount": 11340.0,
   "currency": "AED",
   "notes": "",
   "createdAt": "2026-01-10T10:00:00.000Z",
@@ -681,13 +722,13 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ### Endpoints
 
-| Method | URL | Query Params | Description |
-|---|---|---|---|
-| GET | `/boqs` | `?clientId={id}` (optional) | Return all; filter by client if param present |
-| GET | `/boqs/{id}` | — | Return single BOQ |
-| POST | `/boqs` | — | Create |
-| PUT | `/boqs/{id}` | — | Full update |
-| DELETE | `/boqs/{id}` | — | Delete, return 204 No Content |
+| Method | URL          | Query Params                | Description                                   |
+| ------ | ------------ | --------------------------- | --------------------------------------------- |
+| GET    | `/boqs`      | `?clientId={id}` (optional) | Return all; filter by client if param present |
+| GET    | `/boqs/{id}` | —                           | Return single BOQ                             |
+| POST   | `/boqs`      | —                           | Create                                        |
+| PUT    | `/boqs/{id}` | —                           | Full update                                   |
+| DELETE | `/boqs/{id}` | —                           | Delete, return 204 No Content                 |
 
 **Query param:** `?clientId=` is camelCase — accept exactly this casing.
 
@@ -695,32 +736,38 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 ## 12. BOQ Invoices
 
-BOQ Invoices are auto-generated by the React frontend when a BOQ status is set to "Approved". The frontend checks for an existing BOQ invoice first, then POSTs to create one if none exists. They are immutable by design — the normal UI has no edit or delete for BOQ invoices. The API supports PUT/DELETE only for admin use.
+BOQ Invoices are auto-generated by the React frontend when a BOQ status is set to "Approved". This happens in two places: `CreateBOQ.jsx` (on save with Approved status) and `ViewBOQ.jsx` (via a manual "Generate Invoice" button). Both use the same idempotency check before creating. They are immutable by design — the normal UI has no edit or delete for BOQ invoices.
+
+### Frontend auto-generation flow (for context):
+
+1. Frontend calls `GET /boq-invoices?boqId={id}`
+2. If response is `[]`, frontend calls `GET /boq-invoices` (to get count for number generation), then `POST /boq-invoices` to create
+3. If response has records, frontend skips creation (idempotency)
 
 ### Database table: `boq_invoices`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK, AI | No | — | |
-| boq_invoice_number | varchar(50), unique | No | — | Format: BOQINV-2026-0001 |
-| boq_id | varchar(50) | No | — | Stored as string — see note below |
-| boq_number | varchar(50) | No | — | Denormalized for quick display |
-| client_id | bigint unsigned, FK | No | — | References clients.id |
-| date | datetime | No | — | |
-| items | json | No | '[]' | Same shape as BOQ items, includes procurementSource |
-| subtotal | decimal(14,2) | No | 0.00 | |
-| total_discount | decimal(14,2) | No | 0.00 | |
-| tax_amount | decimal(14,2) | No | 0.00 | |
-| tax_percent | decimal(5,2) | No | 0.00 | |
-| tax_label | varchar(50) | Yes | null | |
-| service_tax_amount | decimal(14,2) | No | 0.00 | |
-| service_tax_percent | decimal(5,2) | No | 0.00 | |
-| total_amount | decimal(14,2) | No | 0.00 | |
-| currency | varchar(10) | No | 'AED' | |
-| notes | text | Yes | null | |
-| status | varchar(50) | No | 'Approved' | Always "Approved" — immutable |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column              | Type                    | Nullable | Default           | Notes                                               |
+| ------------------- | ----------------------- | -------- | ----------------- | --------------------------------------------------- |
+| id                  | bigint unsigned, PK, AI | No       | —                 |                                                     |
+| boq_invoice_number  | varchar(50), unique     | No       | —                 | Format: BOQINV-2026-0001                            |
+| boq_id              | varchar(50)             | No       | —                 | Stored as string — see note below                   |
+| boq_number          | varchar(50)             | No       | —                 | Denormalized for quick display                      |
+| client_id           | bigint unsigned, FK     | No       | —                 | References clients.id                               |
+| date                | datetime                | No       | —                 |                                                     |
+| items               | json                    | No       | '[]'              | Same shape as BOQ items, includes procurementSource |
+| subtotal            | decimal(14,2)           | No       | 0.00              |                                                     |
+| total_discount      | decimal(14,2)           | No       | 0.00              |                                                     |
+| tax_amount          | decimal(14,2)           | No       | 0.00              |                                                     |
+| tax_percent         | decimal(5,2)            | No       | 0.00              |                                                     |
+| tax_label           | varchar(50)             | Yes      | null              |                                                     |
+| service_tax_amount  | decimal(14,2)           | No       | 0.00              |                                                     |
+| service_tax_percent | decimal(5,2)            | No       | 0.00              |                                                     |
+| total_amount        | decimal(14,2)           | No       | 0.00              |                                                     |
+| currency            | varchar(10)             | No       | 'AED'             |                                                     |
+| notes               | text                    | Yes      | null              |                                                     |
+| status              | varchar(50)             | No       | 'Approved'        | Always "Approved" — immutable                       |
+| created_at          | timestamp               | No       | CURRENT_TIMESTAMP |                                                     |
+| updated_at          | timestamp               | No       | CURRENT_TIMESTAMP |                                                     |
 
 **Important — `boq_id` as string:** The frontend stores and queries `boqId` as a string (uses `String(id)` for type safety in its idempotency check). Store `boq_id` as `varchar(50)`, **NOT** as a foreign key integer. Do not add a foreign key constraint on this column.
 
@@ -740,21 +787,21 @@ BOQ Invoices are auto-generated by the React frontend when a BOQ status is set t
       "imageUrl": "",
       "category": "Furniture",
       "itemName": "L-shaped sofa set",
-      "unitPrice": 12000.00,
+      "unitPrice": 12000.0,
       "quantity": 1,
       "discount": 10,
       "discountType": "percent",
       "procurementSource": "IKEA UAE – Article #123456"
     }
   ],
-  "subtotal": 12000.00,
-  "totalDiscount": 1200.00,
-  "taxAmount": 540.00,
-  "taxPercent": 5.00,
+  "subtotal": 12000.0,
+  "totalDiscount": 1200.0,
+  "taxAmount": 540.0,
+  "taxPercent": 5.0,
   "taxLabel": "VAT",
-  "serviceTaxAmount": 0.00,
-  "serviceTaxPercent": 0.00,
-  "totalAmount": 11340.00,
+  "serviceTaxAmount": 0.0,
+  "serviceTaxPercent": 0.0,
+  "totalAmount": 11340.0,
   "currency": "AED",
   "notes": "",
   "status": "Approved",
@@ -765,17 +812,17 @@ BOQ Invoices are auto-generated by the React frontend when a BOQ status is set t
 
 ### Endpoints
 
-| Method | URL | Query Params | Description |
-|---|---|---|---|
-| GET | `/boq-invoices` | `?boqId={id}`, `?clientId={id}` | Return all; filter if params present |
-| GET | `/boq-invoices/{id}` | — | Return single BOQ invoice |
-| POST | `/boq-invoices` | — | Create (called by frontend on BOQ approval) |
-| PUT | `/boq-invoices/{id}` | — | Update (admin use only) |
-| DELETE | `/boq-invoices/{id}` | — | Delete (admin use only), return 204 No Content |
+| Method | URL                  | Query Params                    | Description                                    |
+| ------ | -------------------- | ------------------------------- | ---------------------------------------------- |
+| GET    | `/boq-invoices`      | `?boqId={id}`, `?clientId={id}` | Return all; filter if params present           |
+| GET    | `/boq-invoices/{id}` | —                               | Return single BOQ invoice                      |
+| POST   | `/boq-invoices`      | —                               | Create (called by frontend on BOQ approval)    |
+| PUT    | `/boq-invoices/{id}` | —                               | Update (admin use only)                        |
+| DELETE | `/boq-invoices/{id}` | —                               | Delete (admin use only), return 204 No Content |
 
 **Query params:** `?boqId=` and `?clientId=` are camelCase — accept exactly these casings.
 
-**Idempotency requirement:** `GET /boq-invoices?boqId={id}` MUST return an empty array `[]` (not null, not 404) when no BOQ invoice exists for that `boqId`. The frontend checks the array length before creating a new BOQ invoice to prevent duplicates.
+**Idempotency requirement:** `GET /boq-invoices?boqId={id}` MUST return an empty array `[]` (not null, not 404) when no BOQ invoice exists for that `boqId`. The frontend checks `response.data.length` before creating to prevent duplicates.
 
 ---
 
@@ -785,22 +832,22 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 
 ### Database table: `organization_settings`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK | No | 1 | Always 1 — seeded, never auto-incremented |
-| name | varchar(255) | No | — | Required |
-| logo_url | varchar(1000) | Yes | null | |
-| email | varchar(255) | Yes | null | |
-| contact | varchar(100) | Yes | null | |
-| website | varchar(255) | Yes | null | |
-| address | text | Yes | null | |
-| city | varchar(100) | Yes | null | |
-| state | varchar(100) | Yes | null | |
-| country | varchar(100) | Yes | null | |
-| postal_code | varchar(20) | Yes | null | |
-| registration_number | varchar(100) | Yes | null | |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column              | Type                | Nullable | Default           | Notes                                     |
+| ------------------- | ------------------- | -------- | ----------------- | ----------------------------------------- |
+| id                  | bigint unsigned, PK | No       | 1                 | Always 1 — seeded, never auto-incremented |
+| name                | varchar(255)        | No       | —                 | Required                                  |
+| logo_url            | varchar(1000)       | Yes      | null              |                                           |
+| email               | varchar(255)        | Yes      | null              |                                           |
+| contact             | varchar(100)        | Yes      | null              |                                           |
+| website             | varchar(255)        | Yes      | null              |                                           |
+| address             | text                | Yes      | null              |                                           |
+| city                | varchar(100)        | Yes      | null              |                                           |
+| state               | varchar(100)        | Yes      | null              |                                           |
+| country             | varchar(100)        | Yes      | null              |                                           |
+| postal_code         | varchar(20)         | Yes      | null              |                                           |
+| registration_number | varchar(100)        | Yes      | null              |                                           |
+| created_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                           |
+| updated_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                           |
 
 ### API Resource shape:
 
@@ -823,10 +870,12 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 
 ### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/settings/organization` | Return the singleton object (no wrapping key) |
-| PUT | `/settings/organization` | Full update of the singleton |
+| Method | URL                      | Description                                   |
+| ------ | ------------------------ | --------------------------------------------- |
+| GET    | `/settings/organization` | Return the singleton object (no wrapping key) |
+| PUT    | `/settings/organization` | Full update of the singleton                  |
+
+**Implementation:** Use `updateOrCreate(['id' => 1], $data)` or simply `OrganizationSettings::find(1)->update($data)`.
 
 ---
 
@@ -836,20 +885,20 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 
 ### Database table: `tax_settings`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK | No | 1 | Always 1 — seeded |
-| tax_label | varchar(50) | Yes | 'VAT' | e.g. "VAT", "GST" |
-| tax_percent | decimal(5,2) | No | 0.00 | |
-| tax_id | varchar(100) | Yes | null | TRN / tax registration number |
-| service_tax_label | varchar(50) | Yes | 'Service Tax' | |
-| service_tax_percent | decimal(5,2) | No | 0.00 | |
-| service_tax_enabled | tinyint(1) | No | 0 | Cast to bool |
-| additional_taxes | json | Yes | '[]' | Reserved for future multi-tax support; store as-is |
-| tax_inclusive | tinyint(1) | No | 0 | Cast to bool |
-| show_tax_breakdown | tinyint(1) | No | 1 | Cast to bool |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column              | Type                | Nullable | Default           | Notes                                              |
+| ------------------- | ------------------- | -------- | ----------------- | -------------------------------------------------- |
+| id                  | bigint unsigned, PK | No       | 1                 | Always 1 — seeded                                  |
+| tax_label           | varchar(50)         | Yes      | 'VAT'             | e.g. "VAT", "GST"                                  |
+| tax_percent         | decimal(5,2)        | No       | 0.00              |                                                    |
+| tax_id              | varchar(100)        | Yes      | null              | TRN / tax registration number                      |
+| service_tax_label   | varchar(50)         | Yes      | 'Service Tax'     |                                                    |
+| service_tax_percent | decimal(5,2)        | No       | 0.00              |                                                    |
+| service_tax_enabled | tinyint(1)          | No       | 0                 | Cast to bool                                       |
+| additional_taxes    | json                | Yes      | '[]'              | Reserved for future multi-tax support; store as-is |
+| tax_inclusive       | tinyint(1)          | No       | 0                 | Cast to bool                                       |
+| show_tax_breakdown  | tinyint(1)          | No       | 1                 | Cast to bool                                       |
+| created_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                                    |
+| updated_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                                    |
 
 ### API Resource shape:
 
@@ -857,10 +906,10 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 {
   "id": 1,
   "taxLabel": "VAT",
-  "taxPercent": 5.00,
+  "taxPercent": 5.0,
   "taxId": "100234567890003",
   "serviceTaxLabel": "Service Tax",
-  "serviceTaxPercent": 0.00,
+  "serviceTaxPercent": 0.0,
   "serviceTaxEnabled": false,
   "additionalTaxes": [],
   "taxInclusive": false,
@@ -868,14 +917,14 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 }
 ```
 
-`additionalTaxes`: This is a JSON array stored and returned as-is. The frontend initializes it as `[]` and has no UI to edit it currently. Store it verbatim and return it verbatim. Do not attempt to parse or validate its contents.
+`additionalTaxes`: This is a JSON array stored and returned as-is. The frontend always sends it (initialized as `[]`) in every PUT. Store it verbatim and return it verbatim. Do not validate or transform its contents.
 
 ### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/settings/tax` | Return the singleton tax settings object |
-| PUT | `/settings/tax` | Full update of the singleton |
+| Method | URL             | Description                              |
+| ------ | --------------- | ---------------------------------------- |
+| GET    | `/settings/tax` | Return the singleton tax settings object |
+| PUT    | `/settings/tax` | Full update of the singleton             |
 
 ---
 
@@ -885,25 +934,25 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 
 ### Database table: `general_settings`
 
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| id | bigint unsigned, PK | No | 1 | Always 1 — seeded |
-| currency | varchar(10) | No | 'AED' | |
-| currency_symbol | varchar(10) | No | 'AED' | |
-| quotation_prefix | varchar(20) | No | 'PI' | Prefix for quotation/performa numbers |
-| invoice_prefix | varchar(20) | No | 'INV' | Prefix for invoice numbers |
-| boq_prefix | varchar(20) | No | 'BOQ' | Prefix for BOQ numbers |
-| boq_invoice_prefix | varchar(20) | No | 'BOQINV' | Prefix for BOQ invoice numbers |
-| quotation_valid_days | int | No | 30 | |
-| payment_terms | varchar(100) | Yes | 'Net 30' | |
-| default_payment_method | varchar(100) | Yes | 'Bank Transfer' | |
-| fiscal_year_start | varchar(10) | Yes | '01-01' | Format: MM-DD |
-| date_format | varchar(20) | No | 'DD/MM/YYYY' | |
-| time_zone | varchar(50) | Yes | 'Asia/Dubai' | |
-| number_format | varchar(20) | Yes | '1,000.00' | |
-| decimal_places | tinyint | No | 2 | |
-| created_at | timestamp | No | CURRENT_TIMESTAMP | |
-| updated_at | timestamp | No | CURRENT_TIMESTAMP | |
+| Column                 | Type                | Nullable | Default           | Notes                                 |
+| ---------------------- | ------------------- | -------- | ----------------- | ------------------------------------- |
+| id                     | bigint unsigned, PK | No       | 1                 | Always 1 — seeded                     |
+| currency               | varchar(10)         | No       | 'AED'             |                                       |
+| currency_symbol        | varchar(10)         | No       | 'AED'             |                                       |
+| quotation_prefix       | varchar(20)         | No       | 'PI'              | Prefix for quotation/performa numbers |
+| invoice_prefix         | varchar(20)         | No       | 'INV'             | Prefix for invoice numbers            |
+| boq_prefix             | varchar(20)         | No       | 'BOQ'             | Prefix for BOQ numbers                |
+| boq_invoice_prefix     | varchar(20)         | No       | 'BOQINV'          | Prefix for BOQ invoice numbers        |
+| quotation_valid_days   | int                 | No       | 30                |                                       |
+| payment_terms          | varchar(100)        | Yes      | 'Net 30'          |                                       |
+| default_payment_method | varchar(100)        | Yes      | 'Bank Transfer'   |                                       |
+| fiscal_year_start      | varchar(10)         | Yes      | '01-01'           | Format: MM-DD                         |
+| date_format            | varchar(20)         | No       | 'DD/MM/YYYY'      |                                       |
+| time_zone              | varchar(50)         | Yes      | 'Asia/Dubai'      |                                       |
+| number_format          | varchar(20)         | Yes      | '1,000.00'        |                                       |
+| decimal_places         | tinyint             | No       | 2                 |                                       |
+| created_at             | timestamp           | No       | CURRENT_TIMESTAMP |                                       |
+| updated_at             | timestamp           | No       | CURRENT_TIMESTAMP |                                       |
 
 ### API Resource shape:
 
@@ -929,10 +978,10 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 
 ### Endpoints
 
-| Method | URL | Description |
-|---|---|---|
-| GET | `/settings/general` | Return the singleton general settings object |
-| PUT | `/settings/general` | Full update of the singleton |
+| Method | URL                 | Description                                  |
+| ------ | ------------------- | -------------------------------------------- |
+| GET    | `/settings/general` | Return the singleton general settings object |
+| PUT    | `/settings/general` | Full update of the singleton                 |
 
 ---
 
@@ -991,14 +1040,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 ## 17. Required Database Seeders
 
-| Seeder | Purpose | Key data |
-|---|---|---|
-| UserSeeder | Create default admin user | email: `invoice@thisinteriors.com`, password: `THIS@123###` |
-| OrganizationSettingsSeeder | Seed singleton org record with id = 1 | name: "THIS INTERIORS", all other fields empty |
-| TaxSettingsSeeder | Seed singleton tax record with id = 1 | All values zero/false/disabled; additionalTaxes: `[]` |
-| GeneralSettingsSeeder | Seed singleton general settings with id = 1 | All prefixes as shown in Section 15 |
-| BoqAreaSeeder | Seed default areas | Entrance, Hallway, Living Room, Bedroom, Master Bedroom, Bathroom, Kitchen, Lobby, Terrace, Common Area |
-| BoqCategorySeeder | Seed default categories | Furniture, Sofa, Coffee Table, Bed, Dining Table, Lights, Carpets, Wallpaper, Curtains, Accessories, Flooring, Artwork |
+| Seeder                     | Purpose                                     | Key data                                                                                                               |
+| -------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| UserSeeder                 | Create default admin user                   | email: `invoice@thisinteriors.com`, password: `THIS@123###`                                                            |
+| OrganizationSettingsSeeder | Seed singleton org record with id = 1       | name: "THIS INTERIORS", all other fields empty                                                                         |
+| TaxSettingsSeeder          | Seed singleton tax record with id = 1       | All values zero/false/disabled; additionalTaxes: `[]`                                                                  |
+| GeneralSettingsSeeder      | Seed singleton general settings with id = 1 | All prefixes as shown in Section 15                                                                                    |
+| BoqAreaSeeder              | Seed default areas                          | Entrance, Hallway, Living Room, Bedroom, Master Bedroom, Bathroom, Kitchen, Lobby, Terrace, Common Area                |
+| BoqCategorySeeder          | Seed default categories                     | Furniture, Sofa, Coffee Table, Bed, Dining Table, Lights, Carpets, Wallpaper, Curtains, Accessories, Flooring, Artwork |
 
 ---
 
@@ -1019,4 +1068,16 @@ No React component changes required. All API calls, field names, query parameter
 
 ---
 
-**End of specification — v1.0**
+## 19. Changelog — v1.0 → v2.0
+
+| Section                         | Change                                                                                                                                                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1.9 (new)**                   | Added critical rule: ignore `createdAt`, `updatedAt`, and `id` in all POST/PUT request bodies. The frontend sends these in every single request — Laravel must not use them.                             |
+| **Section 7 (Invoices)**        | Added `?quotationId=` as a supported query filter. `ViewQuotation.jsx` currently fetches all invoices and filters client-side; this param enables server-side filtering for better performance at scale. |
+| **Section 9 (BOQ Areas)**       | Added explicit note that PUT body includes `id`, `createdAt`, `updatedAt` — ignore all three.                                                                                                            |
+| **Section 10 (BOQ Categories)** | Same note as BOQ Areas.                                                                                                                                                                                  |
+| **Section 12 (BOQ Invoices)**   | Clarified that auto-generation also occurs from `ViewBOQ.jsx` (not only `CreateBOQ.jsx`), and documented the exact 3-step idempotency flow the frontend uses.                                            |
+
+---
+
+**End of specification — v2.0**
