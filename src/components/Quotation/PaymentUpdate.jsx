@@ -222,14 +222,15 @@ const PaymentUpdate = () => {
           taxPercent: quotation.taxPercent || 0,
           serviceTaxPercent: quotation.serviceTaxPercent || 0,
           taxLabel: quotation.taxLabel || "Tax",
-          totalAmount: paymentDetails.amount,
-          paidAmount: paymentDetails.amount,
+          totalAmount: paymentAmount,
+          paidAmount: paymentAmount,
           paymentDate: paymentDetails.paymentDate.toISOString(),
           paymentMethod: paymentDetails.paymentMethod,
-          currency: CURRENCY,
+          currency: quotation.currency || "AED",
           notes:
             paymentDetails.notes ||
             `Payment for performa ${quotation.quotationNumber}`,
+          bankAccountId: quotation.bankAccountId || null,
           createdAt: new Date().toISOString(),
         };
 
