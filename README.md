@@ -20,6 +20,8 @@ A comprehensive invoice, quotation, and Bill of Quantities (BOQ) management appl
   - [Quotation Management](#quotation-management)
   - [Invoice Management](#invoice-management)
   - [BOQ (Bill of Quantities)](#boq-bill-of-quantities)
+  - [BOQ Invoices](#boq-invoices)
+  - [Procurement Details](#procurement-details)
   - [Client Management](#client-management)
   - [Reports & Analytics](#reports--analytics)
   - [Settings](#settings)
@@ -31,6 +33,7 @@ A comprehensive invoice, quotation, and Bill of Quantities (BOQ) management appl
   - [Quotations API](#quotations-api)
   - [Invoices API](#invoices-api)
   - [BOQ API](#boq-api)
+  - [BOQ Invoices API](#boq-invoices-api)
   - [BOQ Configuration API](#boq-configuration-api)
   - [Bank Accounts API](#bank-accounts-api)
   - [Settings API](#settings-api)
@@ -46,15 +49,21 @@ A comprehensive invoice, quotation, and Bill of Quantities (BOQ) management appl
 ## Features Overview
 
 - **Quotation (Performa Invoice) Management** - Create, edit, view, and print quotations with dynamic line items, scope of work, and tax calculations
+- **Draft Performa Status** - Save quotations as Draft before sending; Draft quotations are fully editable/deletable and excluded from all financial metrics (Dashboard totals, Reports revenue, tax sums, outstanding balances)
+- **Document-Level Discounts on Quotations** - Apply a percentage or flat discount at the document level before tax calculation
 - **Payment Tracking** - Record partial and full payments against quotations with automatic status updates
 - **Invoice Generation** - Auto-generate invoices from quotation payments with unique numbering
-- **Bill of Quantities (BOQ)** - Create detailed BOQs with areas, categories, item images, and per-item discounts
-- **Client Management** - Full CRUD operations for managing clients with contact details and revenue tracking
+- **Bill of Quantities (BOQ)** - Create detailed BOQs with areas, categories, item images, and per-item discounts (percentage or flat)
+- **Vendor / Procurement Source** - Internal-only field per BOQ item for tracking vendor names, supplier links, or product references — never shown on client-facing prints
+- **BOQ Invoices** - Auto-generated when a BOQ is approved; immutable records with their own numbering sequence, list page, and detail view
+- **Procurement Details** - Internal tab in BOQ Invoice view showing vendor/procurement sources with a separate internal print output
+- **Two BOQ Invoice Print Outputs** - Client-facing invoice (no procurement data) and internal copy with confidential banner and Vendor/Source column
+- **Client Management** - Full CRUD operations for managing clients with contact details, company name, tax number, and document display toggles
 - **Dashboard Analytics** - Real-time metrics, recent activity feed, quick actions, and BOQ overview
 - **Comprehensive Reports** - 8 report types covering revenue, clients, status, payments, tax, services, outstanding amounts, and BOQ analysis
 - **Configurable Settings** - Organization profile, tax rates, bank accounts, currency, date formats, and document number prefixes
 - **Scope of Work & Task Library** - Reusable service categories and tasks for quick quotation creation
-- **PDF Export & Print** - Generate printable HTML/PDF documents for quotations, invoices, and BOQs
+- **THIS Interiors Brand-Themed Print Templates** - All print templates use the THIS Interiors brand palette (charcoal #1a1a1a + gold #c17f24) with A4 page optimization, repeating table headers, and page-break control
 - **Responsive Design** - Mobile-friendly interface with Material-UI components
 
 ---
@@ -93,11 +102,15 @@ invoice-quotation-app-this-interiors/
 │   │   ├── Auth/
 │   │   │   └── Login.jsx             # Login page
 │   │   ├── BOQ/
+│   │   │   ├── BOQInvoiceList.jsx    # BOQ invoices list (auto-generated, read-only)
 │   │   │   ├── BOQList.jsx           # BOQ listing with filters
 │   │   │   ├── BOQSettings.jsx       # BOQ areas & categories config
 │   │   │   ├── CreateBOQ.jsx         # Create/Edit BOQ form
 │   │   │   ├── PrintBOQ.jsx          # BOQ print template
-│   │   │   └── ViewBOQ.jsx           # BOQ detail view
+│   │   │   ├── PrintBOQInvoice.jsx   # BOQ invoice print template (client-facing)
+│   │   │   ├── PrintBOQInvoiceInternal.jsx  # BOQ invoice print template (internal with procurement)
+│   │   │   ├── ViewBOQ.jsx           # BOQ detail view
+│   │   │   └── ViewBOQInvoice.jsx    # BOQ invoice view with Invoice + Procurement tabs
 │   │   ├── Clients/
 │   │   │   └── ClientList.jsx        # Client CRUD with statistics
 │   │   ├── Common/
@@ -246,28 +259,39 @@ The main landing page after login, providing an at-a-glance overview of business
 - **Quick Actions** - One-click buttons to create quotations, BOQs, manage clients, and view reports
 - **BOQ Overview** - Total BOQ count, approved count, pending approval alerts, and recent BOQ entries
 
+> **Note:** Draft quotations are excluded from all Dashboard financial totals and metric calculations.
+
 ### Quotation Management
 
 Full lifecycle management for quotations (Performa Invoices).
 
 **Quotation Lifecycle:**
 1. **Create** - Select client, choose scope of work/tasks, add line items with descriptions, quantities, and unit prices
-2. **Tax Calculation** - Automatic tax and service tax computation based on tax settings
-3. **Save** - Quotation saved with status `Performa` and auto-generated number (format: `PI-YYYY-NNNN`)
-4. **Payment** - Record partial or full payments; status updates to `Partially Paid` or `Fully Paid`
-5. **Invoice Generation** - Each payment automatically generates a corresponding invoice
-6. **Print/PDF** - Generate printable quotation document with organization branding
+2. **Discount** - Optionally apply a document-level discount (percentage or flat amount) before tax
+3. **Tax Calculation** - Automatic tax and service tax computation based on tax settings, applied after discount
+4. **Save** - Save as `Draft` (editable, not sent) or save with status `Performa` with auto-generated number (format: `PI-YYYY-NNNN`)
+5. **Payment** - Record partial or full payments; status updates to `Partially Paid` or `Fully Paid`
+6. **Invoice Generation** - Each payment automatically generates a corresponding invoice
+7. **Print/PDF** - Generate printable quotation document with organization branding
 
 **Quotation Statuses:**
 | Status | Description |
 |--------|-------------|
-| `Performa` | Initial quotation, no payment received |
+| `Draft` | Saved but not yet sent — fully editable and deletable, excluded from all financial metrics |
+| `Performa` | Active quotation sent to client, no payment received |
 | `Partially Paid` | Some payment received, balance outstanding |
 | `Fully Paid` | All payments received |
 
+> **Note:** A "Save as Draft" button is available in the quotation creation form. Draft quotations contribute zero to Dashboard totals, Reports revenue, client amounts, tax sums, and outstanding balances. Payment recording is blocked for Draft quotations.
+
+**Discount Support:**
+- Document-level discount applied before tax calculation
+- Discount type: percentage (`%`) or flat currency amount
+- Calculation flow: subtotal → apply discount → apply tax on discounted amount → total
+
 **List View Features:**
 - Search by quotation number, client name
-- Filter by status (Performa, Partially Paid, Fully Paid)
+- Filter by status (Draft, Performa, Partially Paid, Fully Paid)
 - Filter by date range
 - Statistics panel with counts and amounts per status
 
@@ -295,23 +319,90 @@ Detailed quantity surveying documents for interior design projects.
 
 **Features:**
 - Create BOQs with configurable **areas** (e.g., Living Room, Bedroom, Kitchen) and **categories** (e.g., Furniture, Lights, Curtains)
-- Add line items with description, area, category, unit, quantity, unit price, and optional **per-item discount**
+- Add line items with description, area, category, unit, quantity, unit price, and optional **per-item discount** (percentage or flat amount via a discount type toggle)
+- **Vendor / Procurement Source** field per item — an internal-only field for recording vendor names, supplier links, or product references; displayed in the Create/Edit form as an amber-styled "Internal use only" row but never shown on client-facing prints
 - Support for item images (thumbnail display in print view)
 - Tax calculation on the final subtotal
 - Auto-generated BOQ numbers (format: `BOQ-YYYY-NNNN`)
 - Print/PDF with detailed item breakdown
+
+**BOQ Item Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `area` | string | Room or area (e.g., Living Room) |
+| `category` | string | Product category (e.g., Furniture) |
+| `itemName` | string | Item description |
+| `imageUrl` | string | Optional item image URL |
+| `unitPrice` | number | Price per unit |
+| `quantity` | number | Quantity |
+| `discount` | number | Discount value (% or flat amount) |
+| `discountType` | string | `"percent"` or `"flat"` (defaults to `"percent"` for backwards compatibility) |
+| `procurementSource` | string | Vendor name, supplier link, or product reference (internal only) |
 
 **BOQ Statuses:**
 | Status | Description |
 |--------|-------------|
 | `Draft` | Work in progress |
 | `Sent` | Sent to client |
-| `Approved` | Client approved |
+| `Approved` | Client approved — triggers auto-generation of a BOQ Invoice |
 | `Rejected` | Client rejected |
 
 **BOQ Settings:**
 - Manage area list (add, edit, delete areas like Entrance, Living Room, Bedroom, etc.)
 - Manage category list (add, edit, delete categories like Furniture, Sofa, Lights, Wallpaper, etc.)
+
+### BOQ Invoices
+
+BOQ Invoices are auto-generated when a BOQ status is set to **Approved**. They serve as immutable invoice records for approved BOQs.
+
+**Key Characteristics:**
+- **Auto-generated** — created automatically on BOQ approval with an idempotency check (no duplicates)
+- **Immutable** — no edit or delete is permitted once created
+- **Auto-generated number format:** `BOQINV-YYYY-NNNN`
+- Accessible via the sidebar "BOQ Invoices" item → `/boq-invoices`
+
+**List Page (`BOQInvoiceList.jsx`):**
+- Lists all auto-generated BOQ invoices
+- Columns: Invoice No., BOQ No., Client, Date, Amount, Status (always "Approved" chip)
+- Search by invoice number, BOQ number, or client name
+- Date range filter
+- Statistics card showing total count and total amount
+- Actions: View (eye icon), Print Client Invoice (printer icon)
+- No Create, Edit, or Delete actions — invoices are auto-generated and immutable
+- Empty state explains that BOQ invoices are automatically created when a BOQ is approved
+
+**View Page (`ViewBOQInvoice.jsx`):**
+
+Two-tab layout:
+
+| Tab | Name | Description |
+|-----|------|-------------|
+| 0 | Invoice Details | Invoice and BOQ reference info, client details card, full itemized table (client-safe — no procurement data), financial summary (subtotal, discount, tax, total), and notes |
+| 1 | Procurement Details | Amber/orange-themed table with confidential banner showing area, category, item name, and Vendor / Procurement Source per item (internal only) |
+
+**Header Actions on View Page:**
+- **Print Client Invoice** — blue outlined button → `PrintBOQInvoice.jsx` (no procurement data)
+- **Print Internal Copy** — orange gradient button → `PrintBOQInvoiceInternal.jsx` (includes Vendor/Source column + confidential banner)
+- **Back** — returns to `/boq-invoices`
+
+**ViewBOQ Integration:**
+- ViewBOQ checks for an existing BOQ invoice on load for Approved BOQs
+- If BOQ invoice exists → **View BOQ Invoice** button (green, navigates to `/boq-invoices/view/:id`)
+- If BOQ is Approved but no invoice yet → **Generate BOQ Invoice** button (orange, creates invoice on demand as a one-time recovery action)
+
+### Procurement Details
+
+The Procurement Details feature provides an internal-only view of vendor and supplier information associated with BOQ line items.
+
+**Key Points:**
+- The `procurementSource` field on each BOQ item stores vendor names, supplier links, or product references
+- In `CreateBOQ.jsx`, the field is displayed as an amber-styled "Internal use only" row (Row 3 in each item card)
+- **Never printed** on client-facing documents (`PrintBOQ.jsx`, `PrintBOQInvoice.jsx`)
+- Visible in the **Procurement Details** tab of `ViewBOQInvoice.jsx`
+- Visible in the internal print output (`PrintBOQInvoiceInternal.jsx`) which includes a "Vendor / Source" column and a confidential banner
+- A counter shows how many items have procurement sources filled
+- Warning alert: "Internal Use Only — not to be shared with clients"
 
 ### Client Management
 
@@ -319,9 +410,21 @@ Central management of all client/customer records.
 
 **Features:**
 - Create, edit, and delete clients
-- Fields: Name, email, phone, address, company name
 - Client statistics: total count, revenue per client
-- Client selection integrated into quotation and BOQ creation forms
+- Client selection integrated into quotation and BOQ creation forms (with inline quick-add)
+
+**Client Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Client name |
+| `email` | string | Email address |
+| `phone` | string | Phone number |
+| `address` | string | Mailing address |
+| `companyName` | string | Company or trade name (optional, shown on documents if toggled) |
+| `taxNumber` | string | TRN or tax registration number (optional, shown on documents if toggled) |
+| `showCompanyInDocuments` | boolean | Whether to show company name on printed documents |
+| `showTaxInDocuments` | boolean | Whether to show tax number on printed documents |
 
 ### Reports & Analytics
 
@@ -423,7 +526,10 @@ All endpoints use the base URL configured via `REACT_APP_API_BASE_URL` (default:
   "email": "john@example.com",
   "phone": "+971501234567",
   "address": "Dubai, UAE",
-  "companyName": "Doe Enterprises"
+  "companyName": "Doe Enterprises",
+  "taxNumber": "100234567890003",
+  "showCompanyInDocuments": true,
+  "showTaxInDocuments": true
 }
 ```
 
@@ -490,6 +596,9 @@ All endpoints use the base URL configured via `REACT_APP_API_BASE_URL` (default:
   "date": "2026-01-15",
   "validUntil": "2026-02-14",
   "status": "Partially Paid",
+  "discountType": "percent",
+  "discountValue": 10,
+  "discountAmount": 500,
   "items": [
     {
       "description": "Interior Design Consultation",
@@ -501,13 +610,13 @@ All endpoints use the base URL configured via `REACT_APP_API_BASE_URL` (default:
   ],
   "subtotal": 5000,
   "taxPercent": 5,
-  "taxAmount": 250,
-  "totalAmount": 5250,
-  "paidAmount": 2625,
-  "balanceAmount": 2625,
+  "taxAmount": 225,
+  "totalAmount": 4725,
+  "paidAmount": 2362.5,
+  "balanceAmount": 2362.5,
   "payments": [
     {
-      "amount": 2625,
+      "amount": 2362.5,
       "paymentMethod": "Bank Transfer",
       "paymentDate": "2026-01-20",
       "notes": "First installment"
@@ -575,27 +684,79 @@ All endpoints use the base URL configured via `REACT_APP_API_BASE_URL` (default:
   "clientId": 1,
   "clientName": "John Doe",
   "date": "2026-01-10",
-  "status": "Draft",
+  "status": "Approved",
   "items": [
     {
       "area": "Living Room",
       "category": "Furniture",
-      "description": "L-shaped sofa set",
-      "unit": "nos",
-      "quantity": 1,
+      "itemName": "L-shaped sofa set",
+      "imageUrl": "",
       "unitPrice": 12000,
+      "quantity": 1,
       "discount": 10,
-      "amount": 10800,
-      "imageUrl": ""
+      "discountType": "percent",
+      "procurementSource": "IKEA UAE – Article #123456",
+      "amount": 10800
     }
   ],
   "subtotal": 10800,
+  "totalDiscount": 1200,
   "taxPercent": 5,
   "taxAmount": 540,
   "totalAmount": 11340,
   "notes": ""
 }
 ```
+
+### BOQ Invoices API
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/boqInvoices` | List all BOQ invoices |
+| `GET` | `/boqInvoices/:id` | Get a single BOQ invoice |
+| `GET` | `/boqInvoices?boqId=:id` | Get BOQ invoice for a specific BOQ (idempotency check) |
+| `GET` | `/boqInvoices?clientId=:id` | Filter BOQ invoices by client |
+| `POST` | `/boqInvoices` | Create a BOQ invoice (auto-called on BOQ approval) |
+| `PUT` | `/boqInvoices/:id` | Update a BOQ invoice |
+| `DELETE` | `/boqInvoices/:id` | Delete a BOQ invoice |
+
+**BOQ Invoice Object:**
+```json
+{
+  "id": 1,
+  "boqInvoiceNumber": "BOQINV-2026-0001",
+  "boqId": "1",
+  "boqNumber": "BOQ-2026-0001",
+  "clientId": 1,
+  "date": "2026-03-13T00:00:00.000Z",
+  "items": [
+    {
+      "area": "Living Room",
+      "category": "Furniture",
+      "itemName": "L-shaped sofa",
+      "unitPrice": 12000,
+      "quantity": 1,
+      "discount": 10,
+      "discountType": "percent",
+      "procurementSource": "IKEA UAE – Article #123456"
+    }
+  ],
+  "subtotal": 12000,
+  "totalDiscount": 1200,
+  "taxAmount": 540,
+  "taxPercent": 5,
+  "taxLabel": "VAT",
+  "serviceTaxAmount": 0,
+  "serviceTaxPercent": 0,
+  "totalAmount": 11340,
+  "currency": "AED",
+  "notes": "",
+  "status": "Approved",
+  "createdAt": "2026-03-13T00:00:00.000Z"
+}
+```
+
+> **Note:** BOQ invoices are auto-generated and immutable. The `POST`, `PUT`, and `DELETE` endpoints exist in the API layer but creation is only triggered programmatically on BOQ approval. Edit and delete are not exposed in the UI.
 
 ### BOQ Configuration API
 
@@ -690,6 +851,7 @@ All settings endpoints are singletons (always `id=1`).
   "quotationPrefix": "PI",
   "invoicePrefix": "INV",
   "boqPrefix": "BOQ",
+  "boqInvoicePrefix": "BOQINV",
   "quotationValidity": 30,
   "paymentTerms": "Payment is due within 30 days",
   "dateFormat": "DD/MM/YYYY",
@@ -707,16 +869,17 @@ The application manages the following entities:
 
 | Entity | Description | Key Fields |
 |--------|-------------|------------|
-| `clients` | Customer records | name, email, phone, address, companyName |
+| `clients` | Customer records | name, email, phone, address, companyName, taxNumber, showCompanyInDocuments, showTaxInDocuments |
 | `scopeOfWork` | Service categories | name, description |
 | `tasks` | Tasks within scopes | scopeOfWorkId, name, description, estimatedHours |
-| `quotations` | Quotation documents | quotationNumber, clientId, date, status, items, payments, totals |
+| `quotations` | Quotation documents | quotationNumber, clientId, date, status, items, payments, totals, discountType, discountValue, discountAmount |
 | `quotation_items` | Quotation line items | quotationId, description, quantity, unitPrice, amount |
 | `quotation_payments` | Payment records | quotationId, amount, paymentMethod, paymentDate |
 | `invoices` | Invoice documents | invoiceNumber, quotationId, clientId, date, status, items, totals |
 | `invoice_items` | Invoice line items | invoiceId, description, quantity, unitPrice, amount |
 | `boqs` | Bill of Quantities | boqNumber, clientId, date, status, items, totals |
-| `boq_items` | BOQ line items | boqId, area, category, description, unit, quantity, unitPrice, discount |
+| `boq_items` | BOQ line items | boqId, area, category, description, unit, quantity, unitPrice, discount, discountType, procurementSource |
+| `boqInvoices` | BOQ invoice documents | boqInvoiceNumber, boqId, clientId, date, status, items, totals |
 | `bankAccounts` | Bank account details | bankName, accountNumber, iban, swiftCode, isDefault |
 
 ### Configuration Entities (Singletons)
@@ -725,7 +888,7 @@ The application manages the following entities:
 |--------|-------------|------------|
 | `organizationSettings` | Company profile | name, address, phone, email, logoUrl, trn |
 | `taxSettings` | Tax configuration | taxEnabled, taxPercent, serviceTaxEnabled, serviceTaxPercent |
-| `generalSettings` | System preferences | currency, prefixes, quotationValidity, dateFormat |
+| `generalSettings` | System preferences | currency, prefixes (including boqInvoicePrefix), quotationValidity, dateFormat |
 
 ### BOQ Configuration
 
@@ -761,6 +924,8 @@ The application manages the following entities:
 | `/boq/edit/:id` | `CreateBOQ` | Edit an existing BOQ |
 | `/boq/view/:id` | `ViewBOQ` | View BOQ details |
 | `/boq-settings` | `BOQSettings` | Manage BOQ areas and categories |
+| `/boq-invoices` | `BOQInvoiceList` | List all BOQ invoices (auto-generated) |
+| `/boq-invoices/view/:id` | `ViewBOQInvoice` | View BOQ invoice with Invoice Details + Procurement Details tabs |
 | `/clients` | `ClientList` | Client management |
 | `/reports` | `Reports` | Reports and analytics (8 tabs) |
 | `/settings` | `Settings` | Settings hub (6 tabs) |
@@ -794,6 +959,7 @@ Settings are cached in memory for 5 minutes to reduce API calls:
 - `generateQuotationNumber(lastNumber)` - Generate next quotation number: `{prefix}-YYYY-NNNN`
 - `generateInvoiceNumber(lastNumber)` - Generate next invoice number: `INV-YYYY-NNNN`
 - `generateBoqNumber(lastNumber)` - Generate next BOQ number: `BOQ-YYYY-NNNN`
+- `generateBoqInvoiceNumber(lastNumber)` - Generate next BOQ invoice number: `{boqInvoicePrefix}-YYYY-NNNN` (default prefix: `BOQINV`)
 
 ### Date & Calculation Helpers
 
@@ -805,9 +971,10 @@ Settings are cached in memory for 5 minutes to reduce API calls:
 
 ### Constants (`src/utils/constants.js`)
 
-- **Quotation Statuses:** `Performa`, `Partially Paid`, `Fully Paid`
+- **Quotation Statuses:** `Draft`, `Performa`, `Partially Paid`, `Fully Paid`
 - **Invoice Statuses:** `Pending`, `Paid`, `Overdue`, `Cancelled`
 - **BOQ Statuses:** `Draft`, `Sent`, `Approved`, `Rejected`
+- **BOQ Invoice Status:** `Approved`
 - **Payment Methods:** `Cash`, `Bank Transfer`, `Credit Card`, `Debit Card`, `Cheque`, `Online Payment`
 - **Default Currency:** `AED`
 - **Default Date Format:** `DD/MM/YYYY`
@@ -816,20 +983,43 @@ Settings are cached in memory for 5 minutes to reduce API calls:
 
 ## PDF & Print Support
 
-The application supports generating printable documents for all major document types:
+All print templates use the **THIS Interiors brand palette** and are optimized for A4 printing.
+
+### Brand Theme
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| Charcoal | `#1a1a1a` | Table headers (client prints), document title, header rule |
+| Gold | `#c17f24` | Section labels, borders, total row, accent elements |
+| Gold Dark | `#a0652a` | Gradient end, vendor text in internal print |
+| Gold Gradient | `linear-gradient(135deg, #c17f24 0%, #a0652a 100%)` | Internal print table header, PAID stamp |
+| Cream | `#fdf6ec` | Alternating rows, info box backgrounds, notes background |
+| Cream Border | `#e8d5b0` | Info box borders, table row dividers |
+
+### A4 Print Optimizations (All Templates)
+
+| Setting | Value |
+|---------|-------|
+| `@page` declaration | `@page { size: A4 portrait; margin: 12mm 14mm; }` |
+| Container max-width | `100%` — full A4 printable width |
+| Base font size | `10px` |
+| Table cell padding | `6px 8px` |
+| Table header repeat | `thead { display: table-header-group; }` — repeats on every page |
+| Page break control | `page-break-inside: avoid` on summary, notes, footer, info sections |
 
 ### Quotation Print (`PrintQuotation.jsx`)
 - Organization header with logo and contact details
-- Client information block
+- Client information block (includes company name and tax number if toggled on)
 - Quotation number, date, and validity
 - Itemized table with scope, description, quantity, unit price, and amount
+- Discount line (if applicable) showing discount type and amount
 - Tax breakdown (VAT, Service Tax if enabled)
 - Payment terms and notes
 - Bank account details
 
 ### Invoice Print (`PrintInvoice.jsx`)
 - Organization header with logo
-- Client and quotation reference
+- Client and quotation reference (includes company name and tax number if toggled on)
 - Invoice number and date
 - Itemized table with line items
 - Tax breakdown
@@ -837,13 +1027,31 @@ The application supports generating printable documents for all major document t
 
 ### BOQ Print (`PrintBOQ.jsx`)
 - Organization header
-- Client information
+- Client information (includes company name and tax number if toggled on)
 - BOQ number, date, and status
-- Itemized table with area, category, description, item images (60x60 thumbnails), unit, quantity, unit price, discount, and amount
+- Itemized table with area, category, description, item images (60x60 thumbnails), unit, quantity, unit price, discount (with type), and amount
 - Tax breakdown
 - Notes section
+- **No procurement source data** — client-facing only
 
-**Implementation:**
+### BOQ Invoice Print — Client (`PrintBOQInvoice.jsx`)
+- Organization header with THIS Interiors branding
+- Client and BOQ reference information
+- BOQ invoice number and date
+- Itemized table with area, category, item name, unit price, quantity, discount, and amount
+- Financial summary (subtotal, total discount, tax, total)
+- Notes section
+- **No procurement source data** — client-facing only
+
+### BOQ Invoice Print — Internal (`PrintBOQInvoiceInternal.jsx`)
+- Organization header with THIS Interiors branding
+- **Gold-gradient table headers** (instead of charcoal) to visually distinguish from client prints
+- **Charcoal-with-gold-text confidential banner**: "CONFIDENTIAL — INTERNAL USE ONLY"
+- Includes **Vendor / Source** column showing `procurementSource` for each item
+- Full financial summary
+- Notes section
+
+### Print Implementation
 - Print templates generate HTML strings with embedded CSS
 - Documents open in a new browser tab via `window.open()`
 - jsPDF and jspdf-autotable are available for programmatic PDF generation (used in Reports for PDF export)
@@ -894,9 +1102,14 @@ The application is designed for migration to a Laravel 10+ backend with MySQL 8.
 | `UserSeeder` | Default user account (`invoice@thisinteriors.com`) |
 | `OrganizationSeeder` | Default organization settings |
 | `TaxSeeder` | Default tax configuration (5% VAT) |
-| `GeneralSettingsSeeder` | Default currency (AED), prefixes, formats |
+| `GeneralSettingsSeeder` | Default currency (AED), prefixes (including `boqInvoicePrefix: "BOQINV"`), formats |
 | `BOQAreaSeeder` | Predefined areas (Living Room, Bedroom, etc.) |
 | `BOQCategorySeeder` | Predefined categories (Furniture, Lights, etc.) |
+| `BOQInvoiceSeeder` | Seed BOQ invoice records (if pre-populating data) |
+
+### Migration Notes
+
+The `boqInvoices` resource follows the same API contract as all other resources. Migrating to Laravel requires only updating `BASE_URL` in `baseURL.js` — all API calls are already structured for real REST endpoints.
 
 ---
 
