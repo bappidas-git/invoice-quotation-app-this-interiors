@@ -194,6 +194,16 @@ const ViewInvoice = () => {
                   <Typography variant="body2" color="textSecondary">
                     {client.country}
                   </Typography>
+                  {client.companyName && client.showCompanyInDocuments && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>Company:</strong> {client.companyName}
+                    </Typography>
+                  )}
+                  {client.taxNumber && client.showTaxInDocuments && (
+                    <Typography variant="body2" color="textSecondary">
+                      <strong>TRN / Tax No:</strong> {client.taxNumber}
+                    </Typography>
+                  )}
                 </Box>
               )}
             </CardContent>

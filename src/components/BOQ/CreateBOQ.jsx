@@ -18,6 +18,8 @@ import {
   InputLabel,
   Divider,
   Tooltip,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -90,6 +92,10 @@ const CreateBOQ = () => {
     pin: "",
     state: "",
     country: "",
+    companyName: "",
+    taxNumber: "",
+    showCompanyInDocuments: false,
+    showTaxInDocuments: false,
   });
   const [areaDialogOpen, setAreaDialogOpen] = useState(false);
   const [newArea, setNewArea] = useState({ name: "" });
@@ -308,7 +314,7 @@ const CreateBOQ = () => {
       setClients([...clients, response.data]);
       setFormData({ ...formData, clientId: response.data.id });
       setClientDialogOpen(false);
-      setNewClient({ name: "", email: "", contact: "", address: "", pin: "", state: "", country: "" });
+      setNewClient({ name: "", email: "", contact: "", address: "", pin: "", state: "", country: "", companyName: "", taxNumber: "", showCompanyInDocuments: false, showTaxInDocuments: false });
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: "Failed to create client" });
     }
@@ -779,6 +785,87 @@ const CreateBOQ = () => {
                   setNewClient({ ...newClient, country: e.target.value })
                 }
                 fullWidth
+              />
+            </Box>
+
+            <Divider sx={{ my: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                Company & Tax Information
+              </Typography>
+            </Divider>
+
+            <TextField
+              label="Company Name"
+              value={newClient.companyName}
+              onChange={(e) =>
+                setNewClient({ ...newClient, companyName: e.target.value })
+              }
+              fullWidth
+              placeholder="Optional"
+            />
+
+            <TextField
+              label="Tax / TRN Number"
+              value={newClient.taxNumber}
+              onChange={(e) =>
+                setNewClient({ ...newClient, taxNumber: e.target.value })
+              }
+              fullWidth
+              placeholder="Optional"
+            />
+
+            <Divider sx={{ my: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                Document Display Preferences
+              </Typography>
+            </Divider>
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, px: 0.5 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={newClient.showCompanyInDocuments}
+                    onChange={(e) =>
+                      setNewClient({
+                        ...newClient,
+                        showCompanyInDocuments: e.target.checked,
+                      })
+                    }
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2">Show Company Name in Documents</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Shown in Bill To section of printed documents
+                    </Typography>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", ml: 0 }}
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={newClient.showTaxInDocuments}
+                    onChange={(e) =>
+                      setNewClient({
+                        ...newClient,
+                        showTaxInDocuments: e.target.checked,
+                      })
+                    }
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2">Show Tax / TRN Number in Documents</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Shown in Bill To section of printed documents
+                    </Typography>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", ml: 0 }}
               />
             </Box>
           </Box>

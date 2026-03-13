@@ -250,6 +250,16 @@ const ViewBOQ = () => {
                       Phone: {client.contact}
                     </Typography>
                   )}
+                  {client.companyName && client.showCompanyInDocuments && (
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Company:</strong> {client.companyName}
+                    </Typography>
+                  )}
+                  {client.taxNumber && client.showTaxInDocuments && (
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>TRN / Tax No:</strong> {client.taxNumber}
+                    </Typography>
+                  )}
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">
