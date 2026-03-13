@@ -25,6 +25,8 @@ const GeneralSettings = () => {
     currencySymbol: "AED",
     quotationPrefix: "QT",
     invoicePrefix: "INV",
+    boqPrefix: "BOQ",
+    boqInvoicePrefix: "BOQINV",
     quotationValidDays: 30,
     paymentTerms: "Net 30",
     defaultPaymentMethod: "Bank Transfer",
@@ -201,6 +203,24 @@ const GeneralSettings = () => {
                     onChange={handleChange("invoicePrefix")}
                     fullWidth
                     helperText="e.g., INV, INVOICE, I"
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    label="BOQ Prefix"
+                    value={settings.boqPrefix}
+                    onChange={handleChange("boqPrefix")}
+                    fullWidth
+                    helperText="e.g., BOQ, BQ"
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    label="BOQ Invoice Prefix"
+                    value={settings.boqInvoicePrefix}
+                    onChange={handleChange("boqInvoicePrefix")}
+                    fullWidth
+                    helperText="e.g., BOQINV, BI"
                   />
                 </Grid>
                 <Grid item xs={12} md={3}>

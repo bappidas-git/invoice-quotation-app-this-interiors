@@ -1404,6 +1404,7 @@
       "quotationPrefix": "PI",
       "invoicePrefix": "INV",
       "boqPrefix": "BOQ",
+      "boqInvoicePrefix": "BOQINV",
       "quotationValidDays": 30,
       "paymentTerms": "Net 30",
       "defaultPaymentMethod": "Online Payment",
