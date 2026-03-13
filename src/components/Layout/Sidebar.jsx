@@ -46,6 +46,11 @@ const Sidebar = ({ open, onClose }) => {
       path: "/boq",
     },
     {
+      title: "BOQ Invoices",
+      icon: "mdi:file-check",
+      path: "/boq-invoices",
+    },
+    {
       title: "Clients",
       icon: "mdi:account-group",
       path: "/clients",

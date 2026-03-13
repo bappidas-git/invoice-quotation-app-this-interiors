@@ -19,6 +19,10 @@ export const BOQ_STATUS = {
   REJECTED: "Rejected",
 };
 
+export const BOQ_INVOICE_STATUS = {
+  APPROVED: "Approved",
+};
+
 export const PAYMENT_METHODS = [
   "Cash",
   "Bank Transfer",
@@ -37,6 +41,7 @@ export default {
   QUOTATION_STATUS,
   INVOICE_STATUS,
   BOQ_STATUS,
+  BOQ_INVOICE_STATUS,
   PAYMENT_METHODS,
   CURRENCY,
   DATE_FORMAT,

@@ -32,6 +32,8 @@ import BOQList from "./components/BOQ/BOQList";
 import CreateBOQ from "./components/BOQ/CreateBOQ";
 import ViewBOQ from "./components/BOQ/ViewBOQ";
 import BOQSettings from "./components/BOQ/BOQSettings";
+import BOQInvoiceList from "./components/BOQ/BOQInvoiceList";
+import ViewBOQInvoice from "./components/BOQ/ViewBOQInvoice";
 
 // Services
 import authService from "./services/authService";
@@ -118,6 +120,8 @@ function App() {
                       <Route path="/boq/edit/:id" element={<CreateBOQ />} />
                       <Route path="/boq/view/:id" element={<ViewBOQ />} />
                       <Route path="/boq-settings" element={<BOQSettings />} />
+                      <Route path="/boq-invoices" element={<BOQInvoiceList />} />
+                      <Route path="/boq-invoices/view/:id" element={<ViewBOQInvoice />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />
                     </Routes>
