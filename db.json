@@ -621,7 +621,7 @@
       "serviceTaxAmount": 0,
       "totalAmount": 2500,
       "status": "Partially Paid",
-      "paidAmount": 1500,
+      "paidAmount": 2000,
       "payments": [
         {
           "amount": 1500,
@@ -629,6 +629,13 @@
           "paymentDate": "2026-03-14T11:14:25.000Z",
           "notes": "Advance Payment",
           "date": "2026-03-13T11:16:04.234Z"
+        },
+        {
+          "amount": 500,
+          "paymentMethod": "Bank Transfer",
+          "paymentDate": "2026-03-13T13:52:18.600Z",
+          "notes": "2nd Payment",
+          "date": "2026-03-13T13:52:42.503Z"
         }
       ],
       "currency": "AED",
@@ -641,7 +648,7 @@
       "discountValue": 500,
       "discountAmount": 500,
       "createdAt": "2026-03-13T11:11:59.629Z",
-      "updatedAt": "2026-03-13T11:16:04.234Z",
+      "updatedAt": "2026-03-13T13:52:42.514Z",
       "id": 13
     }
   ],
@@ -1015,6 +1022,38 @@
       "bankAccountId": 1,
       "createdAt": "2026-03-13T11:16:04.353Z",
       "id": 13
+    },
+    {
+      "invoiceNumber": "INV-2026-0014",
+      "quotationId": 13,
+      "clientId": 1,
+      "date": "2026-03-13T13:52:42.649Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Overall Layout Plans, Ceiling Designs (RCP), Furniture Placement Plans, Materials and Finishes Schedule, Lighting & Electrical Layouts, and Custom Joinery Concepts",
+          "amount": 200
+        },
+        {
+          "scopeOfWork": "Up to 12x 3D Visualizations & Renderings - 2 Rooms",
+          "task": "Furniture, Fixtures & Equipment (FF&E) Selections List",
+          "amount": 400
+        }
+      ],
+      "subtotal": 500,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "totalAmount": 500,
+      "paidAmount": 500,
+      "paymentDate": "2026-03-13T13:52:18.600Z",
+      "paymentMethod": "Bank Transfer",
+      "currency": "AED",
+      "notes": "2nd Payment",
+      "createdAt": "2026-03-13T13:52:42.649Z",
+      "id": 14
     }
   ],
   "bankAccounts": [
