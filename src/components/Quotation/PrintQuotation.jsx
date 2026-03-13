@@ -299,13 +299,19 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
             <div class="section-title">Bill To</div>
             <div class="info-block">
               <strong>${client?.name || ""}</strong><br>
+              ${client?.showCompanyInDocuments && client?.companyName
+                ? `<span style="color: #555; font-size: 10px;">${client.companyName}</span><br>`
+                : ""}
               ${client?.address || ""}<br>
               ${client?.state ? `${client.state}, ` : ""}${
     client?.pin || ""
   }<br>
               ${client?.country || ""}<br>
               ${client?.email ? `Email: ${client.email}<br>` : ""}
-              ${client?.contact ? `Phone: ${client.contact}` : ""}
+              ${client?.contact ? `Phone: ${client.contact}<br>` : ""}
+              ${client?.showTaxInDocuments && client?.taxNumber
+                ? `<strong>TRN / Tax No:</strong> ${client.taxNumber}`
+                : ""}
             </div>
           </div>
           <div class="info-box">

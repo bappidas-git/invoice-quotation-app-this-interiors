@@ -14,6 +14,9 @@ import {
   DialogContent,
   DialogActions,
   Grid,
+  FormControlLabel,
+  Switch,
+  Divider,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import Swal from "sweetalert2";
@@ -34,6 +37,10 @@ const emptyClient = {
   pin: "",
   state: "",
   country: "",
+  companyName: "",
+  taxNumber: "",
+  showCompanyInDocuments: false,
+  showTaxInDocuments: false,
 };
 
 const ClientList = () => {
@@ -139,6 +146,10 @@ const ClientList = () => {
         pin: client.pin || "",
         state: client.state || "",
         country: client.country || "",
+        companyName: client.companyName || "",
+        taxNumber: client.taxNumber || "",
+        showCompanyInDocuments: client.showCompanyInDocuments || false,
+        showTaxInDocuments: client.showTaxInDocuments || false,
       });
     } else {
       setEditingClient(null);
@@ -308,6 +319,22 @@ const ClientList = () => {
               {[row.address, row.pin].filter(Boolean).join(", ") || "-"}
             </Typography>
           </Box>
+          {row.companyName && (
+            <Box>
+              <Typography variant="caption" color="textSecondary">
+                Company
+              </Typography>
+              <Typography variant="body2">{row.companyName}</Typography>
+            </Box>
+          )}
+          {row.taxNumber && (
+            <Box>
+              <Typography variant="caption" color="textSecondary">
+                Tax / TRN
+              </Typography>
+              <Typography variant="body2">{row.taxNumber}</Typography>
+            </Box>
+          )}
           <Box>
             <Typography variant="caption" color="textSecondary">
               Performa Invoices
@@ -506,6 +533,77 @@ const ClientList = () => {
               onChange={(e) => handleFormChange("country", e.target.value)}
               fullWidth
             />
+
+            <Divider sx={{ my: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                Company & Tax Information
+              </Typography>
+            </Divider>
+
+            <TextField
+              label="Company Name"
+              value={formData.companyName}
+              onChange={(e) => handleFormChange("companyName", e.target.value)}
+              fullWidth
+              placeholder="Optional — e.g. ABC Interiors LLC"
+            />
+
+            <TextField
+              label="Tax / TRN Number"
+              value={formData.taxNumber}
+              onChange={(e) => handleFormChange("taxNumber", e.target.value)}
+              fullWidth
+              placeholder="Optional — e.g. 100234567890003"
+            />
+
+            <Divider sx={{ my: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                Document Display Preferences
+              </Typography>
+            </Divider>
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, px: 0.5 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.showCompanyInDocuments}
+                    onChange={(e) =>
+                      handleFormChange("showCompanyInDocuments", e.target.checked)
+                    }
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2">Show Company Name in Documents</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Displays company name under client name in Performa Invoices, Invoices & BOQs
+                    </Typography>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", ml: 0 }}
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.showTaxInDocuments}
+                    onChange={(e) =>
+                      handleFormChange("showTaxInDocuments", e.target.checked)
+                    }
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2">Show Tax / TRN Number in Documents</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Displays tax/TRN number in the Bill To section of all printed documents
+                    </Typography>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", ml: 0 }}
+              />
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions sx={{ padding: "16px 24px" }}>
