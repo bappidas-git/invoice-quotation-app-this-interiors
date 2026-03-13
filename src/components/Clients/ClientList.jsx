@@ -247,7 +247,7 @@ const ClientList = () => {
     {
       field: "name",
       label: "Client Name",
-      width: "18%",
+      width: "22%",
       sortable: true,
       render: (value) => (
         <Typography variant="body2" fontWeight="600">
@@ -258,7 +258,7 @@ const ClientList = () => {
     {
       field: "email",
       label: "Email",
-      width: "24%",
+      width: "30%",
       sortable: true,
       render: (value) => (
         <Tooltip title={value || ""} disableHoverListener={!value}>
@@ -271,7 +271,7 @@ const ClientList = () => {
     {
       field: "contact",
       label: "Contact",
-      width: "16%",
+      width: "20%",
       sortable: true,
       render: (value) => (
         <span style={{ whiteSpace: "nowrap" }}>
@@ -280,19 +280,9 @@ const ClientList = () => {
       ),
     },
     {
-      field: "state",
-      label: "Location",
-      width: "16%",
-      sortable: true,
-      render: (value, row) => {
-        const parts = [value, row.country].filter(Boolean);
-        return parts.length > 0 ? parts.join(", ") : "-";
-      },
-    },
-    {
       field: "createdAt",
       label: "Added On",
-      width: "14%",
+      width: "16%",
       sortable: true,
       render: (value) => formatDate(value),
     },

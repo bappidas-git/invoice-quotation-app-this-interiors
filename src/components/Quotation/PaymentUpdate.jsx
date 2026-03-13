@@ -41,7 +41,7 @@ const PaymentUpdate = () => {
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paymentDetails, setPaymentDetails] = useState({
-    amount: 0,
+    amount: "",
     paymentMethod: "Bank Transfer",
     paymentDate: new Date(),
     notes: "",
@@ -82,8 +82,9 @@ const PaymentUpdate = () => {
 
   const handleAddPayment = async () => {
     const remainingAmount = quotation.totalAmount - (quotation.paidAmount || 0);
+    const paymentAmount = parseFloat(paymentDetails.amount) || 0;
 
-    if (paymentDetails.amount <= 0) {
+    if (paymentAmount <= 0) {
       Swal.fire({
         icon: "error",
         title: "Invalid Amount",
@@ -92,7 +93,7 @@ const PaymentUpdate = () => {
       return;
     }
 
-    if (paymentDetails.amount > remainingAmount) {
+    if (paymentAmount > remainingAmount) {
       Swal.fire({
         icon: "error",
         title: "Amount Exceeds Balance",
@@ -104,7 +105,7 @@ const PaymentUpdate = () => {
     }
 
     // Calculate tax breakdown for confirmation
-    const paymentRatio = paymentDetails.amount / quotation.totalAmount;
+    const paymentRatio = paymentAmount / quotation.totalAmount;
     // Use after-discount subtotal as the proportional base
     const afterDiscountSubtotal =
       (quotation.subtotal || 0) - (quotation.discountAmount || 0);
@@ -134,13 +135,13 @@ const PaymentUpdate = () => {
           }
           <hr/>
           <p><strong>Total Payment Amount:</strong> ${formatCurrency(
-            paymentDetails.amount
+            paymentAmount
           )}</p>
           <p><strong>Payment Method:</strong> ${
             paymentDetails.paymentMethod
           }</p>
           <p><strong>Remaining Balance After Payment:</strong> ${formatCurrency(
-            remainingAmount - paymentDetails.amount
+            remainingAmount - paymentAmount
           )}</p>
         </div>
       `,
@@ -152,7 +153,7 @@ const PaymentUpdate = () => {
     if (result.isConfirmed) {
       try {
         const newPaidAmount =
-          (quotation.paidAmount || 0) + paymentDetails.amount;
+          (quotation.paidAmount || 0) + paymentAmount;
         const isFullyPaid = newPaidAmount >= quotation.totalAmount;
 
         // Update quotation with payment
@@ -166,6 +167,7 @@ const PaymentUpdate = () => {
             ...(quotation.payments || []),
             {
               ...paymentDetails,
+              amount: paymentAmount,
               date: new Date().toISOString(),
               paymentDate: paymentDetails.paymentDate.toISOString(),
             },
@@ -428,15 +430,17 @@ const PaymentUpdate = () => {
               onChange={(e) =>
                 setPaymentDetails({
                   ...paymentDetails,
-                  amount: parseFloat(e.target.value) || 0,
+                  amount: e.target.value === "" ? "" : e.target.value,
                 })
               }
               fullWidth
+              placeholder="0.00"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">{CURRENCY}</InputAdornment>
                 ),
               }}
+              inputProps={{ min: 0, step: 0.01 }}
               helperText={`Maximum payable amount: ${formatCurrency(
                 remainingAmount
               )}`}
