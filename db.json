@@ -959,34 +959,6 @@
       "id": 9
     },
     {
-      "invoiceNumber": "INV-2026-0010",
-      "quotationId": 10,
-      "clientId": 1,
-      "date": "2026-02-19T10:53:32.227Z",
-      "items": [
-        {
-          "scopeOfWork": "Design Concept & Proposal",
-          "task": "Space Planning, Detailed Layouts, Concept Design, and Permit Drawings",
-          "amount": 500
-        }
-      ],
-      "subtotal": 500,
-      "taxAmount": 0,
-      "serviceTaxAmount": 0,
-      "totalAmount": 500,
-      "paidAmount": 500,
-      "paymentDate": "2026-02-21T10:52:48.000Z",
-      "paymentMethod": "Credit Card",
-      "currency": "AED",
-      "taxPercent": 0,
-      "serviceTaxPercent": 0,
-      "taxLabel": "Tax",
-      "notes": "Note Tests hjsdhjds",
-      "bankAccountId": 1,
-      "createdAt": "2026-02-19T10:53:32.227Z",
-      "id": 10
-    },
-    {
       "invoiceNumber": "INV-2026-0011",
       "quotationId": 12,
       "clientId": 3,
