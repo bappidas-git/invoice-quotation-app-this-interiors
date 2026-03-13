@@ -56,6 +56,19 @@ const PaymentUpdate = () => {
       const quotationRes = await quotationsAPI.getById(id);
       setQuotation(quotationRes.data);
 
+      // Block payment for Draft performa
+      if (quotationRes.data.status === "Draft") {
+        Swal.fire({
+          icon: "warning",
+          title: "Draft Performa",
+          text: "This performa is still in Draft status. Please update it to Performa status before recording a payment.",
+          confirmButtonText: "Go Back",
+        }).then(() => {
+          navigate("/quotations");
+        });
+        return;
+      }
+
       if (quotationRes.data.clientId) {
         const clientRes = await clientsAPI.getById(quotationRes.data.clientId);
         setClient(clientRes.data);

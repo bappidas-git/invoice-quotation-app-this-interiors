@@ -153,7 +153,14 @@ const Reports = () => {
       }
     }
 
-    return { quotations: filteredQ, invoices: filteredI, boqs: filteredB };
+    const activeQ = filteredQ.filter((q) => q.status !== "Draft");
+
+    return {
+      quotations: filteredQ,
+      activeQuotations: activeQ,
+      invoices: filteredI,
+      boqs: filteredB,
+    };
   }, [quotations, invoices, boqs, dateFilter, customDateRange]);
 
   const handleDateFilterChange = (filter, range) => {
@@ -199,7 +206,7 @@ const Reports = () => {
 
   // ───────────────────── REVENUE REPORT ─────────────────────
   const revenueData = useMemo(() => {
-    const { quotations: fq, invoices: fi } = filteredData;
+    const { activeQuotations: fq, invoices: fi } = filteredData;
 
     const totalQuotationAmount = fq.reduce((s, q) => s + (q.totalAmount || 0), 0);
     const totalInvoiceAmount = fi.reduce((s, i) => s + (i.totalAmount || 0), 0);
@@ -239,7 +246,7 @@ const Reports = () => {
 
   // ───────────────────── CLIENT REPORT ─────────────────────
   const clientReportData = useMemo(() => {
-    const { quotations: fq, invoices: fi } = filteredData;
+    const { activeQuotations: fq, invoices: fi } = filteredData;
     const map = {};
 
     clients.forEach((c) => {
@@ -285,7 +292,7 @@ const Reports = () => {
   const statusData = useMemo(() => {
     const { quotations: fq } = filteredData;
 
-    const statusMap = { Performa: [], "Partially Paid": [], "Fully Paid": [], Quotation: [] };
+    const statusMap = { Draft: [], Performa: [], "Partially Paid": [], "Fully Paid": [], Quotation: [] };
 
     fq.forEach((q) => {
       const status = q.status || "Performa";
@@ -338,7 +345,7 @@ const Reports = () => {
 
   // ───────────────────── TAX SUMMARY REPORT ─────────────────────
   const taxData = useMemo(() => {
-    const { quotations: fq, invoices: fi } = filteredData;
+    const { activeQuotations: fq, invoices: fi } = filteredData;
 
     let totalTaxFromQuotations = 0;
     let totalServiceTaxFromQuotations = 0;
@@ -390,7 +397,7 @@ const Reports = () => {
 
   // ───────────────────── SCOPE OF WORK / SERVICES REPORT ─────────────────────
   const servicesData = useMemo(() => {
-    const { quotations: fq } = filteredData;
+    const { activeQuotations: fq } = filteredData;
 
     const sowMap = {};
     fq.forEach((q) => {
@@ -412,7 +419,7 @@ const Reports = () => {
 
   // ───────────────────── OUTSTANDING / AGING REPORT ─────────────────────
   const outstandingData = useMemo(() => {
-    const { quotations: fq } = filteredData;
+    const { activeQuotations: fq } = filteredData;
 
     const outstanding = fq
       .filter((q) => {
@@ -1111,6 +1118,7 @@ const Reports = () => {
       case "Partially Paid": return styles.statusPartiallyPaid;
       case "Performa": return styles.statusPerforma;
       case "Quotation": return styles.statusQuotation;
+      case "Draft": return styles.statusDraft;
       default: return styles.statusPerforma;
     }
   };
@@ -1288,6 +1296,7 @@ const Reports = () => {
 
   const renderStatusReport = () => {
     const statusColors = {
+      Draft: "#9ca3af",
       Performa: "#667eea",
       "Partially Paid": "#f59e0b",
       "Fully Paid": "#10b981",

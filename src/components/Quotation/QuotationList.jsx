@@ -39,6 +39,7 @@ const QuotationList = () => {
     total: { count: 0, amount: 0 },
     partial: { count: 0, amount: 0 },
     paid: { count: 0, amount: 0 },
+    draft: { count: 0, amount: 0 },
   });
 
   useEffect(() => {
@@ -96,7 +97,10 @@ const QuotationList = () => {
           acc.total.count++;
           acc.total.amount += q.totalAmount;
 
-          if (q.status === QUOTATION_STATUS.PARTIALLY_PAID) {
+          if (q.status === QUOTATION_STATUS.DRAFT) {
+            acc.draft.count++;
+            acc.draft.amount += q.totalAmount || 0;
+          } else if (q.status === QUOTATION_STATUS.PARTIALLY_PAID) {
             acc.partial.count++;
             acc.partial.amount += q.paidAmount || 0;
           } else if (q.status === QUOTATION_STATUS.FULLY_PAID) {
@@ -110,6 +114,7 @@ const QuotationList = () => {
           total: { count: 0, amount: 0 },
           partial: { count: 0, amount: 0 },
           paid: { count: 0, amount: 0 },
+          draft: { count: 0, amount: 0 },
         }
       );
 
@@ -157,7 +162,10 @@ const QuotationList = () => {
   };
 
   const handleEdit = (quotation) => {
-    if (quotation.status === QUOTATION_STATUS.QUOTATION) {
+    if (
+      quotation.status === QUOTATION_STATUS.QUOTATION ||
+      quotation.status === QUOTATION_STATUS.DRAFT
+    ) {
       navigate(`/quotations/edit/${quotation.id}`);
     } else if (
       quotation.status === QUOTATION_STATUS.PARTIALLY_PAID ||
@@ -247,8 +255,11 @@ const QuotationList = () => {
               ? "success"
               : value === QUOTATION_STATUS.PARTIALLY_PAID
               ? "warning"
-              : "default"
+              : value === QUOTATION_STATUS.DRAFT
+              ? "default"
+              : "primary"
           }
+          {...(value === QUOTATION_STATUS.DRAFT ? { sx: { opacity: 0.75 } } : {})}
         />
       ),
     },
@@ -265,18 +276,19 @@ const QuotationList = () => {
         </IconButton>
       </Tooltip>
       {(row.status === QUOTATION_STATUS.QUOTATION ||
+        row.status === QUOTATION_STATUS.DRAFT ||
         row.status === QUOTATION_STATUS.PARTIALLY_PAID) && (
         <Tooltip
           title={
-            row.status === QUOTATION_STATUS.QUOTATION ? "Edit" : "Add Payment"
+            row.status === QUOTATION_STATUS.PARTIALLY_PAID ? "Add Payment" : "Edit"
           }
         >
           <IconButton size="small" onClick={() => handleEdit(row)}>
             <Icon
               icon={
-                row.status === QUOTATION_STATUS.QUOTATION
-                  ? "mdi:pencil"
-                  : "mdi:cash-plus"
+                row.status === QUOTATION_STATUS.PARTIALLY_PAID
+                  ? "mdi:cash-plus"
+                  : "mdi:pencil"
               }
             />
           </IconButton>
@@ -294,7 +306,10 @@ const QuotationList = () => {
         <IconButton
           size="small"
           onClick={() => handleDelete(row)}
-          disabled={row.status !== QUOTATION_STATUS.QUOTATION}
+          disabled={
+            row.status !== QUOTATION_STATUS.QUOTATION &&
+            row.status !== QUOTATION_STATUS.DRAFT
+          }
         >
           <Icon icon="mdi:delete" />
         </IconButton>
@@ -401,6 +416,15 @@ const QuotationList = () => {
             </Typography>
           </CardContent>
         </Card>
+        <Card className={styles.statCard}>
+          <CardContent>
+            <Typography variant="h6">{statistics.draft.count}</Typography>
+            <Typography variant="body2">Draft</Typography>
+            <Typography variant="caption" color="text.secondary">
+              {formatCurrency(statistics.draft.amount)}
+            </Typography>
+          </CardContent>
+        </Card>
       </Box>
 
       <Card className={styles.filterCard}>
@@ -428,6 +452,7 @@ const QuotationList = () => {
                 label="Status"
               >
                 <MenuItem value="All">All Status</MenuItem>
+                <MenuItem value={QUOTATION_STATUS.DRAFT}>Draft</MenuItem>
                 <MenuItem value={QUOTATION_STATUS.QUOTATION}>
                   Performa
                 </MenuItem>

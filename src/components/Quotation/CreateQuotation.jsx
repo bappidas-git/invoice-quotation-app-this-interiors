@@ -521,6 +521,62 @@ const CreateQuotation = () => {
     }
   };
 
+  const handleSaveAsDraft = async () => {
+    if (!quotation.clientId || quotation.items.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Please select a client and add at least one item",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const quotationData = {
+        ...quotation,
+        status: QUOTATION_STATUS.DRAFT,
+        date: quotation.date.toISOString(),
+        payments:
+          quotation.payments?.map((payment) => ({
+            ...payment,
+            date:
+              payment.date instanceof Date
+                ? payment.date.toISOString()
+                : payment.date,
+            paymentDate:
+              payment.paymentDate instanceof Date
+                ? payment.paymentDate.toISOString()
+                : payment.paymentDate,
+          })) || [],
+        createdAt: isEdit ? quotation.createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (isEdit) {
+        await quotationsAPI.update(id, quotationData);
+      } else {
+        await quotationsAPI.create(quotationData);
+      }
+
+      await Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Performa saved as Draft",
+      });
+
+      navigate("/quotations");
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to save performa invoice",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSave = async (shouldPrint = false) => {
     if (!quotation.clientId || quotation.items.length === 0) {
       Swal.fire({
@@ -972,6 +1028,14 @@ const CreateQuotation = () => {
             )}
 
             <Box className={styles.saveButtons}>
+              <Button
+                variant="outlined"
+                startIcon={<Icon icon="mdi:content-save-edit-outline" />}
+                onClick={handleSaveAsDraft}
+                disabled={loading}
+              >
+                Save as Draft
+              </Button>
               <Button
                 variant="contained"
                 startIcon={<Icon icon="mdi:content-save" />}
