@@ -507,6 +507,10 @@ const CreateQuotation = () => {
       const invoiceServiceTaxAmount =
         (currentQuotation.serviceTaxAmount || 0) * paymentRatio;
 
+      // Distribute item amounts proportionally so they sum to invoiceSubtotal
+      const itemDistributionRatio =
+        invoiceSubtotal / (currentQuotation.subtotal || 1);
+
       const invoice = {
         invoiceNumber,
         quotationId: currentQuotation.id || parseInt(id),
@@ -514,7 +518,7 @@ const CreateQuotation = () => {
         date: new Date().toISOString(),
         items: currentQuotation.items.map((item) => ({
           ...item,
-          amount: item.amount * paymentRatio,
+          amount: item.amount * itemDistributionRatio,
         })),
         subtotal: invoiceSubtotal,
         taxAmount: invoiceTaxAmount,
