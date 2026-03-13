@@ -28,7 +28,7 @@ const PrintBOQInvoiceInternal = ({ invoice, client, organization, bankAccount })
           <td class="text-right">${formatCurrency(item.unitPrice, invoice.currency)}</td>
           <td style="text-align:center;">${item.quantity || 0}</td>
           <td class="text-right">${formatCurrency(lineTotal - discountAmt, invoice.currency)}</td>
-          <td style="color:#e65100;font-size:11px;">${item.procurementSource || "<em style='color:#bbb;'>Not specified</em>"}</td>
+          <td>${item.procurementSource ? `<span class="vendor-cell">${item.procurementSource}</span>` : `<span class="vendor-empty">Not specified</span>`}</td>
         </tr>`;
     })
     .join("") || "";
@@ -38,43 +38,67 @@ const PrintBOQInvoiceInternal = ({ invoice, client, organization, bankAccount })
 <head>
   <title>BOQ Invoice [INTERNAL COPY] - ${invoice.boqInvoiceNumber}</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: Arial, sans-serif; color: #333; background: white; }
-    .internal-banner { background:linear-gradient(135deg,#f57c00 0%,#e65100 100%); color:white; text-align:center; padding:10px; font-weight:bold; font-size:14px; letter-spacing:1px; margin-bottom:20px; border-radius:6px; }
-    .container { max-width: 980px; margin: 0 auto; padding: 20px; }
-    .header { display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:15px; border-bottom:3px solid #f57c00; margin-bottom:20px; }
-    .logo-section { flex:1; }
-    .logo { max-height:60px; margin-bottom:10px; }
-    .company-info { font-size:11px; color:#666; line-height:1.4; }
-    .document-info { text-align:right; flex:1; }
-    .document-info h1 { background:linear-gradient(135deg,#f57c00 0%,#e65100 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-size:26px; margin-bottom:5px; }
-    .document-number { font-size:13px; color:#666; margin-bottom:3px; }
-    .info-row { display:flex; gap:15px; margin-bottom:15px; }
-    .info-box { flex:1; border:1px solid #ffe0b2; border-radius:6px; padding:10px; }
-    .info-box-title { font-size:11px; color:#f57c00; font-weight:bold; margin-bottom:6px; text-transform:uppercase; }
-    .info-box-content { font-size:11px; line-height:1.5; }
-    table.items-table { width:100%; border-collapse:collapse; margin-bottom:20px; font-size:12px; }
-    .items-table thead { background:linear-gradient(135deg,#f57c00 0%,#e65100 100%); color:white; }
-    .items-table th { padding:10px 8px; text-align:left; font-size:10px; font-weight:600; text-transform:uppercase; }
-    .items-table td { padding:10px 8px; border-bottom:1px solid #ffe0b2; font-size:11px; vertical-align:middle; }
-    .items-table tbody tr:nth-child(even) { background:#fff8f0; }
-    .text-right { text-align:right; }
-    .summary-section { display:flex; justify-content:flex-end; margin-bottom:25px; }
-    .summary-table { width:320px; }
-    .summary-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; }
-    .summary-row.total { font-size:16px; font-weight:bold; color:#f57c00; border-top:2px solid #f57c00; margin-top:8px; padding-top:10px; }
-    .notes-section { margin-bottom:25px; padding:12px; background:#fff8f0; border-radius:6px; }
-    .notes-title { font-size:13px; font-weight:bold; margin-bottom:6px; color:#f57c00; }
-    .notes-content { font-size:12px; color:#666; line-height:1.5; }
-    .footer { text-align:center; padding-top:15px; border-top:1px solid #ffe0b2; color:#666; font-size:11px; }
-    .footer .company-name { font-weight:bold; color:#f57c00; font-size:12px; margin-bottom:3px; }
-    .status-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:bold; margin-left:8px; background:#fff3e0; color:#e65100; }
-    @media print { body { print-color-adjust:exact; -webkit-print-color-adjust:exact; } }
+    @page { size: A4 portrait; margin: 12mm 14mm; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; font-size: 10px; color: #1a1a1a; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    .container { max-width: 100%; padding: 0; }
+
+    /* Internal banner — charcoal with gold left stripe */
+    .internal-banner { background: #1a1a1a; color: #c17f24; text-align: center; padding: 7px 12px; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 10px; border-radius: 4px; border-left: 5px solid #c17f24; }
+
+    .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 10px; border-bottom: 3px solid #c17f24; margin-bottom: 10px; }
+    .logo-section { flex: 1; }
+    .logo { max-height: 44px; margin-bottom: 5px; }
+    .company-info { font-size: 9px; color: #555; line-height: 1.35; }
+    .document-info { text-align: right; flex: 1; }
+    .document-info h1 { color: #1a1a1a; font-size: 22px; font-weight: 700; letter-spacing: 1px; margin-bottom: 3px; }
+    .document-number { font-size: 11px; color: #555; margin-bottom: 3px; }
+
+    .info-row { display: flex; gap: 10px; margin-bottom: 10px; page-break-inside: avoid; }
+    .info-box { flex: 1; border: 1px solid #e8d5b0; border-radius: 5px; padding: 8px; background: #fdf6ec; }
+    .info-box-title { font-size: 10px; color: #c17f24; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8d5b0; padding-bottom: 3px; }
+    .info-box-content { font-size: 10px; line-height: 1.45; color: #333; }
+    .info-box-content strong { color: #1a1a1a; }
+
+    table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+    /* Internal table header: gold gradient */
+    .items-table thead { background: linear-gradient(135deg, #c17f24 0%, #a0652a 100%); color: white; display: table-header-group; }
+    .items-table th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+    .items-table td { padding: 6px 8px; border-bottom: 1px solid #e8d5b0; font-size: 10px; vertical-align: middle; }
+    .items-table tbody tr:nth-child(even) { background: #fdf6ec; }
+    .text-right { text-align: right; }
+
+    /* Vendor/Source column in gold */
+    .vendor-cell { color: #a0652a; font-weight: 600; font-size: 10px; }
+    .vendor-empty { color: #aaa; font-style: italic; font-size: 10px; }
+
+    .summary-section { display: flex; justify-content: flex-end; margin-bottom: 12px; page-break-inside: avoid; }
+    .summary-table { width: 260px; }
+    .summary-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 10px; }
+    .summary-row.total { font-size: 13px; font-weight: 700; color: #c17f24; border-top: 2px solid #c17f24; margin-top: 5px; padding-top: 6px; }
+
+    .notes-section { margin-bottom: 10px; padding: 8px 10px; background: #fdf6ec; border-radius: 5px; border-left: 3px solid #c17f24; page-break-inside: avoid; }
+    .notes-title { font-size: 10px; font-weight: 700; margin-bottom: 4px; color: #1a1a1a; }
+    .notes-content { font-size: 10px; color: #555; line-height: 1.45; }
+
+    .footer { text-align: center; padding-top: 10px; border-top: 1px solid #e8d5b0; color: #888; font-size: 9px; page-break-inside: avoid; }
+    .footer .company-name { font-weight: 700; color: #c17f24; font-size: 10px; margin-bottom: 2px; }
+    .footer .internal-note { color: #a0652a; font-weight: 600; font-size: 9px; margin-top: 3px; }
+
+    /* Internal copy badge */
+    .status-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; margin-left: 8px; background: #1a1a1a; color: #c17f24; border: 1px solid #c17f24; letter-spacing: 0.5px; }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      thead { display: table-header-group; }
+      .info-row, .notes-section, .summary-section, .footer { page-break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="internal-banner">INTERNAL COPY — CONFIDENTIAL — NOT FOR CLIENT DISTRIBUTION</div>
+    <div class="internal-banner">🔒 &nbsp; INTERNAL COPY — CONFIDENTIAL — NOT FOR CLIENT DISTRIBUTION</div>
 
     <div class="header">
       <div class="logo-section">
@@ -151,8 +175,8 @@ const PrintBOQInvoiceInternal = ({ invoice, client, organization, bankAccount })
     ${invoice.notes ? `<div class="notes-section"><div class="notes-title">Notes</div><div class="notes-content">${invoice.notes}</div></div>` : ""}
 
     <div class="footer">
-      <p class="company-name">${organization?.name || "THIS - The Home Interior Stylist"}</p>
-      <p style="margin-top:8px;color:#e65100;font-weight:bold;">This document contains internal procurement information. Handle with care.</p>
+      <p class="company-name">${organization?.name || "THIS — The Home Interior Stylist"}</p>
+          <p class="internal-note">⚠ This document contains internal procurement information. Handle with care.</p>
     </div>
   </div>
 </body>

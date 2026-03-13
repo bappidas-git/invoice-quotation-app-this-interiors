@@ -30,215 +30,66 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
     <head>
       <title>Performa Invoice - ${quotation.quotationNumber}</title>
       <style>
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        body {
-          font-family: 'Arial', sans-serif;
-          color: #333;
-          background: white;
-        }
-        .invoice-container {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 15px 20px;
-        }
-        .header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-bottom: 12px;
-          border-bottom: 3px solid #667eea;
-          margin-bottom: 15px;
-        }
-        .logo-section {
-          flex: 1;
-        }
-        .logo {
-          max-height: 50px;
-          margin-bottom: 6px;
-        }
-        .company-info {
-          font-size: 10px;
-          color: #666;
-          line-height: 1.3;
-        }
-        .document-title {
-          text-align: right;
-          flex: 1;
-        }
-        .document-title h1 {
-          color: #667eea;
-          font-size: 28px;
-          margin-bottom: 3px;
-        }
-        .document-number {
-          font-size: 12px;
-          color: #666;
-        }
-        .info-section {
-          display: flex;
-          gap: 12px;
-          margin-bottom: 15px;
-        }
-        .info-box {
-          flex: 1;
-          border: 1px solid #e0e0e0;
-          border-radius: 6px;
-          padding: 10px;
-        }
-        .section-title {
-          font-size: 11px;
-          color: #667eea;
-          font-weight: bold;
-          margin-bottom: 6px;
-          text-transform: uppercase;
-        }
-        .info-block {
-          font-size: 11px;
-          line-height: 1.4;
-          color: #333;
-        }
-        .info-block strong {
-          color: #000;
-        }
-        .qr-code {
-          max-width: 70px;
-          max-height: 70px;
-          margin-top: 5px;
-          border: 1px solid #e0e0e0;
-          border-radius: 4px;
-        }
-        .items-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 15px;
-        }
-        .items-table thead {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-        }
-        .items-table th {
-          padding: 8px 10px;
-          text-align: left;
-          font-size: 11px;
-          font-weight: 600;
-        }
-        .items-table td {
-          padding: 8px 10px;
-          border-bottom: 1px solid #e0e0e0;
-          font-size: 11px;
-        }
-        .items-table tbody tr:hover {
-          background: #f8f9fa;
-        }
-        .text-right {
-          text-align: right;
-        }
-        .summary-section {
-          display: flex;
-          justify-content: flex-end;
-          margin-bottom: 15px;
-        }
-        .summary-table {
-          width: 280px;
-        }
-        .summary-row {
-          display: flex;
-          justify-content: space-between;
-          padding: 5px 0;
-          font-size: 12px;
-        }
-        .summary-row.total {
-          font-size: 15px;
-          font-weight: bold;
-          color: #667eea;
-          border-top: 2px solid #667eea;
-          margin-top: 6px;
-          padding-top: 8px;
-        }
-        .payment-info-section {
-          margin-bottom: 15px;
-          padding: 8px 10px;
-          background: #f3f0ff;
-          border: 1px solid #d1c4e9;
-          border-radius: 6px;
-        }
-        .payment-info-title {
-          font-size: 11px;
-          font-weight: bold;
-          margin-bottom: 5px;
-          color: #667eea;
-          text-transform: uppercase;
-        }
-        .payment-info-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-        .payment-entry {
-          flex: 1;
-          min-width: 180px;
-          padding: 8px;
-          background: white;
-          border-radius: 4px;
-          border: 1px solid #e0e0e0;
-          font-size: 11px;
-          line-height: 1.4;
-        }
-        .notes-section {
-          margin-bottom: 15px;
-          padding: 10px;
-          background: #f8f9fa;
-          border-radius: 6px;
-        }
-        .notes-title {
-          font-size: 12px;
-          font-weight: bold;
-          margin-bottom: 5px;
-        }
-        .notes-content {
-          font-size: 11px;
-          color: #666;
-          line-height: 1.4;
-        }
-        .footer {
-          text-align: center;
-          padding-top: 12px;
-          border-top: 1px solid #e0e0e0;
-          color: #666;
-          font-size: 10px;
-        }
-        .status-badge {
-          display: inline-block;
-          padding: 3px 10px;
-          border-radius: 20px;
-          font-size: 11px;
-          font-weight: bold;
-          margin-left: 8px;
-        }
-        .status-performa {
-          background: #e3f2fd;
-          color: #1976d2;
-        }
-        .status-partially {
-          background: #fff3e0;
-          color: #f57c00;
-        }
-        .status-paid {
-          background: #e8f5e9;
-          color: #2e7d32;
-        }
+        @page { size: A4 portrait; margin: 12mm 14mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; font-size: 10px; color: #1a1a1a; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+        .invoice-container { max-width: 100%; padding: 0; }
+
+        /* ── Header ── */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 10px; border-bottom: 3px solid #c17f24; margin-bottom: 10px; }
+        .logo-section { flex: 1; }
+        .logo { max-height: 44px; margin-bottom: 5px; }
+        .company-info { font-size: 9px; color: #555; line-height: 1.35; }
+        .document-title { text-align: right; flex: 1; }
+        .document-title h1 { color: #1a1a1a; font-size: 22px; font-weight: 700; letter-spacing: 1px; margin-bottom: 3px; }
+        .document-number { font-size: 11px; color: #555; margin-bottom: 3px; }
+
+        /* ── Info boxes ── */
+        .info-section { display: flex; gap: 10px; margin-bottom: 10px; }
+        .info-box { flex: 1; border: 1px solid #e8d5b0; border-radius: 5px; padding: 8px; background: #fdf6ec; }
+        .section-title { font-size: 10px; color: #c17f24; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8d5b0; padding-bottom: 3px; }
+        .info-block { font-size: 10px; line-height: 1.45; color: #333; }
+        .info-block strong { color: #1a1a1a; }
+        .qr-code { max-width: 60px; max-height: 60px; margin-top: 4px; border: 1px solid #e8d5b0; border-radius: 3px; }
+
+        /* ── Items table ── */
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .items-table thead { background: #1a1a1a; color: white; display: table-header-group; }
+        .items-table th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+        .items-table td { padding: 6px 8px; border-bottom: 1px solid #e8d5b0; font-size: 10px; vertical-align: top; }
+        .items-table tbody tr:nth-child(even) { background: #fdf6ec; }
+        .text-right { text-align: right; }
+
+        /* ── Summary ── */
+        .summary-section { display: flex; justify-content: flex-end; margin-bottom: 10px; page-break-inside: avoid; }
+        .summary-table { width: 260px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 10px; }
+        .summary-row.total { font-size: 13px; font-weight: 700; color: #c17f24; border-top: 2px solid #c17f24; margin-top: 5px; padding-top: 6px; }
+
+        /* ── Payment info ── */
+        .payment-info-section { margin-bottom: 10px; padding: 8px 10px; background: #fdf6ec; border: 1px solid #e8d5b0; border-radius: 5px; page-break-inside: avoid; }
+        .payment-info-title { font-size: 10px; font-weight: 700; margin-bottom: 4px; color: #c17f24; text-transform: uppercase; letter-spacing: 0.4px; }
+        .payment-info-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+        .payment-entry { flex: 1; min-width: 160px; padding: 6px 8px; background: white; border-radius: 4px; border: 1px solid #e8d5b0; font-size: 10px; line-height: 1.4; }
+
+        /* ── Notes & footer ── */
+        .notes-section { margin-bottom: 10px; padding: 8px 10px; background: #fdf6ec; border-radius: 5px; border-left: 3px solid #c17f24; page-break-inside: avoid; }
+        .notes-title { font-size: 10px; font-weight: 700; margin-bottom: 4px; color: #1a1a1a; }
+        .notes-content { font-size: 10px; color: #555; line-height: 1.45; }
+        .footer { text-align: center; padding-top: 10px; border-top: 1px solid #e8d5b0; color: #888; font-size: 9px; page-break-inside: avoid; }
+        .footer .brand { font-weight: 700; color: #c17f24; font-size: 10px; margin-bottom: 2px; }
+
+        /* ── Status badges ── */
+        .status-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; margin-top: 4px; border: 1px solid; }
+        .status-performa { background: #fdf6ec; color: #a0652a; border-color: #c17f24; }
+        .status-partially { background: #fff7ed; color: #c2410c; border-color: #f97316; }
+        .status-paid { background: #f0fdf4; color: #15803d; border-color: #22c55e; }
+
         @media print {
-          body {
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-          }
-          .invoice-container {
-            padding: 10px 15px;
-          }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          thead { display: table-header-group; }
+          .info-section, .payment-info-section, .notes-section, .footer, .summary-section { page-break-inside: avoid; }
         }
       </style>
     </head>
@@ -479,8 +330,9 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
         }
 
         <div class="footer">
+          <p class="brand">${organization?.name || "THIS — The Home Interior Stylist"}</p>
           <p>Thank you for your business!</p>
-          <p style="margin-top: 5px;">This is a computer-generated document. No signature is required.</p>
+          <p style="margin-top: 3px;">This is a computer-generated document. No signature is required.</p>
         </div>
       </div>
     </body>
