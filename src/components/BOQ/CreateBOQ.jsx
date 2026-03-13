@@ -20,6 +20,9 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  ToggleButton,
+  ToggleButtonGroup,
+  InputAdornment,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -70,6 +73,7 @@ const CreateBOQ = () => {
       unitPrice: "",
       quantity: 1,
       discount: 0,
+      discountType: "percent",
     },
   ]);
 
@@ -150,6 +154,7 @@ const CreateBOQ = () => {
                   unitPrice: "",
                   quantity: 1,
                   discount: 0,
+                  discountType: "percent",
                 },
               ]
         );
@@ -175,7 +180,10 @@ const CreateBOQ = () => {
 
     items.forEach((item) => {
       const lineTotal = (parseFloat(item.unitPrice) || 0) * (parseFloat(item.quantity) || 0);
-      const discountAmount = (lineTotal * (parseFloat(item.discount) || 0)) / 100;
+      const discountAmount =
+        (item.discountType || "percent") === "flat"
+          ? parseFloat(item.discount) || 0
+          : (lineTotal * (parseFloat(item.discount) || 0)) / 100;
       subtotal += lineTotal;
       totalDiscount += discountAmount;
     });
@@ -206,6 +214,7 @@ const CreateBOQ = () => {
         unitPrice: "",
         quantity: 1,
         discount: 0,
+        discountType: "percent",
       },
     ]);
   };
@@ -252,6 +261,7 @@ const CreateBOQ = () => {
           unitPrice: parseFloat(item.unitPrice) || 0,
           quantity: parseFloat(item.quantity) || 1,
           discount: parseFloat(item.discount) || 0,
+          discountType: item.discountType || "percent",
         })),
         subtotal: totals.subtotal,
         totalDiscount: totals.totalDiscount,
@@ -483,7 +493,9 @@ const CreateBOQ = () => {
                   (parseFloat(item.unitPrice) || 0) *
                   (parseFloat(item.quantity) || 0);
                 const discountAmt =
-                  (lineTotal * (parseFloat(item.discount) || 0)) / 100;
+                  (item.discountType || "percent") === "flat"
+                    ? parseFloat(item.discount) || 0
+                    : (lineTotal * (parseFloat(item.discount) || 0)) / 100;
                 const finalTotal = lineTotal - discountAmt;
 
                 return (
@@ -593,17 +605,55 @@ const CreateBOQ = () => {
                         className={styles.lineItemFieldXSmall}
                         inputProps={{ min: 1 }}
                       />
-                      <TextField
-                        label="Disc %"
-                        size="small"
-                        type="number"
-                        value={item.discount}
-                        onChange={(e) =>
-                          handleItemChange(index, "discount", e.target.value)
-                        }
-                        className={styles.lineItemFieldXSmall}
-                        inputProps={{ min: 0, max: 100 }}
-                      />
+                      {/* Discount Type + Value */}
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 120 }}>
+                        <ToggleButtonGroup
+                          value={item.discountType || "percent"}
+                          exclusive
+                          size="small"
+                          onChange={(e, val) => {
+                            if (val) handleItemChange(index, "discountType", val);
+                          }}
+                          sx={{
+                            "& .MuiToggleButton-root": {
+                              px: 1,
+                              py: 0.3,
+                              fontSize: "11px",
+                              fontWeight: 600,
+                              textTransform: "none",
+                              borderRadius: "4px !important",
+                              minWidth: 36,
+                            },
+                            "& .Mui-selected": {
+                              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important",
+                              color: "white !important",
+                            },
+                          }}
+                        >
+                          <ToggleButton value="percent">%</ToggleButton>
+                          <ToggleButton value="flat">Flat</ToggleButton>
+                        </ToggleButtonGroup>
+                        <TextField
+                          label="Discount"
+                          size="small"
+                          type="number"
+                          value={item.discount}
+                          onChange={(e) => handleItemChange(index, "discount", e.target.value)}
+                          className={styles.lineItemFieldXSmall}
+                          inputProps={{
+                            min: 0,
+                            max: (item.discountType || "percent") === "percent" ? 100 : undefined,
+                            step: 0.01,
+                          }}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                {(item.discountType || "percent") === "percent" ? "%" : formData.currency || "AED"}
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </Box>
                       <Box className={styles.lineTotalBox}>
                         <Typography variant="caption" color="text.secondary">
                           Line Total

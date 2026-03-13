@@ -288,7 +288,7 @@ const ViewBOQ = () => {
                   <TableCell>Item</TableCell>
                   <TableCell align="right">Unit Price</TableCell>
                   <TableCell align="center">Qty</TableCell>
-                  <TableCell align="center">Disc %</TableCell>
+                  <TableCell align="center">Discount</TableCell>
                   <TableCell align="right">Total</TableCell>
                 </TableRow>
               </TableHead>
@@ -297,7 +297,9 @@ const ViewBOQ = () => {
                   const lineTotal =
                     (item.unitPrice || 0) * (item.quantity || 0);
                   const discountAmt =
-                    (lineTotal * (item.discount || 0)) / 100;
+                    (item.discountType || "percent") === "flat"
+                      ? item.discount || 0
+                      : (lineTotal * (item.discount || 0)) / 100;
                   const finalTotal = lineTotal - discountAmt;
 
                   return (
@@ -325,7 +327,11 @@ const ViewBOQ = () => {
                       </TableCell>
                       <TableCell align="center">{item.quantity}</TableCell>
                       <TableCell align="center">
-                        {item.discount > 0 ? `${item.discount}%` : "-"}
+                        {item.discount > 0
+                          ? (item.discountType || "percent") === "flat"
+                            ? formatCurrency(item.discount, boq.currency)
+                            : `${item.discount}%`
+                          : "-"}
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="body2" fontWeight="500">

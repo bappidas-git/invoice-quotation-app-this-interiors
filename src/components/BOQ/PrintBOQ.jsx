@@ -34,21 +34,14 @@ const PrintBOQ = ({ boq, client, organization, bankAccount }) => {
           (item.unitPrice || 0) * (item.quantity || 0),
           boq.currency
         )}</td>
-        <td class="text-right">${
-          item.discount > 0
-            ? formatCurrency(
-                (item.unitPrice || 0) * (item.quantity || 0) -
-                  ((item.unitPrice || 0) *
-                    (item.quantity || 0) *
-                    (item.discount || 0)) /
-                    100,
-                boq.currency
-              )
-            : formatCurrency(
-                (item.unitPrice || 0) * (item.quantity || 0),
-                boq.currency
-              )
-        }</td>
+        <td class="text-right">${(() => {
+          const lineTotal = (item.unitPrice || 0) * (item.quantity || 0);
+          const discountAmt =
+            (item.discountType || "percent") === "flat"
+              ? (item.discount || 0)
+              : (lineTotal * (item.discount || 0)) / 100;
+          return formatCurrency(lineTotal - discountAmt, boq.currency);
+        })()}</td>
       </tr>
     `
     )

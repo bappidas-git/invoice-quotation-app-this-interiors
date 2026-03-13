@@ -365,6 +365,19 @@ const ViewQuotation = () => {
                     )}
                   </Typography>
                 </Box>
+                {(quotation.discountAmount || 0) > 0 && (
+                  <Box className={styles.summaryRow}>
+                    <Typography variant="body1">
+                      Discount
+                      {quotation.discountType === "percent"
+                        ? ` (${quotation.discountValue}%)`
+                        : ""}
+                    </Typography>
+                    <Typography variant="body1" fontWeight="600" color="error">
+                      -{formatCurrency(quotation.discountAmount)}
+                    </Typography>
+                  </Box>
+                )}
                 {quotation.taxAmount > 0 && (
                   <Box className={styles.summaryRow}>
                     <Typography variant="body1">

@@ -407,6 +407,20 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
               )}</span>
             </div>
             ${
+              (quotation.discountAmount || 0) > 0
+                ? `
+              <div class="summary-row" style="color: #c62828;">
+                <span>Discount${
+                  quotation.discountType === "percent"
+                    ? ` (${quotation.discountValue}%)`
+                    : ""
+                }:</span>
+                <span>-${formatCurrency(quotation.discountAmount, quotation.currency || "AED")}</span>
+              </div>
+            `
+                : ""
+            }
+            ${
               quotation.taxAmount > 0
                 ? `
               <div class="summary-row">
