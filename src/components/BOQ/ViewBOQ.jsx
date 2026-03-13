@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
-import { boqsAPI, clientsAPI, bankAccountsAPI } from "../../services/api";
+import { boqsAPI, clientsAPI, bankAccountsAPI, boqInvoicesAPI } from "../../services/api";
 import {
   formatDate,
   formatCurrency,
@@ -36,6 +36,7 @@ const ViewBOQ = () => {
   const [client, setClient] = useState(null);
   const [bankAccount, setBankAccount] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [boqInvoiceId, setBoqInvoiceId] = useState(null);
 
   useEffect(() => {
     fetchBOQ();
@@ -49,6 +50,18 @@ const ViewBOQ = () => {
       if (boqRes.data.clientId) {
         const clientRes = await clientsAPI.getById(boqRes.data.clientId);
         setClient(clientRes.data);
+      }
+
+      // Check if a BOQ invoice exists for this BOQ
+      if (boqRes.data.status === BOQ_STATUS.APPROVED) {
+        try {
+          const invoicesRes = await boqInvoicesAPI.getByBoqId(id);
+          if (invoicesRes.data && invoicesRes.data.length > 0) {
+            setBoqInvoiceId(invoicesRes.data[0].id);
+          }
+        } catch (e) {
+          console.error("Error checking BOQ invoice:", e);
+        }
       }
 
       // Fetch default bank account
@@ -134,6 +147,22 @@ const ViewBOQ = () => {
           </Box>
         </Box>
         <Box className={styles.headerActions}>
+          {boqInvoiceId && (
+            <Button
+              variant="contained"
+              startIcon={<Icon icon="mdi:file-check" />}
+              onClick={() => navigate(`/boq-invoices/view/${boqInvoiceId}`)}
+              sx={{
+                background: "linear-gradient(135deg, #43a047 0%, #1b5e20 100%)",
+                color: "white",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #388e3c 0%, #1b5e20 100%)",
+                },
+              }}
+            >
+              View BOQ Invoice
+            </Button>
+          )}
           {boq.status !== BOQ_STATUS.APPROVED && (
             <Button
               variant="outlined"

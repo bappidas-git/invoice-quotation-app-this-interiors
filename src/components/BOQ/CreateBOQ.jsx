@@ -20,6 +20,7 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  InputAdornment,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -29,10 +30,12 @@ import {
   boqAreasAPI,
   boqCategoriesAPI,
   clientsAPI,
+  boqInvoicesAPI,
 } from "../../services/api";
 import {
   formatCurrency,
   generateBoqNumber,
+  generateBoqInvoiceNumber,
   getGeneralSettings,
   getTaxSettings,
   applyTaxCalculations,
@@ -71,6 +74,7 @@ const CreateBOQ = () => {
       quantity: 1,
       discount: 0,
       discountType: "percent",
+      procurementSource: "",
     },
   ]);
 
@@ -141,7 +145,17 @@ const CreateBOQ = () => {
         });
         setItems(
           boq.items && boq.items.length > 0
-            ? boq.items
+            ? boq.items.map((item) => ({
+                area: item.area || "",
+                imageUrl: item.imageUrl || "",
+                category: item.category || "",
+                itemName: item.itemName || "",
+                unitPrice: item.unitPrice || "",
+                quantity: item.quantity || 1,
+                discount: item.discount || 0,
+                discountType: item.discountType || "percent",
+                procurementSource: item.procurementSource || "",
+              }))
             : [
                 {
                   area: "",
@@ -152,6 +166,7 @@ const CreateBOQ = () => {
                   quantity: 1,
                   discount: 0,
                   discountType: "percent",
+                  procurementSource: "",
                 },
               ]
         );
@@ -212,6 +227,7 @@ const CreateBOQ = () => {
         quantity: 1,
         discount: 0,
         discountType: "percent",
+        procurementSource: "",
       },
     ]);
   };
@@ -259,6 +275,7 @@ const CreateBOQ = () => {
           quantity: parseFloat(item.quantity) || 1,
           discount: parseFloat(item.discount) || 0,
           discountType: item.discountType || "percent",
+          procurementSource: item.procurementSource || "",
         })),
         subtotal: totals.subtotal,
         totalDiscount: totals.totalDiscount,
@@ -277,6 +294,50 @@ const CreateBOQ = () => {
           ...boqData,
           updatedAt: new Date().toISOString(),
         });
+
+        // Auto-create BOQ Invoice when status changes to Approved
+        if (formData.status === BOQ_STATUS.APPROVED) {
+          try {
+            // Check if a BOQ invoice already exists for this BOQ
+            const existingInvoicesRes = await boqInvoicesAPI.getByBoqId(id);
+            const existingInvoices = existingInvoicesRes.data || [];
+
+            if (existingInvoices.length === 0) {
+              // Generate BOQ invoice number
+              const allBoqInvoicesRes = await boqInvoicesAPI.getAll();
+              const allBoqInvoices = allBoqInvoicesRes.data || [];
+              const lastInvoiceNumber = allBoqInvoices.length;
+              const boqInvoiceNumber = await generateBoqInvoiceNumber(lastInvoiceNumber);
+
+              const boqInvoiceData = {
+                boqInvoiceNumber,
+                boqId: id,
+                boqNumber: formData.boqNumber,
+                clientId: Number(formData.clientId),
+                date: new Date().toISOString(),
+                items: boqData.items,
+                subtotal: totals.subtotal,
+                totalDiscount: totals.totalDiscount,
+                taxAmount: totals.taxAmount,
+                taxPercent: totals.taxPercent,
+                taxLabel: totals.taxLabel,
+                serviceTaxAmount: totals.serviceTaxAmount || 0,
+                serviceTaxPercent: totals.serviceTaxPercent || 0,
+                totalAmount: totals.totalAmount,
+                currency: formData.currency,
+                notes: formData.notes,
+                status: "Approved",
+                createdAt: new Date().toISOString(),
+              };
+
+              await boqInvoicesAPI.create(boqInvoiceData);
+            }
+          } catch (invoiceError) {
+            console.error("Error creating BOQ invoice:", invoiceError);
+            // Do not block main BOQ save if invoice creation fails
+          }
+        }
+
         Swal.fire({
           icon: "success",
           title: "Success",
@@ -699,6 +760,46 @@ const CreateBOQ = () => {
                           {formatCurrency(finalTotal, formData.currency)}
                         </Typography>
                       </Box>
+                    </Box>
+
+                    {/* Row 3: Procurement Source (internal) */}
+                    <Box
+                      className={styles.lineItemRow}
+                      sx={{
+                        background: "linear-gradient(135deg, rgba(255, 193, 7, 0.06) 0%, rgba(255, 152, 0, 0.06) 100%)",
+                        borderRadius: "8px",
+                        padding: "8px 12px",
+                        border: "1px dashed rgba(255, 152, 0, 0.3)",
+                      }}
+                    >
+                      <TextField
+                        label="Vendor / Procurement Source"
+                        value={item.procurementSource}
+                        onChange={(e) => handleItemChange(index, "procurementSource", e.target.value)}
+                        fullWidth
+                        size="small"
+                        placeholder="e.g. IKEA UAE – Article #123456, https://supplier.com/item"
+                        helperText="Internal use only — not visible to client"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Icon icon="mdi:store-outline" width="18" height="18" style={{ color: "#f57c00" }} />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{
+                          "& .MuiFormHelperText-root": {
+                            color: "#f57c00",
+                            fontStyle: "italic",
+                            fontSize: "0.7rem",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&:hover fieldset": { borderColor: "#f57c00" },
+                            "&.Mui-focused fieldset": { borderColor: "#f57c00" },
+                          },
+                          "& label.Mui-focused": { color: "#f57c00" },
+                        }}
+                      />
                     </Box>
                   </Paper>
                 );

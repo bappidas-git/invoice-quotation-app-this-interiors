@@ -167,6 +167,19 @@ export const boqsAPI = {
 };
 
 // ──────────────────────────────────────────────
+// BOQ Invoices API
+// ──────────────────────────────────────────────
+export const boqInvoicesAPI = {
+  getAll: () => api.get("/boqInvoices"),
+  getById: (id) => api.get(`/boqInvoices/${id}`),
+  create: (data) => api.post("/boqInvoices", data),
+  update: (id, data) => api.put(`/boqInvoices/${id}`, data),
+  delete: (id) => api.delete(`/boqInvoices/${id}`),
+  getByBoqId: (boqId) => api.get(`/boqInvoices?boqId=${boqId}`),
+  getByClient: (clientId) => api.get(`/boqInvoices?clientId=${clientId}`),
+};
+
+// ──────────────────────────────────────────────
 // General Settings API
 // ──────────────────────────────────────────────
 export const generalSettingsAPI = {
