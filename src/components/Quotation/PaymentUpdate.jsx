@@ -201,6 +201,10 @@ const PaymentUpdate = () => {
         const invoiceServiceTaxAmount =
           (quotation.serviceTaxAmount || 0) * invoicePaymentRatio;
 
+        // Distribute item amounts proportionally so they sum to invoiceSubtotal
+        const itemDistributionRatio =
+          invoiceSubtotal / (quotation.subtotal || 1);
+
         const invoice = {
           invoiceNumber,
           quotationId: parseInt(id),
@@ -208,7 +212,7 @@ const PaymentUpdate = () => {
           date: new Date().toISOString(),
           items: quotation.items.map((item) => ({
             ...item,
-            amount: item.amount * invoicePaymentRatio,
+            amount: item.amount * itemDistributionRatio,
           })),
           subtotal: invoiceSubtotal,
           taxAmount: invoiceTaxAmount,
