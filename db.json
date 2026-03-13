@@ -1246,6 +1246,48 @@
       "notes": "Test Notes",
       "updatedAt": "2026-02-19T11:32:11.613Z",
       "id": 3
+    },
+    {
+      "boqNumber": "BOQ-2026-0004",
+      "clientId": 1,
+      "date": "2026-03-13T00:00:00.000Z",
+      "status": "Approved",
+      "items": [
+        {
+          "area": "Living Room",
+          "imageUrl": "https://placehold.co/600x400/orange/white?text=Sofa",
+          "category": "Sofa",
+          "itemName": "Sofa",
+          "unitPrice": 1000,
+          "quantity": 2,
+          "discount": 200,
+          "discountType": "flat",
+          "procurementSource": "Purchased from XYZ shop at 800 AED/piece"
+        },
+        {
+          "area": "Master Bedroom",
+          "imageUrl": "https://placehold.co/600x400/orange/white?text=Bed",
+          "category": "Bed",
+          "itemName": "King Size Bed",
+          "unitPrice": 3000,
+          "quantity": 1,
+          "discount": 500,
+          "discountType": "flat",
+          "procurementSource": "Purchased Online www.bed.com at 2000 AED"
+        }
+      ],
+      "subtotal": 5000,
+      "totalDiscount": 700,
+      "taxAmount": 0,
+      "taxPercent": 0,
+      "taxLabel": "Tax",
+      "serviceTaxAmount": 0,
+      "serviceTaxPercent": 0,
+      "totalAmount": 4300,
+      "currency": "AED",
+      "notes": "Need to send to Client today",
+      "updatedAt": "2026-03-13T07:49:43.129Z",
+      "id": 4
     }
   ],
   "generalSettings": [
