@@ -394,8 +394,9 @@ const ViewInvoice = () => {
                 component={Paper}
                 elevation={0}
                 className={styles.itemsTable}
+                sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}
               >
-                <Table>
+                <Table sx={{ minWidth: 500 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell>#</TableCell>

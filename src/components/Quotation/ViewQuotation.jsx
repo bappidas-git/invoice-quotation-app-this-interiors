@@ -329,8 +329,8 @@ const ViewQuotation = () => {
               <Typography variant="h6" gutterBottom>
                 Items
               </Typography>
-              <TableContainer component={Paper} elevation={0}>
-                <Table>
+              <TableContainer component={Paper} elevation={0} sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                <Table sx={{ minWidth: 500 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell>#</TableCell>
@@ -451,8 +451,8 @@ const ViewQuotation = () => {
                 <Typography variant="h6" gutterBottom>
                   Payment History
                 </Typography>
-                <TableContainer>
-                  <Table size="small">
+                <TableContainer sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                  <Table size="small" sx={{ minWidth: 450 }}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Date</TableCell>
@@ -487,8 +487,8 @@ const ViewQuotation = () => {
                 <Typography variant="h6" gutterBottom>
                   Related Invoices
                 </Typography>
-                <TableContainer>
-                  <Table size="small">
+                <TableContainer sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                  <Table size="small" sx={{ minWidth: 550 }}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Invoice Number</TableCell>

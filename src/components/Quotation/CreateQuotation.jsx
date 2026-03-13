@@ -857,8 +857,8 @@ const CreateQuotation = () => {
               </Button>
             </Box>
 
-            <TableContainer component={Paper} className={styles.itemsTable}>
-              <Table>
+            <TableContainer component={Paper} className={styles.itemsTable} sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+              <Table sx={{ minWidth: 600 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell>Scope of Work</TableCell>

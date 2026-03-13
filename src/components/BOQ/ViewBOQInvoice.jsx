@@ -261,8 +261,8 @@ const ViewBOQInvoice = () => {
             <Typography variant="subtitle1" fontWeight="600" gutterBottom>
               Line Items
             </Typography>
-            <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #e0e0e0", borderRadius: "8px", mb: 3 }}>
-              <Table>
+            <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #e0e0e0", borderRadius: "8px", mb: 3, overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+              <Table sx={{ minWidth: 800 }}>
                 <TableHead>
                   <TableRow sx={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
                     {["#", "Area", "Image", "Category", "Item", "Unit Price", "Qty", "Discount", "Total"].map((h) => (
@@ -313,7 +313,7 @@ const ViewBOQInvoice = () => {
 
             {/* Summary */}
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Box sx={{ width: 350 }}>
+              <Box sx={{ width: { xs: "100%", sm: 350 } }}>
                 {[
                   ["Subtotal:", formatCurrency(invoice.subtotal, invoice.currency), false],
                   invoice.totalDiscount > 0 && [`Total Discount:`, `-${formatCurrency(invoice.totalDiscount, invoice.currency)}`, true],
@@ -353,8 +353,8 @@ const ViewBOQInvoice = () => {
               <strong>Internal Use Only</strong> — Procurement details are confidential and must not be shared with clients. Use "Print Internal Copy" to print a version that includes this information.
             </Alert>
 
-            <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #ffe0b2", borderRadius: "8px" }}>
-              <Table>
+            <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #ffe0b2", borderRadius: "8px", overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+              <Table sx={{ minWidth: 600 }}>
                 <TableHead>
                   <TableRow sx={{ background: "linear-gradient(135deg, #f57c00 0%, #e65100 100%)" }}>
                     {["#", "Area", "Category", "Item Name", "Vendor / Procurement Source"].map((h) => (

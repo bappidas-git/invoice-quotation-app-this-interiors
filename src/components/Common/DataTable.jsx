@@ -85,121 +85,210 @@ const DataTable = ({
     page * rowsPerPage + rowsPerPage
   );
 
-  return (
-    <Paper className={styles.tableWrapper}>
-      <TableContainer className={styles.tableContainer}>
-        <Table stickyHeader className={styles.table}>
-          <TableHead>
-            <TableRow>
-              {expandable && <TableCell width="50" />}
-              {columns.map((col) => (
-                <TableCell
-                  key={col.field}
-                  align={col.align || "left"}
-                  style={{ width: col.width || "auto" }}
-                >
-                  {col.sortable !== false ? (
-                    <TableSortLabel
-                      active={orderBy === col.field}
-                      direction={orderBy === col.field ? order : "asc"}
-                      onClick={() => handleSort(col.field)}
-                    >
-                      {col.label}
-                    </TableSortLabel>
-                  ) : (
-                    col.label
-                  )}
-                </TableCell>
-              ))}
-              {actions && <TableCell align="center">Actions</TableCell>}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length + (actions ? 1 : 0)}
-                  align="center"
-                >
-                  <Typography>Loading...</Typography>
-                </TableCell>
-              </TableRow>
-            ) : paginatedData.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length + (actions ? 1 : 0)}
-                  align="center"
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    {emptyMessage}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <AnimatePresence>
-                {paginatedData.reverse().map((row, i) => (
-                  <React.Fragment key={row.id || i}>
-                    <MotionTableRow
-                      hover
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className={styles.tableRow}
-                    >
+  // Mobile card view for responsive display
+  const renderMobileCards = () => (
+    <Box className={styles.mobileCardList}>
+      {loading ? (
+        <Box sx={{ p: 3, textAlign: "center" }}>
+          <Typography>Loading...</Typography>
+        </Box>
+      ) : paginatedData.length === 0 ? (
+        <Box sx={{ p: 3, textAlign: "center" }}>
+          <Typography variant="body2" color="textSecondary">
+            {emptyMessage}
+          </Typography>
+        </Box>
+      ) : (
+        <AnimatePresence>
+          {[...paginatedData].reverse().map((row, i) => {
+            const primaryCol = columns[0];
+            const remainingCols = columns.slice(1);
+            return (
+              <motion.div
+                key={row.id || i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Box className={styles.mobileCard}>
+                  <Box className={styles.mobileCardHeader}>
+                    <Box className={styles.mobileCardPrimary} sx={{ display: "flex", alignItems: "center" }}>
                       {expandable && (
-                        <TableCell>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleExpandRow(row.id)}
-                          >
-                            <Icon
-                              icon={
-                                expandedRows.includes(row.id)
-                                  ? "mdi:chevron-up"
-                                  : "mdi:chevron-down"
-                              }
-                            />
-                          </IconButton>
-                        </TableCell>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleExpandRow(row.id)}
+                          sx={{ ml: -1, mr: 0.5 }}
+                        >
+                          <Icon
+                            icon={
+                              expandedRows.includes(row.id)
+                                ? "mdi:chevron-up"
+                                : "mdi:chevron-down"
+                            }
+                            width="18"
+                          />
+                        </IconButton>
                       )}
-                      {columns.map((col) => (
-                        <TableCell key={col.field} align={col.align || "left"}>
+                      {primaryCol.render
+                        ? primaryCol.render(row[primaryCol.field], row)
+                        : <Typography variant="body2" fontWeight="600">{row[primaryCol.field]}</Typography>}
+                    </Box>
+                    {actions && (
+                      <Box className={styles.mobileCardActions}>
+                        {actions(row)}
+                      </Box>
+                    )}
+                  </Box>
+                  <Box className={styles.mobileCardFields}>
+                    {remainingCols.map((col) => (
+                      <Box key={col.field} className={styles.mobileCardField}>
+                        <Typography className={styles.mobileCardFieldLabel}>
+                          {col.label}
+                        </Typography>
+                        <Box className={styles.mobileCardFieldValue}>
                           {col.render
                             ? col.render(row[col.field], row)
-                            : row[col.field]}
-                        </TableCell>
-                      ))}
-                      {actions && (
-                        <TableCell align="center">
-                          <Box className={styles.actions}>{actions(row)}</Box>
-                        </TableCell>
-                      )}
-                    </MotionTableRow>
+                            : row[col.field] || "-"}
+                        </Box>
+                      </Box>
+                    ))}
+                  </Box>
+                  {expandable && expandedContent && expandedRows.includes(row.id) && (
+                    <Box className={styles.mobileExpandedContent}>
+                      {expandedContent(row)}
+                    </Box>
+                  )}
+                </Box>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      )}
+    </Box>
+  );
 
-                    {expandable && expandedContent && (
-                      <TableRow>
-                        <TableCell
-                          colSpan={columns.length + 1 + (actions ? 1 : 0)}
-                          className={styles.expandCell}
-                        >
-                          <Collapse in={expandedRows.includes(row.id)}>
-                            <Box className={styles.expandedContent}>
-                              {expandedContent(row)}
-                            </Box>
-                          </Collapse>
-                        </TableCell>
-                      </TableRow>
+  return (
+    <Paper className={styles.tableWrapper}>
+      {/* Desktop table view */}
+      <Box className={styles.desktopTable}>
+        <TableContainer className={styles.tableContainer}>
+          <Table stickyHeader className={styles.table}>
+            <TableHead>
+              <TableRow>
+                {expandable && <TableCell width="50" />}
+                {columns.map((col) => (
+                  <TableCell
+                    key={col.field}
+                    align={col.align || "left"}
+                    style={{ width: col.width || "auto" }}
+                  >
+                    {col.sortable !== false ? (
+                      <TableSortLabel
+                        active={orderBy === col.field}
+                        direction={orderBy === col.field ? order : "asc"}
+                        onClick={() => handleSort(col.field)}
+                      >
+                        {col.label}
+                      </TableSortLabel>
+                    ) : (
+                      col.label
                     )}
-                  </React.Fragment>
+                  </TableCell>
                 ))}
-              </AnimatePresence>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                {actions && <TableCell align="center">Actions</TableCell>}
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length + (actions ? 1 : 0) + (expandable ? 1 : 0)}
+                    align="center"
+                  >
+                    <Typography>Loading...</Typography>
+                  </TableCell>
+                </TableRow>
+              ) : paginatedData.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length + (actions ? 1 : 0) + (expandable ? 1 : 0)}
+                    align="center"
+                  >
+                    <Typography variant="body2" color="textSecondary">
+                      {emptyMessage}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <AnimatePresence>
+                  {paginatedData.reverse().map((row, i) => (
+                    <React.Fragment key={row.id || i}>
+                      <MotionTableRow
+                        hover
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className={styles.tableRow}
+                      >
+                        {expandable && (
+                          <TableCell>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleExpandRow(row.id)}
+                            >
+                              <Icon
+                                icon={
+                                  expandedRows.includes(row.id)
+                                    ? "mdi:chevron-up"
+                                    : "mdi:chevron-down"
+                                }
+                              />
+                            </IconButton>
+                          </TableCell>
+                        )}
+                        {columns.map((col) => (
+                          <TableCell key={col.field} align={col.align || "left"}>
+                            {col.render
+                              ? col.render(row[col.field], row)
+                              : row[col.field]}
+                          </TableCell>
+                        ))}
+                        {actions && (
+                          <TableCell align="center">
+                            <Box className={styles.actions}>{actions(row)}</Box>
+                          </TableCell>
+                        )}
+                      </MotionTableRow>
+
+                      {expandable && expandedContent && (
+                        <TableRow>
+                          <TableCell
+                            colSpan={columns.length + 1 + (actions ? 1 : 0)}
+                            className={styles.expandCell}
+                          >
+                            <Collapse in={expandedRows.includes(row.id)}>
+                              <Box className={styles.expandedContent}>
+                                {expandedContent(row)}
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </AnimatePresence>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      {/* Mobile card view */}
+      {renderMobileCards()}
 
       <Box className={styles.tableFooter}>
         <FormControl size="small">
