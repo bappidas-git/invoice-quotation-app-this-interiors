@@ -40,8 +40,8 @@
       "country": "India",
       "companyName": "TCS Pvt. Limited",
       "taxNumber": "3424234235546456",
-      "showCompanyInDocuments": false,
-      "showTaxInDocuments": false,
+      "showCompanyInDocuments": true,
+      "showTaxInDocuments": true,
       "createdAt": "2026-02-08T02:59:16.663Z",
       "id": 3
     },
@@ -650,6 +650,57 @@
       "createdAt": "2026-03-13T11:11:59.629Z",
       "updatedAt": "2026-03-13T13:52:42.514Z",
       "id": 13
+    },
+    {
+      "quotationNumber": "PI-2026-0013",
+      "clientId": 3,
+      "date": "2026-03-13T14:06:08.524Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 1000
+        },
+        {
+          "scopeOfWork": "Schematic & Interior Design Drawings",
+          "task": "Styling & Staging",
+          "amount": 5000
+        }
+      ],
+      "subtotal": 6000,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 5500,
+      "status": "Partially Paid",
+      "paidAmount": 3000,
+      "payments": [
+        {
+          "amount": 1000,
+          "paymentMethod": "Bank Transfer",
+          "paymentDate": "2026-03-13T14:08:01.946Z",
+          "notes": "1st Payment",
+          "date": "2026-03-13T14:08:40.381Z"
+        },
+        {
+          "amount": 2000,
+          "paymentMethod": "Cash",
+          "paymentDate": "2026-03-13T14:09:17.900Z",
+          "notes": "2nd Payment",
+          "date": "2026-03-13T14:09:48.234Z"
+        }
+      ],
+      "currency": "AED",
+      "notes": "New Test Performa",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "bankAccountId": 1,
+      "discountType": "flat",
+      "discountValue": 500,
+      "discountAmount": 500,
+      "createdAt": "2026-03-13T14:07:56.598Z",
+      "updatedAt": "2026-03-13T14:09:48.234Z",
+      "id": 14
     }
   ],
   "invoices": [
@@ -1054,6 +1105,71 @@
       "notes": "2nd Payment",
       "createdAt": "2026-03-13T13:52:42.649Z",
       "id": 14
+    },
+    {
+      "invoiceNumber": "INV-2026-0015",
+      "quotationId": 14,
+      "clientId": 3,
+      "date": "2026-03-13T14:08:40.483Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 166.66666666666666
+        },
+        {
+          "scopeOfWork": "Schematic & Interior Design Drawings",
+          "task": "Styling & Staging",
+          "amount": 833.3333333333333
+        }
+      ],
+      "subtotal": 1000,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 1000,
+      "paidAmount": 1000,
+      "paymentDate": "2026-03-13T14:08:01.946Z",
+      "paymentMethod": "Bank Transfer",
+      "currency": "AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "notes": "1st Payment",
+      "bankAccountId": 1,
+      "createdAt": "2026-03-13T14:08:40.483Z",
+      "id": 15
+    },
+    {
+      "invoiceNumber": "INV-2026-0016",
+      "quotationId": 14,
+      "clientId": 3,
+      "date": "2026-03-13T14:09:48.286Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 333.3333333333333
+        },
+        {
+          "scopeOfWork": "Schematic & Interior Design Drawings",
+          "task": "Styling & Staging",
+          "amount": 1666.6666666666665
+        }
+      ],
+      "subtotal": 2000,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "totalAmount": 2000,
+      "paidAmount": 2000,
+      "paymentDate": "2026-03-13T14:09:17.900Z",
+      "paymentMethod": "Cash",
+      "currency": "AED",
+      "notes": "2nd Payment",
+      "createdAt": "2026-03-13T14:09:48.286Z",
+      "id": 16
     }
   ],
   "bankAccounts": [

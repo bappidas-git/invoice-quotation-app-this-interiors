@@ -1,6 +1,6 @@
 # THIS Interiors — Laravel Backend API Specification
 
-**Document version:** 2.0 (Final — post frontend audit)
+**Document version:** 2.1 (Post data audit — legacy field migration note added)
 **Frontend stack:** React 18, Axios, JSON (camelCase)
 **Backend stack:** Laravel 10+, MySQL 8.0+, Laravel Sanctum
 **Prepared for:** Backend Developer
@@ -832,22 +832,34 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 
 ### Database table: `organization_settings`
 
-| Column              | Type                | Nullable | Default           | Notes                                     |
-| ------------------- | ------------------- | -------- | ----------------- | ----------------------------------------- |
-| id                  | bigint unsigned, PK | No       | 1                 | Always 1 — seeded, never auto-incremented |
-| name                | varchar(255)        | No       | —                 | Required                                  |
-| logo_url            | varchar(1000)       | Yes      | null              |                                           |
-| email               | varchar(255)        | Yes      | null              |                                           |
-| contact             | varchar(100)        | Yes      | null              |                                           |
-| website             | varchar(255)        | Yes      | null              |                                           |
-| address             | text                | Yes      | null              |                                           |
-| city                | varchar(100)        | Yes      | null              |                                           |
-| state               | varchar(100)        | Yes      | null              |                                           |
-| country             | varchar(100)        | Yes      | null              |                                           |
-| postal_code         | varchar(20)         | Yes      | null              |                                           |
-| registration_number | varchar(100)        | Yes      | null              |                                           |
-| created_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                           |
-| updated_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                           |
+| Column              | Type                | Nullable | Default           | Notes                                             |
+| ------------------- | ------------------- | -------- | ----------------- | ------------------------------------------------- |
+| id                  | bigint unsigned, PK | No       | 1                 | Always 1 — seeded, never auto-incremented         |
+| name                | varchar(255)        | No       | —                 | Required                                          |
+| logo_url            | varchar(1000)       | Yes      | null              |                                                   |
+| email               | varchar(255)        | Yes      | null              |                                                   |
+| contact             | varchar(100)        | Yes      | null              |                                                   |
+| website             | varchar(255)        | Yes      | null              |                                                   |
+| address             | text                | Yes      | null              |                                                   |
+| city                | varchar(100)        | Yes      | null              |                                                   |
+| state               | varchar(100)        | Yes      | null              |                                                   |
+| country             | varchar(100)        | Yes      | null              |                                                   |
+| postal_code         | varchar(20)         | Yes      | null              |                                                   |
+| registration_number | varchar(100)        | Yes      | null              |                                                   |
+| bank_name           | varchar(255)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
+| bank_account        | varchar(100)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
+| bank_branch         | varchar(255)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
+| bank_ifsc           | varchar(100)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
+| created_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                                   |
+| updated_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                                   |
+
+> **⚠️ Legacy bank fields — important migration note:**
+>
+> The current JSON Server `db.json` (`organizationSettings` record) contains four legacy banking fields: `bankName`, `bankAccount`, `bankBranch`, `bankIFSC`. These were added before the dedicated `bank_accounts` table existed and are **no longer used by any frontend component**. All banking information is now managed exclusively through the `bank_accounts` resource (Section 8), and quotations/invoices reference banking via `bankAccountId`.
+>
+> You MUST include these four columns in the `organization_settings` table **for data migration completeness** — to avoid data loss when migrating from JSON Server. However, **do NOT expose them in the API response** (`GET /settings/organization` and `PUT /settings/organization`). They should exist in the DB but remain invisible to the frontend.
+>
+> The `PUT /settings/organization` handler must use `$request->except(['bankName', 'bankAccount', 'bankBranch', 'bankIFSC', 'createdAt', 'updatedAt', 'id'])` so that even if these fields are somehow passed, they are never written through the API.
 
 ### API Resource shape:
 
@@ -1080,4 +1092,12 @@ No React component changes required. All API calls, field names, query parameter
 
 ---
 
-**End of specification — v2.0**
+## 20. Changelog — v2.0 → v2.1
+
+| Section                                | Change                                                                                                                                                                                                                                                                                                                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Section 13 (Organization Settings)** | Added 4 legacy bank fields (`bank_name`, `bank_account`, `bank_branch`, `bank_ifsc`) to the DB schema table. These exist in the current JSON Server `db.json` and must be included in the MySQL migration for data completeness. They are NOT exposed in the API response and must be excluded from the `PUT` handler. See the migration note in Section 13 for details. |
+
+---
+
+**End of specification — v2.1**
