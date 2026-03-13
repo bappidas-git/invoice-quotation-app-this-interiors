@@ -1,6 +1,6 @@
 # THIS Interiors — Laravel Backend API Specification
 
-**Document version:** 2.1 (Post data audit — legacy field migration note added)
+**Document version:** 2.2 (Post code audit — server-side filter notes, PaymentUpdate bug fixes)
 **Frontend stack:** React 18, Axios, JSON (camelCase)
 **Backend stack:** Laravel 10+, MySQL 8.0+, Laravel Sanctum
 **Prepared for:** Backend Developer
@@ -423,6 +423,8 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 
 **Status filtering:** Exact string match. URL-encoded as needed (e.g. `Partially%20Paid`).
 
+> **Implementation note:** The `?status=`, `?start_date=`, and `?end_date=` query parameters are defined in the frontend API service (`api.js`) and MUST be supported by the Laravel backend. However, the current React components fetch all records via `GET /quotations` and filter client-side. The server-side filters exist for performance optimization — the frontend may switch to using them in a future release without any backend changes needed.
+
 ---
 
 ## 7. Invoices
@@ -502,6 +504,8 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 - `?clientId=` — filter invoices by client
 - `?quotationId=` — filter invoices belonging to a specific quotation. The ViewQuotation screen uses `invoicesAPI.getAll()` and filters client-side today, but implementing this server-side filter is recommended for performance.
 - `?start_date=` / `?end_date=` — filter on the `date` column, both inclusive
+
+> **Implementation note:** Same as quotations — `?clientId=`, `?start_date=`, and `?end_date=` are defined in the frontend API service and MUST be supported. The current React components fetch all invoices and filter client-side. `?quotationId=` is recommended but not yet used by the frontend.
 
 ---
 
@@ -1100,4 +1104,14 @@ No React component changes required. All API calls, field names, query parameter
 
 ---
 
-**End of specification — v2.1**
+## 21. Changelog — v2.1 → v2.2
+
+| Section                          | Change                                                                                                                                                                                                                                                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Section 6 (Quotations)**       | Added implementation note clarifying that `?status=`, `?start_date=`, and `?end_date=` query parameters are defined in the frontend API service and MUST be supported, even though current React components filter client-side. Server-side filters exist for performance optimization and future frontend updates. |
+| **Section 7 (Invoices)**         | Added similar implementation note for `?clientId=`, `?start_date=`, `?end_date=`, and `?quotationId=` filters.                                                                                                                                                                                                     |
+| **Frontend bug fix (PaymentUpdate.jsx)** | Fixed 3 bugs: (1) Added missing `bankAccountId` to invoice creation, (2) Replaced hardcoded `"AED"` currency with `quotation.currency`, (3) Fixed `totalAmount`/`paidAmount` being sent as strings instead of numbers. These fixes ensure invoices created from the PaymentUpdate page match the spec exactly.       |
+
+---
+
+**End of specification — v2.2**
