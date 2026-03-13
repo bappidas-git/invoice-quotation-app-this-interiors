@@ -91,7 +91,12 @@ const Dashboard = () => {
         }
       }
 
-      const totalQuotationAmount = filteredQuotations.reduce(
+      // Exclude Draft performa from all financial calculations
+      const activeQuotations = filteredQuotations.filter(
+        (q) => q.status !== "Draft"
+      );
+
+      const totalQuotationAmount = activeQuotations.reduce(
         (sum, q) => sum + q.totalAmount,
         0
       );
@@ -125,9 +130,9 @@ const Dashboard = () => {
       setDashboardData({
         totalInvoices: filteredInvoices.length,
         totalInvoiceAmount,
-        totalQuotations: filteredQuotations.length,
+        totalQuotations: activeQuotations.length,
         totalQuotationAmount,
-        partiallyPaidAmount: filteredQuotations
+        partiallyPaidAmount: activeQuotations
           .filter((q) => q.status === "Partially Paid")
           .reduce((sum, q) => sum + q.paidAmount, 0),
         dueAmount: dueAmount > 0 ? dueAmount : 0,

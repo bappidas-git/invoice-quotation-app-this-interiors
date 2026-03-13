@@ -1,4 +1,5 @@
 export const QUOTATION_STATUS = {
+  DRAFT: "Draft",
   QUOTATION: "Performa",
   PARTIALLY_PAID: "Partially Paid",
   FULLY_PAID: "Fully Paid",
