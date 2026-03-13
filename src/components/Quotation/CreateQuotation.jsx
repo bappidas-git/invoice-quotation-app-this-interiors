@@ -86,7 +86,7 @@ const CreateQuotation = () => {
     taxLabel: "Tax",
     bankAccountId: null,
     discountType: "percent",
-    discountValue: 0,
+    discountValue: "",
     discountAmount: 0,
   });
 
@@ -115,11 +115,11 @@ const CreateQuotation = () => {
   const [newTask, setNewTask] = useState({
     scopeOfWorkId: "",
     description: "",
-    estimatedHours: 0,
+    estimatedHours: "",
     isActive: true,
   });
   const [paymentDetails, setPaymentDetails] = useState({
-    amount: 0,
+    amount: "",
     paymentMethod: "Bank Transfer",
     paymentDate: new Date(),
     notes: "",
@@ -216,7 +216,7 @@ const CreateQuotation = () => {
   const handleAddItem = () => {
     setQuotation((prev) => ({
       ...prev,
-      items: [...prev.items, { scopeOfWork: "", task: "", amount: 0 }],
+      items: [...prev.items, { scopeOfWork: "", task: "", amount: "" }],
     }));
   };
 
@@ -233,7 +233,7 @@ const CreateQuotation = () => {
       const newItems = [...prev.items];
       newItems[index] = {
         ...newItems[index],
-        [field]: field === "amount" ? parseFloat(value) || 0 : value,
+        [field]: field === "amount" ? (value === "" ? "" : value) : value,
       };
       const totals = calculateTotals(newItems, prev.discountType, prev.discountValue);
       return { ...prev, items: newItems, ...totals };
@@ -387,7 +387,8 @@ const CreateQuotation = () => {
   };
 
   const handlePaymentSubmit = async () => {
-    if (paymentDetails.amount <= 0) {
+    const paymentAmount = parseFloat(paymentDetails.amount) || 0;
+    if (paymentAmount <= 0) {
       Swal.fire({
         icon: "error",
         title: "Invalid Amount",
@@ -407,7 +408,7 @@ const CreateQuotation = () => {
       return;
     }
 
-    if (paymentDetails.amount > remainingAmount) {
+    if (paymentAmount > remainingAmount) {
       Swal.fire({
         icon: "error",
         title: "Amount Exceeds Balance",
@@ -425,10 +426,11 @@ const CreateQuotation = () => {
     try {
       const newPayment = {
         ...paymentDetails,
+        amount: paymentAmount,
         date: new Date(),
       };
 
-      const newPaidAmount = (quotation.paidAmount || 0) + paymentDetails.amount;
+      const newPaidAmount = (quotation.paidAmount || 0) + paymentAmount;
       const isFullyPaid = newPaidAmount >= quotation.totalAmount;
 
       const updatedQuotation = {
@@ -569,6 +571,11 @@ const CreateQuotation = () => {
     try {
       const quotationData = {
         ...quotation,
+        items: quotation.items.map((item) => ({
+          ...item,
+          amount: parseFloat(item.amount) || 0,
+        })),
+        discountValue: parseFloat(quotation.discountValue) || 0,
         status: QUOTATION_STATUS.DRAFT,
         date: quotation.date.toISOString(),
         payments:
@@ -625,6 +632,11 @@ const CreateQuotation = () => {
     try {
       const quotationData = {
         ...quotation,
+        items: quotation.items.map((item) => ({
+          ...item,
+          amount: parseFloat(item.amount) || 0,
+        })),
+        discountValue: parseFloat(quotation.discountValue) || 0,
         date: quotation.date.toISOString(),
         payments:
           quotation.payments?.map((payment) => ({
@@ -743,6 +755,7 @@ const CreateQuotation = () => {
     try {
       const response = await tasksAPI.create({
         ...newTask,
+        estimatedHours: parseFloat(newTask.estimatedHours) || 0,
         createdAt: new Date().toISOString(),
       });
       setTasks((prev) => [...prev, response.data]);
@@ -750,7 +763,7 @@ const CreateQuotation = () => {
       setNewTask({
         scopeOfWorkId: "",
         description: "",
-        estimatedHours: 0,
+        estimatedHours: "",
         isActive: true,
       });
     } catch (error) {
@@ -929,6 +942,7 @@ const CreateQuotation = () => {
                           }
                           size="small"
                           fullWidth
+                          placeholder="0.00"
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start">
@@ -936,6 +950,7 @@ const CreateQuotation = () => {
                               </InputAdornment>
                             ),
                           }}
+                          inputProps={{ min: 0, step: 0.01 }}
                         />
                       </TableCell>
                       <TableCell>
@@ -1003,14 +1018,15 @@ const CreateQuotation = () => {
                       size="small"
                       value={quotation.discountValue}
                       onChange={(e) =>
-                        handleDiscountChange("discountValue", parseFloat(e.target.value) || 0)
+                        handleDiscountChange("discountValue", e.target.value === "" ? "" : e.target.value)
                       }
+                      placeholder="0"
                       inputProps={{
                         min: 0,
                         max: quotation.discountType === "percent" ? 100 : undefined,
                         step: 0.01,
                       }}
-                      sx={{ width: 100 }}
+                      sx={{ width: 140 }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -1464,10 +1480,11 @@ const CreateQuotation = () => {
               onChange={(e) =>
                 setPaymentDetails({
                   ...paymentDetails,
-                  amount: parseFloat(e.target.value) || 0,
+                  amount: e.target.value === "" ? "" : e.target.value,
                 })
               }
               fullWidth
+              placeholder="0.00"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -1475,6 +1492,7 @@ const CreateQuotation = () => {
                   </InputAdornment>
                 ),
               }}
+              inputProps={{ min: 0, step: 0.01 }}
               helperText={`Maximum payable amount: ${formatCurrency(
                 quotation.totalAmount - (quotation.paidAmount || 0),
                 quotation.currency

@@ -40,7 +40,7 @@ const Tasks = () => {
   const [currentTask, setCurrentTask] = useState({
     scopeOfWorkId: "",
     description: "",
-    estimatedHours: 0,
+    estimatedHours: "",
     isActive: true,
   });
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,7 +73,7 @@ const Tasks = () => {
       setCurrentTask({
         scopeOfWorkId: "",
         description: "",
-        estimatedHours: 0,
+        estimatedHours: "",
         isActive: true,
       });
       setEditMode(false);
@@ -103,9 +103,13 @@ const Tasks = () => {
     }
 
     try {
+      const taskData = {
+        ...currentTask,
+        estimatedHours: parseFloat(currentTask.estimatedHours) || 0,
+      };
       if (editMode) {
         await tasksAPI.update(currentTask.id, {
-          ...currentTask,
+          ...taskData,
           updatedAt: new Date().toISOString(),
         });
         Swal.fire({
@@ -115,7 +119,7 @@ const Tasks = () => {
         });
       } else {
         await tasksAPI.create({
-          ...currentTask,
+          ...taskData,
           createdAt: new Date().toISOString(),
         });
         Swal.fire({
@@ -349,10 +353,11 @@ const Tasks = () => {
               onChange={(e) =>
                 setCurrentTask({
                   ...currentTask,
-                  estimatedHours: parseFloat(e.target.value) || 0,
+                  estimatedHours: e.target.value === "" ? "" : e.target.value,
                 })
               }
               fullWidth
+              placeholder="0"
               inputProps={{ min: 0, step: 0.5 }}
             />
           </Box>
