@@ -16,7 +16,7 @@ const DateRangeFilter = ({ value, onChange, className }) => {
   const [activeFilter, setActiveFilter] = useState(value || "Last Month");
   const [dateRange, setDateRange] = useState({ start: null, end: null });
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [customLabel, setCustomLabel] = useState("Choose Date Range");
+  const [customLabel, setCustomLabel] = useState("Date Range");
 
   const filters = ["Today", "Last Week", "Last Month", customLabel, "All"];
 
@@ -27,19 +27,16 @@ const DateRangeFilter = ({ value, onChange, className }) => {
   }, [value]);
 
   useEffect(() => {
-    if (
-      activeFilter !== "Choose Date Range" &&
-      !activeFilter.includes(" - ")
-    ) {
-      setCustomLabel("Choose Date Range");
+    if (activeFilter !== "Date Range" && !activeFilter.includes(" - ")) {
+      setCustomLabel("Date Range");
       setDateRange({ start: null, end: null });
     }
   }, [activeFilter]);
 
   const handleFilterClick = (filter) => {
-    if (filter === customLabel && customLabel === "Choose Date Range") {
+    if (filter === customLabel && customLabel === "Date Range") {
       setShowDatePicker(true);
-    } else if (filter === customLabel && customLabel !== "Choose Date Range") {
+    } else if (filter === customLabel && customLabel !== "Date Range") {
       setActiveFilter(filter);
       onChange(filter, dateRange);
     } else {
@@ -52,7 +49,7 @@ const DateRangeFilter = ({ value, onChange, className }) => {
     if (dateRange.start && dateRange.end) {
       const label = `${format(dateRange.start, "MMM dd")} - ${format(
         dateRange.end,
-        "MMM dd"
+        "MMM dd",
       )}`;
       setCustomLabel(label);
       setActiveFilter(label);
@@ -63,7 +60,7 @@ const DateRangeFilter = ({ value, onChange, className }) => {
 
   const handleCancelDateRange = () => {
     setShowDatePicker(false);
-    if (customLabel === "Choose Date Range") {
+    if (customLabel === "Date Range") {
       setDateRange({ start: null, end: null });
     }
   };
