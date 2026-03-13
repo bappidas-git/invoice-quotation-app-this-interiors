@@ -28,6 +28,8 @@ import {
   Divider,
   FormControlLabel,
   Switch,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Icon } from "@iconify/react";
@@ -83,6 +85,9 @@ const CreateQuotation = () => {
     serviceTaxPercent: 0,
     taxLabel: "Tax",
     bankAccountId: null,
+    discountType: "percent",
+    discountValue: 0,
+    discountAmount: 0,
   });
 
   const [openClientDialog, setOpenClientDialog] = useState(false);
@@ -185,14 +190,20 @@ const CreateQuotation = () => {
     }
   };
 
-  const calculateTotals = (items) => {
+  const calculateTotals = (items, discountType, discountValue) => {
     const subtotal = items.reduce(
       (sum, item) => sum + (parseFloat(item.amount) || 0),
       0
     );
-    const taxCalc = applyTaxCalculations(subtotal, taxSettings);
+    const discountAmount =
+      (discountType || "percent") === "percent"
+        ? (subtotal * (parseFloat(discountValue) || 0)) / 100
+        : parseFloat(discountValue) || 0;
+    const afterDiscount = subtotal - discountAmount;
+    const taxCalc = applyTaxCalculations(afterDiscount, taxSettings);
     return {
       subtotal,
+      discountAmount,
       taxAmount: taxCalc.taxAmount,
       serviceTaxAmount: taxCalc.serviceTaxAmount,
       totalAmount: taxCalc.total,
@@ -212,7 +223,7 @@ const CreateQuotation = () => {
   const handleRemoveItem = (index) => {
     setQuotation((prev) => {
       const newItems = prev.items.filter((_, i) => i !== index);
-      const totals = calculateTotals(newItems);
+      const totals = calculateTotals(newItems, prev.discountType, prev.discountValue);
       return { ...prev, items: newItems, ...totals };
     });
   };
@@ -224,8 +235,23 @@ const CreateQuotation = () => {
         ...newItems[index],
         [field]: field === "amount" ? parseFloat(value) || 0 : value,
       };
-      const totals = calculateTotals(newItems);
+      const totals = calculateTotals(newItems, prev.discountType, prev.discountValue);
       return { ...prev, items: newItems, ...totals };
+    });
+  };
+
+  const handleDiscountChange = (field, value) => {
+    setQuotation((prev) => {
+      const updated = {
+        ...prev,
+        [field]: value,
+      };
+      const totals = calculateTotals(
+        updated.items,
+        updated.discountType,
+        updated.discountValue
+      );
+      return { ...updated, ...totals };
     });
   };
 
@@ -241,6 +267,9 @@ const CreateQuotation = () => {
               quotation.subtotal || quotation.totalAmount,
               quotation.currency
             )}</p>
+            ${quotation.discountAmount > 0
+              ? `<p><strong>Discount:</strong> -${formatCurrency(quotation.discountAmount, quotation.currency)}</p>`
+              : ""}
             ${
               quotation.taxAmount > 0
                 ? `<p><strong>${quotation.taxLabel} (${
@@ -921,12 +950,97 @@ const CreateQuotation = () => {
 
             <Box className={styles.totalSection}>
               <Box className={styles.totalBreakdown}>
+
+                {/* Discount Row — above subtotal line */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    py: 1,
+                    gap: 2,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Discount
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <ToggleButtonGroup
+                      value={quotation.discountType}
+                      exclusive
+                      size="small"
+                      onChange={(e, val) => {
+                        if (val) handleDiscountChange("discountType", val);
+                      }}
+                      sx={{
+                        "& .MuiToggleButton-root": {
+                          px: 1.5,
+                          py: 0.4,
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          borderRadius: "6px !important",
+                          textTransform: "none",
+                        },
+                        "& .Mui-selected": {
+                          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important",
+                          color: "white !important",
+                        },
+                      }}
+                    >
+                      <ToggleButton value="percent">%</ToggleButton>
+                      <ToggleButton value="flat">Flat</ToggleButton>
+                    </ToggleButtonGroup>
+                    <TextField
+                      type="number"
+                      size="small"
+                      value={quotation.discountValue}
+                      onChange={(e) =>
+                        handleDiscountChange("discountValue", parseFloat(e.target.value) || 0)
+                      }
+                      inputProps={{
+                        min: 0,
+                        max: quotation.discountType === "percent" ? 100 : undefined,
+                        step: 0.01,
+                      }}
+                      sx={{ width: 100 }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {quotation.discountType === "percent" ? "%" : quotation.currency || "AED"}
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                {/* Subtotal */}
                 <Box className={styles.totalRow}>
                   <Typography variant="body1">Subtotal:</Typography>
                   <Typography variant="body1">
                     {formatCurrency(quotation.subtotal, quotation.currency)}
                   </Typography>
                 </Box>
+
+                {/* Discount Amount row (only when discount > 0) */}
+                {quotation.discountAmount > 0 && (
+                  <Box className={styles.totalRow}>
+                    <Typography variant="body2" color="error">
+                      Discount
+                      {quotation.discountType === "percent"
+                        ? ` (${quotation.discountValue}%)`
+                        : ""}
+                      :
+                    </Typography>
+                    <Typography variant="body2" color="error">
+                      -{formatCurrency(quotation.discountAmount, quotation.currency)}
+                    </Typography>
+                  </Box>
+                )}
+
                 {quotation.taxAmount > 0 && (
                   <Box className={styles.totalRow}>
                     <Typography variant="body2">
@@ -1302,6 +1416,12 @@ const CreateQuotation = () => {
                 quotation.currency
               )}
             </Typography>
+            {quotation.discountAmount > 0 && (
+              <Typography variant="body2" gutterBottom>
+                <strong>Discount:</strong>{" "}
+                -{formatCurrency(quotation.discountAmount, quotation.currency)}
+              </Typography>
+            )}
             {quotation.taxAmount > 0 && (
               <Typography variant="body2" gutterBottom>
                 <strong>
