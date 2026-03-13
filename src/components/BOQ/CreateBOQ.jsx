@@ -20,9 +20,6 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
-  ToggleButton,
-  ToggleButtonGroup,
-  InputAdornment,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -605,53 +602,93 @@ const CreateBOQ = () => {
                         className={styles.lineItemFieldXSmall}
                         inputProps={{ min: 1 }}
                       />
-                      {/* Discount Type + Value */}
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 120 }}>
-                        <ToggleButtonGroup
-                          value={item.discountType || "percent"}
-                          exclusive
-                          size="small"
-                          onChange={(e, val) => {
-                            if (val) handleItemChange(index, "discountType", val);
-                          }}
+                      {/* Discount — unified segmented input group */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          border: "1px solid",
+                          borderColor: "divider",
+                          borderRadius: "8px",
+                          overflow: "hidden",
+                          minWidth: 160,
+                          height: 40,
+                          background: "white",
+                          "&:hover": { borderColor: "text.secondary" },
+                          "&:focus-within": {
+                            borderColor: "primary.main",
+                            boxShadow: "0 0 0 2px rgba(102, 126, 234, 0.15)",
+                          },
+                        }}
+                      >
+                        {/* Segment toggle — left side */}
+                        <Box
                           sx={{
-                            "& .MuiToggleButton-root": {
-                              px: 1,
-                              py: 0.3,
-                              fontSize: "11px",
-                              fontWeight: 600,
-                              textTransform: "none",
-                              borderRadius: "4px !important",
-                              minWidth: 36,
-                            },
-                            "& .Mui-selected": {
-                              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important",
-                              color: "white !important",
-                            },
+                            display: "flex",
+                            borderRight: "1px solid",
+                            borderColor: "divider",
+                            height: "100%",
                           }}
                         >
-                          <ToggleButton value="percent">%</ToggleButton>
-                          <ToggleButton value="flat">Flat</ToggleButton>
-                        </ToggleButtonGroup>
-                        <TextField
-                          label="Discount"
-                          size="small"
+                          {["percent", "flat"].map((type) => (
+                            <Box
+                              key={type}
+                              onClick={() => handleItemChange(index, "discountType", type)}
+                              sx={{
+                                px: 1.2,
+                                height: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "12px",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                                userSelect: "none",
+                                transition: "all 0.15s ease",
+                                background:
+                                  (item.discountType || "percent") === type
+                                    ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                                    : "transparent",
+                                color:
+                                  (item.discountType || "percent") === type
+                                    ? "white"
+                                    : "text.secondary",
+                                "&:hover": {
+                                  background:
+                                    (item.discountType || "percent") === type
+                                      ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                                      : "rgba(102, 126, 234, 0.08)",
+                                },
+                              }}
+                            >
+                              {type === "percent" ? "%" : "Flat"}
+                            </Box>
+                          ))}
+                        </Box>
+
+                        {/* Number input — right side */}
+                        <input
                           type="number"
                           value={item.discount}
-                          onChange={(e) => handleItemChange(index, "discount", e.target.value)}
-                          className={styles.lineItemFieldXSmall}
-                          inputProps={{
-                            min: 0,
-                            max: (item.discountType || "percent") === "percent" ? 100 : undefined,
-                            step: 0.01,
+                          min={0}
+                          max={(item.discountType || "percent") === "percent" ? 100 : undefined}
+                          step={0.01}
+                          onChange={(e) =>
+                            handleItemChange(index, "discount", e.target.value)
+                          }
+                          style={{
+                            flex: 1,
+                            border: "none",
+                            outline: "none",
+                            padding: "0 10px",
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            width: "100%",
+                            background: "transparent",
+                            color: "inherit",
+                            fontFamily: "inherit",
                           }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                {(item.discountType || "percent") === "percent" ? "%" : formData.currency || "AED"}
-                              </InputAdornment>
-                            ),
-                          }}
+                          placeholder="0"
                         />
                       </Box>
                       <Box className={styles.lineTotalBox}>
