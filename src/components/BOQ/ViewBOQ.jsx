@@ -58,9 +58,19 @@ const ViewBOQ = () => {
       // Check if a BOQ invoice exists for this BOQ
       if (boqRes.data.status === BOQ_STATUS.APPROVED) {
         try {
-          const invoicesRes = await boqInvoicesAPI.getByBoqId(id);
-          if (invoicesRes.data && invoicesRes.data.length > 0) {
-            setBoqInvoiceId(invoicesRes.data[0].id);
+          let invoices = [];
+          try {
+            const invoicesRes = await boqInvoicesAPI.getByBoqId(id);
+            invoices = invoicesRes.data || [];
+          } catch (lookupError) {
+            // Fallback: fetch all and filter locally if query-based lookup fails
+            const allRes = await boqInvoicesAPI.getAll();
+            invoices = (allRes.data || []).filter(
+              (inv) => String(inv.boqId) === String(id)
+            );
+          }
+          if (invoices.length > 0) {
+            setBoqInvoiceId(invoices[0].id);
           }
         } catch (e) {
           console.error("Error checking BOQ invoice:", e);
