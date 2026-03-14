@@ -701,6 +701,62 @@
       "createdAt": "2026-03-13T14:07:56.598Z",
       "updatedAt": "2026-03-13T14:09:48.234Z",
       "id": 14
+    },
+    {
+      "quotationNumber": "PI-2026-0014",
+      "clientId": 4,
+      "date": "2026-03-14T07:04:21.924Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 200
+        },
+        {
+          "scopeOfWork": "Procurement Management (3 months included)",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 800
+        },
+        {
+          "scopeOfWork": "Test Scope 1",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 1000
+        }
+      ],
+      "subtotal": 2000,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": 2000,
+      "status": "Partially Paid",
+      "paidAmount": 1499.99,
+      "payments": [
+        {
+          "amount": 999.99,
+          "paymentMethod": "Bank Transfer",
+          "paymentDate": "2026-03-14T07:06:05.008Z",
+          "notes": "1st Payment",
+          "date": "2026-03-14T07:06:33.007Z"
+        },
+        {
+          "amount": 500,
+          "paymentMethod": "Online Payment",
+          "paymentDate": "2026-03-14T07:09:12.320Z",
+          "notes": "2nd Payment",
+          "date": "2026-03-14T07:17:08.130Z"
+        }
+      ],
+      "currency": "AED",
+      "notes": "Step 1",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "bankAccountId": 1,
+      "discountType": "percent",
+      "discountValue": 0,
+      "discountAmount": 0,
+      "createdAt": "2026-03-14T07:05:12.454Z",
+      "updatedAt": "2026-03-14T07:17:08.130Z",
+      "id": 15
     }
   ],
   "invoices": [
@@ -1142,6 +1198,82 @@
       "notes": "2nd Payment",
       "createdAt": "2026-03-13T14:09:48.286Z",
       "id": 16
+    },
+    {
+      "invoiceNumber": "INV-2026-0016",
+      "quotationId": 15,
+      "clientId": 4,
+      "date": "2026-03-14T07:06:33.205Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 99.99900000000001
+        },
+        {
+          "scopeOfWork": "Procurement Management (3 months included)",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 399.99600000000004
+        },
+        {
+          "scopeOfWork": "Test Scope 1",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 499.995
+        }
+      ],
+      "subtotal": 999.99,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "totalAmount": "999.99",
+      "paidAmount": "999.99",
+      "paymentDate": "2026-03-14T07:06:05.008Z",
+      "paymentMethod": "Bank Transfer",
+      "currency": "AED",
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "notes": "1st Payment",
+      "bankAccountId": 1,
+      "createdAt": "2026-03-14T07:06:33.205Z",
+      "id": 17
+    },
+    {
+      "invoiceNumber": "INV-2026-0017",
+      "quotationId": 15,
+      "clientId": 4,
+      "date": "2026-03-14T07:17:08.219Z",
+      "items": [
+        {
+          "scopeOfWork": "Design Concept & Proposal",
+          "task": "Market Insights, Initial Design Planning, Creative Concepts, Mood Boards, and Presentation with Furniture, Fixtures & Equipment (FF&E) Selections",
+          "amount": 50
+        },
+        {
+          "scopeOfWork": "Procurement Management (3 months included)",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 200
+        },
+        {
+          "scopeOfWork": "Test Scope 1",
+          "task": "Test Scope 1 Related Task Description...",
+          "amount": 250
+        }
+      ],
+      "subtotal": 500,
+      "taxAmount": 0,
+      "serviceTaxAmount": 0,
+      "taxPercent": 0,
+      "serviceTaxPercent": 0,
+      "taxLabel": "Tax",
+      "totalAmount": 500,
+      "paidAmount": 500,
+      "paymentDate": "2026-03-14T07:09:12.320Z",
+      "paymentMethod": "Online Payment",
+      "currency": "AED",
+      "notes": "2nd Payment",
+      "bankAccountId": 1,
+      "createdAt": "2026-03-14T07:17:08.219Z",
+      "id": 18
     }
   ],
   "bankAccounts": [

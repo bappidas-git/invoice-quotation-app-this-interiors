@@ -98,7 +98,7 @@ const PaymentUpdate = () => {
         icon: "error",
         title: "Amount Exceeds Balance",
         text: `Payment amount cannot exceed the remaining balance of ${formatCurrency(
-          remainingAmount
+          remainingAmount,
         )}`,
       });
       return;
@@ -117,8 +117,8 @@ const PaymentUpdate = () => {
       title: "Confirm Payment",
       html: `
         <div style="text-align: left;">
-          <p><strong>Payment Breakdown:</strong></p>
-          <p>Subtotal: ${formatCurrency(subtotalPortion)}</p>
+          <p style="margin-bottom:5px;"><strong>Payment Breakdown:</strong></p>
+          <p style="margin-bottom:10px;">Subtotal: <span style="color:green; font-weight:bold;">${formatCurrency(subtotalPortion)}</span></p>
           ${
             quotation.taxAmount > 0
               ? `<p>${quotation.taxLabel || "Tax"} (${
@@ -134,15 +134,16 @@ const PaymentUpdate = () => {
               : ""
           }
           <hr/>
-          <p><strong>Total Payment Amount:</strong> ${formatCurrency(
-            paymentAmount
-          )}</p>
-          <p><strong>Payment Method:</strong> ${
+          <br/>
+          <p style="margin-bottom:5px;"><strong>Total Payment Amount:</strong> <span style="color:green; font-weight:bold;">${formatCurrency(
+            paymentAmount,
+          )}</span></p>
+          <p style="margin-bottom:5px;"><strong>Payment Method:</strong> ${
             paymentDetails.paymentMethod
           }</p>
-          <p><strong>Remaining Balance After Payment:</strong> ${formatCurrency(
-            remainingAmount - paymentAmount
-          )}</p>
+          <p style="margin-bottom:5px;"><strong>Remaining Balance After Payment:</strong> <span style="color:orange; font-weight:bold;">${formatCurrency(
+            remainingAmount - paymentAmount,
+          )}</span></p>
         </div>
       `,
       icon: "info",
@@ -152,8 +153,7 @@ const PaymentUpdate = () => {
 
     if (result.isConfirmed) {
       try {
-        const newPaidAmount =
-          (quotation.paidAmount || 0) + paymentAmount;
+        const newPaidAmount = (quotation.paidAmount || 0) + paymentAmount;
         const isFullyPaid = newPaidAmount >= quotation.totalAmount;
 
         // Update quotation with payment
@@ -240,7 +240,7 @@ const PaymentUpdate = () => {
           icon: "success",
           title: "Payment Recorded",
           text: `Payment of ${formatCurrency(
-            paymentDetails.amount
+            paymentDetails.amount,
           )} has been recorded and invoice generated`,
         });
 
@@ -376,8 +376,8 @@ const PaymentUpdate = () => {
                   quotation.status === QUOTATION_STATUS.FULLY_PAID
                     ? "success"
                     : quotation.status === QUOTATION_STATUS.PARTIALLY_PAID
-                    ? "warning"
-                    : "default"
+                      ? "warning"
+                      : "default"
                 }
                 size="small"
               />
@@ -443,7 +443,7 @@ const PaymentUpdate = () => {
               }}
               inputProps={{ min: 0, step: 0.01 }}
               helperText={`Maximum payable amount: ${formatCurrency(
-                remainingAmount
+                remainingAmount,
               )}`}
             />
 
@@ -505,8 +505,9 @@ const PaymentUpdate = () => {
                     <Typography variant="body2">Subtotal:</Typography>
                     <Typography variant="body2">
                       {formatCurrency(
-                        ((quotation.subtotal || 0) - (quotation.discountAmount || 0)) *
-                          (paymentDetails.amount / quotation.totalAmount)
+                        ((quotation.subtotal || 0) -
+                          (quotation.discountAmount || 0)) *
+                          (paymentDetails.amount / quotation.totalAmount),
                       )}
                     </Typography>
                   </Box>
@@ -521,7 +522,7 @@ const PaymentUpdate = () => {
                       <Typography variant="body2">
                         {formatCurrency(
                           quotation.taxAmount *
-                            (paymentDetails.amount / quotation.totalAmount)
+                            (paymentDetails.amount / quotation.totalAmount),
                         )}
                       </Typography>
                     </Box>
@@ -536,7 +537,7 @@ const PaymentUpdate = () => {
                       <Typography variant="body2">
                         {formatCurrency(
                           quotation.serviceTaxAmount *
-                            (paymentDetails.amount / quotation.totalAmount)
+                            (paymentDetails.amount / quotation.totalAmount),
                         )}
                       </Typography>
                     </Box>
