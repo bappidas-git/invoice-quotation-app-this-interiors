@@ -1653,6 +1653,37 @@
       "notes": "Need to send to Client today",
       "updatedAt": "2026-03-13T07:49:43.129Z",
       "id": 4
+    },
+    {
+      "boqNumber": "BOQ-2026-0005",
+      "clientId": 3,
+      "date": "2026-03-14T00:00:00.000Z",
+      "status": "Approved",
+      "items": [
+        {
+          "area": "Hallway",
+          "imageUrl": "https://placehold.co/600x400?text=Hello+World",
+          "category": "Coffee Table",
+          "itemName": "Test Item",
+          "unitPrice": 100,
+          "quantity": 12,
+          "discount": 0,
+          "discountType": "percent",
+          "procurementSource": "Test Test Test"
+        }
+      ],
+      "subtotal": 1200,
+      "totalDiscount": 0,
+      "taxAmount": 0,
+      "taxPercent": 0,
+      "taxLabel": "Tax",
+      "serviceTaxAmount": 0,
+      "serviceTaxPercent": 0,
+      "totalAmount": 1200,
+      "currency": "AED",
+      "notes": "",
+      "updatedAt": "2026-03-14T12:28:10.523Z",
+      "id": 5
     }
   ],
   "generalSettings": [
