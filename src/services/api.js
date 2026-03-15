@@ -20,9 +20,35 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor — handle 401 globally
+// Response interceptor — normalize Laravel API responses & handle 401 globally
+//
+// Problem: Laravel API Resources wrap responses in a { data: ... } envelope:
+//   - Collections: { data: [...], meta: {...}, links: {...} }
+//   - Single resources: { data: { id: 1, ... } }
+// But JSON Server (used in development) returns plain arrays/objects directly.
+// All components expect response.data to be the array or object itself.
+//
+// This interceptor unwraps the Laravel envelope so components work with both
+// backends without any code changes.
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const payload = response.data;
+
+    // Unwrap when payload is a non-array object with a `data` property.
+    // JSON Server never returns objects with a top-level `data` key for
+    // any entity in this app (clients, quotations, invoices, settings, etc.),
+    // so this is safe for both backends.
+    if (
+      payload &&
+      typeof payload === "object" &&
+      !Array.isArray(payload) &&
+      Object.prototype.hasOwnProperty.call(payload, "data")
+    ) {
+      response.data = payload.data;
+    }
+
+    return response;
+  },
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("auth_token");
