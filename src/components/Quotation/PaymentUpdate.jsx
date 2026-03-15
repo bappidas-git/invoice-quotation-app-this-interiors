@@ -81,7 +81,7 @@ const PaymentUpdate = () => {
   };
 
   const handleAddPayment = async () => {
-    const remainingAmount = quotation.totalAmount - (quotation.paidAmount || 0);
+    const remainingAmount = parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0);
     const paymentAmount = parseFloat(paymentDetails.amount) || 0;
 
     if (paymentAmount <= 0) {
@@ -153,7 +153,7 @@ const PaymentUpdate = () => {
 
     if (result.isConfirmed) {
       try {
-        const newPaidAmount = (quotation.paidAmount || 0) + paymentAmount;
+        const newPaidAmount = parseFloat(quotation.paidAmount || 0) + paymentAmount;
         const isFullyPaid = newPaidAmount >= quotation.totalAmount;
 
         // Update quotation with payment
@@ -272,7 +272,7 @@ const PaymentUpdate = () => {
     );
   }
 
-  const remainingAmount = quotation.totalAmount - (quotation.paidAmount || 0);
+  const remainingAmount = parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0);
 
   return (
     <Box className={styles.paymentUpdate}>

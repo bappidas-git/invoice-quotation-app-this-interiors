@@ -95,17 +95,17 @@ const QuotationList = () => {
       const stats = filteredQuotations.reduce(
         (acc, q) => {
           acc.total.count++;
-          acc.total.amount += q.totalAmount;
+          acc.total.amount += parseFloat(q.totalAmount || 0);
 
           if (q.status === QUOTATION_STATUS.DRAFT) {
             acc.draft.count++;
-            acc.draft.amount += q.totalAmount || 0;
+            acc.draft.amount += parseFloat(q.totalAmount || 0);
           } else if (q.status === QUOTATION_STATUS.PARTIALLY_PAID) {
             acc.partial.count++;
-            acc.partial.amount += q.paidAmount || 0;
+            acc.partial.amount += parseFloat(q.paidAmount || 0);
           } else if (q.status === QUOTATION_STATUS.FULLY_PAID) {
             acc.paid.count++;
-            acc.paid.amount += q.totalAmount;
+            acc.paid.amount += parseFloat(q.totalAmount || 0);
           }
 
           return acc;

@@ -413,14 +413,14 @@ const ViewQuotation = () => {
                     fontWeight="600"
                     color="success.main"
                   >
-                    {formatCurrency(quotation.paidAmount || 0)}
+                    {formatCurrency(parseFloat(quotation.paidAmount || 0))}
                   </Typography>
                 </Box>
                 <Box className={styles.summaryRow}>
                   <Typography variant="h6">Balance Due</Typography>
                   <Typography variant="h6" color="error">
                     {formatCurrency(
-                      quotation.totalAmount - (quotation.paidAmount || 0)
+                      parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0)
                     )}
                   </Typography>
                 </Box>
