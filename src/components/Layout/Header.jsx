@@ -54,7 +54,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
 
           <Box className={styles.logoWrapper}>
             <img
-              src="https://thisinteriors.com/wp-content/uploads/2023/05/NEW-FINAL-THIS-Logo-1.png"
+              src="https://res.cloudinary.com/dn9gyaiik/image/upload/v1773555369/this-logo-white_fvqndw.png"
               alt="THIS Interiors"
               className={styles.logo}
             />
