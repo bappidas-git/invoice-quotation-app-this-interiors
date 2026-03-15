@@ -86,7 +86,7 @@ const ClientList = () => {
       );
 
       const totalRevenue = quotationsList.reduce(
-        (sum, q) => sum + (q.paidAmount || 0),
+        (sum, q) => sum + parseFloat(q.paidAmount || 0),
         0
       );
 
@@ -112,14 +112,14 @@ const ClientList = () => {
 
   const getClientTotalAmount = (clientId) => {
     return getClientQuotations(clientId).reduce(
-      (sum, q) => sum + (q.totalAmount || 0),
+      (sum, q) => sum + parseFloat(q.totalAmount || 0),
       0
     );
   };
 
   const getClientPaidAmount = (clientId) => {
     return getClientQuotations(clientId).reduce(
-      (sum, q) => sum + (q.paidAmount || 0),
+      (sum, q) => sum + parseFloat(q.paidAmount || 0),
       0
     );
   };

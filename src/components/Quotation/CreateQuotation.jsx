@@ -299,7 +299,7 @@ const CreateQuotation = () => {
               quotation.currency
             )}</p>
             <p><strong>Balance:</strong> ${formatCurrency(
-              quotation.totalAmount - quotation.paidAmount,
+              parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0),
               quotation.currency
             )}</p>
           </div>
@@ -321,7 +321,7 @@ const CreateQuotation = () => {
     setLoading(true);
     try {
       const remainingAmount =
-        quotation.totalAmount - (quotation.paidAmount || 0);
+        parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0);
 
       const newPayment = {
         amount: remainingAmount,
@@ -397,7 +397,7 @@ const CreateQuotation = () => {
       return;
     }
 
-    const remainingAmount = quotation.totalAmount - (quotation.paidAmount || 0);
+    const remainingAmount = parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0);
 
     if (remainingAmount <= 0) {
       await Swal.fire({
@@ -430,7 +430,7 @@ const CreateQuotation = () => {
         date: new Date(),
       };
 
-      const newPaidAmount = (quotation.paidAmount || 0) + paymentAmount;
+      const newPaidAmount = parseFloat(quotation.paidAmount || 0) + paymentAmount;
       const isFullyPaid = newPaidAmount >= quotation.totalAmount;
 
       const updatedQuotation = {
@@ -1463,12 +1463,12 @@ const CreateQuotation = () => {
             </Typography>
             <Typography variant="body2" gutterBottom>
               <strong>Already Paid:</strong>{" "}
-              {formatCurrency(quotation.paidAmount || 0, quotation.currency)}
+              {formatCurrency(parseFloat(quotation.paidAmount || 0), quotation.currency)}
             </Typography>
             <Typography variant="body2" gutterBottom>
               <strong>Balance:</strong>{" "}
               {formatCurrency(
-                quotation.totalAmount - (quotation.paidAmount || 0),
+                parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0),
                 quotation.currency
               )}
             </Typography>
@@ -1494,7 +1494,7 @@ const CreateQuotation = () => {
               }}
               inputProps={{ min: 0, step: 0.01 }}
               helperText={`Maximum payable amount: ${formatCurrency(
-                quotation.totalAmount - (quotation.paidAmount || 0),
+                parseFloat(quotation.totalAmount || 0) - parseFloat(quotation.paidAmount || 0),
                 quotation.currency
               )}`}
             />

@@ -208,9 +208,9 @@ const Reports = () => {
   const revenueData = useMemo(() => {
     const { activeQuotations: fq, invoices: fi } = filteredData;
 
-    const totalQuotationAmount = fq.reduce((s, q) => s + (q.totalAmount || 0), 0);
-    const totalInvoiceAmount = fi.reduce((s, i) => s + (i.totalAmount || 0), 0);
-    const totalCollected = fi.reduce((s, i) => s + (i.paidAmount || 0), 0);
+    const totalQuotationAmount = fq.reduce((s, q) => s + parseFloat(q.totalAmount || 0), 0);
+    const totalInvoiceAmount = fi.reduce((s, i) => s + parseFloat(i.totalAmount || 0), 0);
+    const totalCollected = fi.reduce((s, i) => s + parseFloat(i.paidAmount || 0), 0);
     const totalOutstanding = totalQuotationAmount - totalCollected;
 
     // Monthly revenue breakdown
@@ -220,8 +220,8 @@ const Reports = () => {
       const key = format(d, "yyyy-MM");
       const label = format(d, "MMM yyyy");
       if (!monthlyMap[key]) monthlyMap[key] = { key, label, invoiced: 0, collected: 0 };
-      monthlyMap[key].invoiced += inv.totalAmount || 0;
-      monthlyMap[key].collected += inv.paidAmount || 0;
+      monthlyMap[key].invoiced += parseFloat(inv.totalAmount || 0);
+      monthlyMap[key].collected += parseFloat(inv.paidAmount || 0);
     });
 
     fq.forEach((q) => {
@@ -266,15 +266,15 @@ const Reports = () => {
     fq.forEach((q) => {
       if (map[q.clientId]) {
         map[q.clientId].quotations += 1;
-        map[q.clientId].quotationAmount += q.totalAmount || 0;
+        map[q.clientId].quotationAmount += parseFloat(q.totalAmount || 0);
       }
     });
 
     fi.forEach((i) => {
       if (map[i.clientId]) {
         map[i.clientId].invoices += 1;
-        map[i.clientId].invoiceAmount += i.totalAmount || 0;
-        map[i.clientId].paidAmount += i.paidAmount || 0;
+        map[i.clientId].invoiceAmount += parseFloat(i.totalAmount || 0);
+        map[i.clientId].paidAmount += parseFloat(i.paidAmount || 0);
       }
     });
 
@@ -305,8 +305,8 @@ const Reports = () => {
       .map(([status, items]) => ({
         status,
         count: items.length,
-        totalAmount: items.reduce((s, q) => s + (q.totalAmount || 0), 0),
-        paidAmount: items.reduce((s, q) => s + (q.paidAmount || 0), 0),
+        totalAmount: items.reduce((s, q) => s + parseFloat(q.totalAmount || 0), 0),
+        paidAmount: items.reduce((s, q) => s + parseFloat(q.paidAmount || 0), 0),
       }));
 
     const total = fq.length || 1;
@@ -324,7 +324,7 @@ const Reports = () => {
       const method = inv.paymentMethod || "Other";
       if (!methodMap[method]) methodMap[method] = { method, count: 0, amount: 0 };
       methodMap[method].count += 1;
-      methodMap[method].amount += inv.paidAmount || 0;
+      methodMap[method].amount += parseFloat(inv.paidAmount || 0);
     });
 
     // Also from quotation payments array
@@ -423,11 +423,11 @@ const Reports = () => {
 
     const outstanding = fq
       .filter((q) => {
-        const balance = (q.totalAmount || 0) - (q.paidAmount || 0);
+        const balance = parseFloat(q.totalAmount || 0) - parseFloat(q.paidAmount || 0);
         return balance > 0;
       })
       .map((q) => {
-        const balance = (q.totalAmount || 0) - (q.paidAmount || 0);
+        const balance = parseFloat(q.totalAmount || 0) - parseFloat(q.paidAmount || 0);
         const daysOld = Math.floor(
           (new Date() - new Date(q.date)) / (1000 * 60 * 60 * 24)
         );
@@ -444,8 +444,8 @@ const Reports = () => {
           client: clientMap[q.clientId] || "Unknown",
           clientId: q.clientId,
           date: q.date,
-          totalAmount: q.totalAmount || 0,
-          paidAmount: q.paidAmount || 0,
+          totalAmount: parseFloat(q.totalAmount || 0),
+          paidAmount: parseFloat(q.paidAmount || 0),
           balance,
           daysOld,
           aging,
