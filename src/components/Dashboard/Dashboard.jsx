@@ -97,17 +97,17 @@ const Dashboard = () => {
       );
 
       const totalQuotationAmount = activeQuotations.reduce(
-        (sum, q) => sum + q.totalAmount,
+        (sum, q) => sum + (parseFloat(q.totalAmount) || 0),
         0
       );
 
       const totalInvoiceAmount = filteredInvoices.reduce(
-        (sum, i) => sum + i.totalAmount,
+        (sum, i) => sum + (parseFloat(i.totalAmount) || 0),
         0
       );
 
       const totalBoqAmount = filteredBoqs.reduce(
-        (sum, b) => sum + (b.totalAmount || 0),
+        (sum, b) => sum + (parseFloat(b.totalAmount) || 0),
         0
       );
 
@@ -134,7 +134,7 @@ const Dashboard = () => {
         totalQuotationAmount,
         partiallyPaidAmount: activeQuotations
           .filter((q) => q.status === "Partially Paid")
-          .reduce((sum, q) => sum + q.paidAmount, 0),
+          .reduce((sum, q) => sum + (parseFloat(q.paidAmount) || 0), 0),
         dueAmount: dueAmount > 0 ? dueAmount : 0,
         totalClients: clients.data.length,
         totalBoqs: filteredBoqs.length,
