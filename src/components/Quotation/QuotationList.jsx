@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import DataTable from "../Common/DataTable";
 import DateRangeFilter from "../Common/DateRangeFilter";
-import { quotationsAPI, clientsAPI } from "../../services/api";
+import { quotationsAPI, clientsAPI, bankAccountsAPI } from "../../services/api";
 import { formatDate, formatCurrency, getDateRange, getOrgProfile } from "../../utils/helpers";
 import { QUOTATION_STATUS } from "../../utils/constants";
 import PrintQuotation from "./PrintQuotation";
@@ -182,8 +182,32 @@ const QuotationList = () => {
         quotation.clientId ? clientsAPI.getById(quotation.clientId) : Promise.resolve(null),
       ]);
       const client = clientRes?.data || null;
+
+      // Fetch bank account details
+      let bankAccount = null;
+      if (quotation.bankAccountId) {
+        try {
+          const bankRes = await bankAccountsAPI.getById(quotation.bankAccountId);
+          bankAccount = bankRes.data;
+        } catch (e) {
+          console.error("Error fetching bank account:", e);
+        }
+      } else {
+        try {
+          const allBanksRes = await bankAccountsAPI.getAll();
+          const defaultBank = allBanksRes.data.find((b) => b.isDefault);
+          if (defaultBank) {
+            bankAccount = defaultBank;
+          } else if (allBanksRes.data.length > 0) {
+            bankAccount = allBanksRes.data[0];
+          }
+        } catch (e) {
+          console.error("Error fetching bank accounts:", e);
+        }
+      }
+
       const printWindow = window.open("", "_blank");
-      const printContent = PrintQuotation({ quotation, client, organization: org });
+      const printContent = PrintQuotation({ quotation, client, organization: org, bankAccount });
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.focus();
