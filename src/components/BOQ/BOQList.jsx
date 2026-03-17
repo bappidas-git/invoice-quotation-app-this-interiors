@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import DataTable from "../Common/DataTable";
 import DateRangeFilter from "../Common/DateRangeFilter";
-import { boqsAPI, clientsAPI } from "../../services/api";
+import { boqsAPI, clientsAPI, bankAccountsAPI } from "../../services/api";
 import {
   formatDate,
   formatCurrency,
@@ -167,15 +167,18 @@ const BOQList = () => {
 
   const printBoq = async (boq) => {
     try {
-      const [org, clientRes] = await Promise.all([
+      const [org, clientRes, allBanksRes] = await Promise.all([
         getOrgProfile(),
         boq.clientId
           ? clientsAPI.getById(boq.clientId)
           : Promise.resolve(null),
+        bankAccountsAPI.getAll(),
       ]);
       const client = clientRes?.data || null;
+      const banks = allBanksRes?.data || [];
+      const bankAccount = banks.find((b) => b.isDefault) || banks[0] || null;
       const printWindow = window.open("", "_blank");
-      const printContent = PrintBOQ({ boq, client, organization: org });
+      const printContent = PrintBOQ({ boq, client, organization: org, bankAccount });
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.focus();
