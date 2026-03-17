@@ -352,9 +352,9 @@ const Reports = () => {
     let totalSubtotalQ = 0;
 
     fq.forEach((q) => {
-      totalTaxFromQuotations += q.taxAmount || 0;
-      totalServiceTaxFromQuotations += q.serviceTaxAmount || 0;
-      totalSubtotalQ += q.subtotal || 0;
+      totalTaxFromQuotations += parseFloat(q.taxAmount) || 0;
+      totalServiceTaxFromQuotations += parseFloat(q.serviceTaxAmount) || 0;
+      totalSubtotalQ += parseFloat(q.subtotal) || 0;
     });
 
     let totalTaxFromInvoices = 0;
@@ -362,25 +362,25 @@ const Reports = () => {
     let totalSubtotalI = 0;
 
     fi.forEach((i) => {
-      totalTaxFromInvoices += i.taxAmount || 0;
-      totalServiceTaxFromInvoices += i.serviceTaxAmount || 0;
-      totalSubtotalI += i.subtotal || 0;
+      totalTaxFromInvoices += parseFloat(i.taxAmount) || 0;
+      totalServiceTaxFromInvoices += parseFloat(i.serviceTaxAmount) || 0;
+      totalSubtotalI += parseFloat(i.subtotal) || 0;
     });
 
     // Per-quotation breakdown for table
     const taxBreakdown = fq
-      .filter((q) => (q.taxAmount || 0) > 0 || (q.serviceTaxAmount || 0) > 0)
+      .filter((q) => (parseFloat(q.taxAmount) || 0) > 0 || (parseFloat(q.serviceTaxAmount) || 0) > 0)
       .map((q) => ({
         id: q.id,
         number: q.quotationNumber,
         client: clientMap[q.clientId] || "Unknown",
         date: q.date,
-        subtotal: q.subtotal || 0,
-        taxPercent: q.taxPercent || 0,
-        taxAmount: q.taxAmount || 0,
-        serviceTaxPercent: q.serviceTaxPercent || 0,
-        serviceTaxAmount: q.serviceTaxAmount || 0,
-        totalAmount: q.totalAmount || 0,
+        subtotal: parseFloat(q.subtotal) || 0,
+        taxPercent: parseFloat(q.taxPercent) || 0,
+        taxAmount: parseFloat(q.taxAmount) || 0,
+        serviceTaxPercent: parseFloat(q.serviceTaxPercent) || 0,
+        serviceTaxAmount: parseFloat(q.serviceTaxAmount) || 0,
+        totalAmount: parseFloat(q.totalAmount) || 0,
       }));
 
     return {
@@ -479,7 +479,7 @@ const Reports = () => {
     const { boqs: fb } = filteredData;
 
     const totalBOQs = fb.length;
-    const totalValue = fb.reduce((s, b) => s + (b.totalAmount || 0), 0);
+    const totalValue = fb.reduce((s, b) => s + (parseFloat(b.totalAmount) || 0), 0);
     const averageValue = totalBOQs > 0 ? totalValue / totalBOQs : 0;
 
     // BOQs by status
@@ -495,7 +495,7 @@ const Reports = () => {
       .map(([status, items]) => ({
         status,
         count: items.length,
-        totalAmount: items.reduce((s, b) => s + (b.totalAmount || 0), 0),
+        totalAmount: items.reduce((s, b) => s + (parseFloat(b.totalAmount) || 0), 0),
       }));
 
     // BOQs by client
@@ -504,7 +504,7 @@ const Reports = () => {
       const cName = clientMap[b.clientId] || "Unknown";
       if (!clientBOQMap[cName]) clientBOQMap[cName] = { name: cName, count: 0, amount: 0 };
       clientBOQMap[cName].count += 1;
-      clientBOQMap[cName].amount += b.totalAmount || 0;
+      clientBOQMap[cName].amount += parseFloat(b.totalAmount) || 0;
     });
     const byClient = Object.values(clientBOQMap).sort((a, b) => b.amount - a.amount);
 
@@ -516,7 +516,7 @@ const Reports = () => {
       clientId: b.clientId,
       date: b.date,
       itemsCount: b.items ? b.items.length : 0,
-      totalAmount: b.totalAmount || 0,
+      totalAmount: parseFloat(b.totalAmount) || 0,
       status: b.status || "Draft",
     }));
 

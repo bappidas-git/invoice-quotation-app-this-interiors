@@ -165,7 +165,8 @@ export const formatCurrency = (amount, currency = null) => {
   const settings = settingsCache.general || { currency: "AED" };
   const curr = currency || settings.currency || "AED";
 
-  return `${curr} ${Number(amount || 0).toLocaleString("en-US", {
+  const num = Number(amount) || 0;
+  return `${curr} ${num.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
