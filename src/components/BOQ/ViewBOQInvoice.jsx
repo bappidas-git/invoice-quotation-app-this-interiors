@@ -19,6 +19,12 @@ import {
   Tabs,
   Tab,
   Alert,
+  IconButton,
+  TextField,
+  Snackbar,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,11 +41,17 @@ import styles from "./boq.module.css";
 const ViewBOQInvoice = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [invoice, setInvoice] = useState(null);
   const [client, setClient] = useState(null);
   const [bankAccount, setBankAccount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
   useEffect(() => {
     fetchInvoice();
@@ -66,6 +78,37 @@ const ViewBOQInvoice = () => {
       console.error("Error fetching BOQ invoice:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEditProcurement = (index) => {
+    setEditingIndex(index);
+    setEditValue(invoice.items[index].procurementSource || "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIndex(null);
+    setEditValue("");
+  };
+
+  const handleSaveProcurement = async () => {
+    if (editingIndex === null) return;
+    setSaving(true);
+    try {
+      const updatedItems = invoice.items.map((item, i) =>
+        i === editingIndex ? { ...item, procurementSource: editValue.trim() } : item
+      );
+      const updatedInvoice = { ...invoice, items: updatedItems };
+      await boqInvoicesAPI.update(id, updatedInvoice);
+      setInvoice(updatedInvoice);
+      setEditingIndex(null);
+      setEditValue("");
+      setSnackbar({ open: true, message: "Vendor / Procurement Source updated successfully.", severity: "success" });
+    } catch (error) {
+      console.error("Error updating procurement source:", error);
+      setSnackbar({ open: true, message: "Failed to update. Please try again.", severity: "error" });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -357,8 +400,17 @@ const ViewBOQInvoice = () => {
               <Table sx={{ minWidth: 600 }}>
                 <TableHead>
                   <TableRow sx={{ background: "linear-gradient(135deg, #f57c00 0%, #e65100 100%)" }}>
-                    {["#", "Area", "Category", "Item Name", "Vendor / Procurement Source"].map((h) => (
-                      <TableCell key={h} sx={{ color: "white", fontWeight: 600, fontSize: "0.75rem", textTransform: "uppercase" }}>
+                    {["#", "Area", "Category", "Item Name", "Vendor / Procurement Source", ""].map((h) => (
+                      <TableCell
+                        key={h || "actions"}
+                        sx={{
+                          color: "white",
+                          fontWeight: 600,
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          ...(h === "" && { width: 56, padding: "6px 8px" }),
+                        }}
+                      >
                         {h}
                       </TableCell>
                     ))}
@@ -371,15 +423,98 @@ const ViewBOQInvoice = () => {
                       <TableCell>{item.area || "-"}</TableCell>
                       <TableCell>{item.category || "-"}</TableCell>
                       <TableCell><Typography fontWeight="500">{item.itemName || "-"}</Typography></TableCell>
-                      <TableCell>
-                        {item.procurementSource ? (
-                          <Typography variant="body2" sx={{ color: "#e65100", fontWeight: 500 }}>
-                            {item.procurementSource}
-                          </Typography>
+                      <TableCell sx={{ minWidth: isMobile ? 200 : 300 }}>
+                        {editingIndex === index ? (
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <TextField
+                              fullWidth
+                              size="small"
+                              multiline
+                              minRows={1}
+                              maxRows={4}
+                              value={editValue}
+                              onChange={(e) => setEditValue(e.target.value)}
+                              placeholder="Enter vendor / procurement source..."
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleSaveProcurement();
+                                }
+                                if (e.key === "Escape") handleCancelEdit();
+                              }}
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  borderRadius: "6px",
+                                  fontSize: "0.875rem",
+                                  "& fieldset": { borderColor: "#f57c00" },
+                                  "&:hover fieldset": { borderColor: "#e65100" },
+                                  "&.Mui-focused fieldset": { borderColor: "#e65100" },
+                                },
+                              }}
+                            />
+                            <Box sx={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 0.5 }}>
+                              <Tooltip title="Save">
+                                <IconButton
+                                  size="small"
+                                  onClick={handleSaveProcurement}
+                                  disabled={saving}
+                                  sx={{
+                                    color: "#fff",
+                                    bgcolor: "#4caf50",
+                                    "&:hover": { bgcolor: "#388e3c" },
+                                    width: 32,
+                                    height: 32,
+                                  }}
+                                >
+                                  {saving ? <CircularProgress size={16} color="inherit" /> : <Icon icon="mdi:check" width="18" />}
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Cancel">
+                                <IconButton
+                                  size="small"
+                                  onClick={handleCancelEdit}
+                                  disabled={saving}
+                                  sx={{
+                                    color: "#fff",
+                                    bgcolor: "#9e9e9e",
+                                    "&:hover": { bgcolor: "#757575" },
+                                    width: 32,
+                                    height: 32,
+                                  }}
+                                >
+                                  <Icon icon="mdi:close" width="18" />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          </Box>
                         ) : (
-                          <Typography variant="body2" color="text.disabled" fontStyle="italic">
-                            Not specified
-                          </Typography>
+                          item.procurementSource ? (
+                            <Typography variant="body2" sx={{ color: "#e65100", fontWeight: 500 }}>
+                              {item.procurementSource}
+                            </Typography>
+                          ) : (
+                            <Typography variant="body2" color="text.disabled" fontStyle="italic">
+                              Not specified
+                            </Typography>
+                          )
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 8px" }}>
+                        {editingIndex !== index && (
+                          <Tooltip title="Edit vendor / procurement source">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleEditProcurement(index)}
+                              disabled={editingIndex !== null}
+                              sx={{
+                                color: "#f57c00",
+                                "&:hover": { bgcolor: "#fff3e0" },
+                              }}
+                            >
+                              <Icon icon="mdi:pencil-outline" width="20" />
+                            </IconButton>
+                          </Tooltip>
                         )}
                       </TableCell>
                     </TableRow>
@@ -397,6 +532,22 @@ const ViewBOQInvoice = () => {
           </CardContent>
         )}
       </Card>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
