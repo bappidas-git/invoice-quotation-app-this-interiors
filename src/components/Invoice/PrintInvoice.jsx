@@ -174,7 +174,7 @@ const PrintInvoice = ({ invoice, client, organization, bankAccount }) => {
                 <strong>A/C No:</strong> ${bankAccount.accountNumber}<br>
                 ${bankAccount.accountHolderName ? `<strong>A/C Holder:</strong> ${bankAccount.accountHolderName}<br>` : ""}
                 ${bankAccount.branch ? `<strong>Branch:</strong> ${bankAccount.branch}<br>` : ""}
-                ${bankAccount.iban ? `<strong>IBAN:</strong> ${bankAccount.iban}<br>` : ""}
+                ${bankAccount.ifscSwift ? `<strong>IBAN:</strong> ${bankAccount.ifscSwift}<br>` : ""}
                 ${bankAccount.qrCodeUrl ? `<img src="${bankAccount.qrCodeUrl}" alt="QR Code" class="qr-code" />` : ""}
               `
                   : "No bank account linked"
