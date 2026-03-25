@@ -27,7 +27,7 @@ import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import DateRangeFilter from "../Common/DateRangeFilter";
-import { invoicesAPI, clientsAPI } from "../../services/api";
+import { invoicesAPI, clientsAPI, bankAccountsAPI } from "../../services/api";
 import {
   formatDate,
   formatCurrency,
@@ -153,8 +153,29 @@ const InvoiceList = () => {
           : Promise.resolve(null),
       ]);
       const client = clientRes?.data || null;
+
+      // Fetch bank account details
+      let bankAccount = null;
+      if (invoice.bankAccountId) {
+        try {
+          const bankRes = await bankAccountsAPI.getById(invoice.bankAccountId);
+          bankAccount = bankRes.data;
+        } catch {
+          // Fall through to default bank lookup
+        }
+      }
+      if (!bankAccount) {
+        try {
+          const allBanksRes = await bankAccountsAPI.getAll();
+          const defaultBank = allBanksRes.data.find((b) => b.isDefault);
+          bankAccount = defaultBank || allBanksRes.data[0] || null;
+        } catch {
+          // Continue without bank account
+        }
+      }
+
       const printWindow = window.open("", "_blank");
-      const printContent = PrintInvoice({ invoice, client, organization: org });
+      const printContent = PrintInvoice({ invoice, client, organization: org, bankAccount });
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.focus();
