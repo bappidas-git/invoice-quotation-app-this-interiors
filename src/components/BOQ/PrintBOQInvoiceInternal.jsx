@@ -61,12 +61,10 @@ const PrintBOQInvoiceInternal = ({ invoice, client, organization, bankAccount })
     .info-box-content { font-size: 10px; line-height: 1.45; color: #333; }
     .info-box-content strong { color: #1a1a1a; }
 
-    table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-    /* Internal table header: gold gradient */
-    .items-table thead { background: linear-gradient(135deg, #c17f24 0%, #a0652a 100%); color: white; display: table-header-group; }
-    .items-table th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-    .items-table td { padding: 6px 8px; border-bottom: 1px solid #e8d5b0; font-size: 10px; vertical-align: middle; }
-    .items-table tbody tr:nth-child(even) { background: #fdf6ec; }
+    table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 1px solid #c17f24; }
+    .items-table thead { background: none; color: #1a1a1a; display: table-header-group; }
+    .items-table th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #c17f24; }
+    .items-table td { padding: 6px 8px; border: 1px solid #c17f24; font-size: 10px; vertical-align: middle; }
     .text-right { text-align: right; }
 
     /* Vendor/Source column in gold */

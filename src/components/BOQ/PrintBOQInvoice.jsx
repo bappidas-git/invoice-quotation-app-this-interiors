@@ -58,11 +58,10 @@ const PrintBOQInvoice = ({ invoice, client, organization, bankAccount }) => {
     .info-box-content strong { color: #1a1a1a; }
     .qr-code { max-width: 60px; max-height: 60px; margin-top: 4px; border: 1px solid #e8d5b0; border-radius: 3px; }
 
-    table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-    .items-table thead { background: #1a1a1a; color: white; display: table-header-group; }
-    .items-table th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-    .items-table td { padding: 6px 8px; border-bottom: 1px solid #e8d5b0; font-size: 10px; vertical-align: middle; }
-    .items-table tbody tr:nth-child(even) { background: #fdf6ec; }
+    table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 1px solid #c17f24; }
+    .items-table thead { background: none; color: #1a1a1a; display: table-header-group; }
+    .items-table th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #c17f24; }
+    .items-table td { padding: 6px 8px; border: 1px solid #c17f24; font-size: 10px; vertical-align: middle; }
     .text-right { text-align: right; }
 
     .summary-section { display: flex; justify-content: flex-end; margin-bottom: 12px; page-break-inside: avoid; }
