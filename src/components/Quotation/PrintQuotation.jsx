@@ -323,7 +323,15 @@ const PrintQuotation = ({ quotation, client, organization, bankAccount }) => {
             ? `
           <div class="notes-section">
             <div class="notes-title">Notes</div>
-            <div class="notes-content">${quotation.notes}</div>
+            <div class="notes-content">
+              <ul style="margin: 0; padding-left: 16px; list-style-type: disc;">
+                ${quotation.notes
+                  .split("\n")
+                  .filter(Boolean)
+                  .map((note) => `<li style="margin-bottom: 2px;">${note}</li>`)
+                  .join("")}
+              </ul>
+            </div>
           </div>
         `
             : ""
