@@ -1282,7 +1282,7 @@
       "bankName": "Standard Chartered",
       "accountNumber": "1234567890",
       "branch": "Dubai",
-      "iban": "XYZ000012345",
+      "ifscSwift": "XYZ000012345",
       "accountHolderName": "THIS INTERIORS",
       "qrCodeUrl": "",
       "isDefault": true,

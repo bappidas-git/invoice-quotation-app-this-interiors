@@ -306,9 +306,9 @@ const ViewInvoice = () => {
                       <strong>Branch:</strong> {bankAccount.branch}
                     </Typography>
                   )}
-                  {bankAccount.iban && (
+                  {bankAccount.ifscSwift && (
                     <Typography variant="body2" color="textSecondary">
-                      <strong>IBAN:</strong> {bankAccount.iban}
+                      <strong>IBAN:</strong> {bankAccount.ifscSwift}
                     </Typography>
                   )}
                   {bankAccount.qrCodeUrl && (
