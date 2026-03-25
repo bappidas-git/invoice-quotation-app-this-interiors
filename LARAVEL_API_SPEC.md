@@ -520,7 +520,7 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 | account_number      | varchar(100)            | No       | —                 | Required                     |
 | account_holder_name | varchar(255)            | Yes      | null              |                              |
 | branch              | varchar(255)            | Yes      | null              |                              |
-| ifsc_swift          | varchar(100)            | Yes      | null              |                              |
+| iban                | varchar(100)            | Yes      | null              |                              |
 | qr_code_url         | varchar(1000)           | Yes      | null              | URL to payment QR code image |
 | is_default          | tinyint(1)              | No       | 0                 | Cast to bool                 |
 | created_at          | timestamp               | No       | CURRENT_TIMESTAMP |                              |
@@ -535,7 +535,7 @@ Line items and payment history are stored as JSON columns. This avoids complex j
   "accountNumber": "1234567890",
   "accountHolderName": "THIS INTERIORS LLC",
   "branch": "Dubai Main Branch",
-  "ifscSwift": "SCBLAEADXXX",
+  "iban": "SCBLAEADXXX",
   "qrCodeUrl": "",
   "isDefault": true,
   "createdAt": "2026-01-01T00:00:00.000Z",
@@ -553,7 +553,7 @@ Line items and payment history are stored as JSON columns. This avoids complex j
 | PUT    | `/bank-accounts/{id}` | Full update                   |
 | DELETE | `/bank-accounts/{id}` | Delete, return 204 No Content |
 
-**POST/PUT accepted fields:** `bankName` (required), `accountNumber` (required), `accountHolderName`, `branch`, `ifscSwift`, `qrCodeUrl`, `isDefault`
+**POST/PUT accepted fields:** `bankName` (required), `accountNumber` (required), `accountHolderName`, `branch`, `iban`, `qrCodeUrl`, `isDefault`
 
 ---
 
@@ -853,17 +853,17 @@ This is a **singleton resource** — there is always exactly one record (seeded 
 | bank_name           | varchar(255)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
 | bank_account        | varchar(100)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
 | bank_branch         | varchar(255)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
-| bank_ifsc           | varchar(100)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
+| bank_iban           | varchar(100)        | Yes      | null              | ⚠️ Legacy field — include for data migration only |
 | created_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                                   |
 | updated_at          | timestamp           | No       | CURRENT_TIMESTAMP |                                                   |
 
 > **⚠️ Legacy bank fields — important migration note:**
 >
-> The current JSON Server `db.json` (`organizationSettings` record) contains four legacy banking fields: `bankName`, `bankAccount`, `bankBranch`, `bankIFSC`. These were added before the dedicated `bank_accounts` table existed and are **no longer used by any frontend component**. All banking information is now managed exclusively through the `bank_accounts` resource (Section 8), and quotations/invoices reference banking via `bankAccountId`.
+> The current JSON Server `db.json` (`organizationSettings` record) contains four legacy banking fields: `bankName`, `bankAccount`, `bankBranch`, `bankIBAN`. These were added before the dedicated `bank_accounts` table existed and are **no longer used by any frontend component**. All banking information is now managed exclusively through the `bank_accounts` resource (Section 8), and quotations/invoices reference banking via `bankAccountId`.
 >
 > You MUST include these four columns in the `organization_settings` table **for data migration completeness** — to avoid data loss when migrating from JSON Server. However, **do NOT expose them in the API response** (`GET /settings/organization` and `PUT /settings/organization`). They should exist in the DB but remain invisible to the frontend.
 >
-> The `PUT /settings/organization` handler must use `$request->except(['bankName', 'bankAccount', 'bankBranch', 'bankIFSC', 'createdAt', 'updatedAt', 'id'])` so that even if these fields are somehow passed, they are never written through the API.
+> The `PUT /settings/organization` handler must use `$request->except(['bankName', 'bankAccount', 'bankBranch', 'bankIBAN', 'createdAt', 'updatedAt', 'id'])` so that even if these fields are somehow passed, they are never written through the API.
 
 ### API Resource shape:
 
@@ -1100,7 +1100,7 @@ No React component changes required. All API calls, field names, query parameter
 
 | Section                                | Change                                                                                                                                                                                                                                                                                                                                                                   |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Section 13 (Organization Settings)** | Added 4 legacy bank fields (`bank_name`, `bank_account`, `bank_branch`, `bank_ifsc`) to the DB schema table. These exist in the current JSON Server `db.json` and must be included in the MySQL migration for data completeness. They are NOT exposed in the API response and must be excluded from the `PUT` handler. See the migration note in Section 13 for details. |
+| **Section 13 (Organization Settings)** | Added 4 legacy bank fields (`bank_name`, `bank_account`, `bank_branch`, `bank_iban`) to the DB schema table. These exist in the current JSON Server `db.json` and must be included in the MySQL migration for data completeness. They are NOT exposed in the API response and must be excluded from the `PUT` handler. See the migration note in Section 13 for details. |
 
 ---
 

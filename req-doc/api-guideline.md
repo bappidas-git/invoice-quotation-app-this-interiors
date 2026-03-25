@@ -273,7 +273,7 @@ CREATE TABLE `bank_accounts` (
     `bank_name` VARCHAR(255) NOT NULL,
     `account_number` VARCHAR(100) NOT NULL,
     `branch` VARCHAR(255) NULL DEFAULT '',
-    `ifsc_swift` VARCHAR(50) NULL DEFAULT '',
+    `iban` VARCHAR(50) NULL DEFAULT '',
     `account_holder_name` VARCHAR(255) NOT NULL,
     `qr_code_url` VARCHAR(500) NULL DEFAULT '',
     `is_default` BOOLEAN NOT NULL DEFAULT FALSE,
@@ -303,7 +303,7 @@ CREATE TABLE `organization_settings` (
     `bank_name` VARCHAR(255) NULL DEFAULT '',
     `bank_account` VARCHAR(100) NULL DEFAULT '',
     `bank_branch` VARCHAR(255) NULL DEFAULT '',
-    `bank_ifsc` VARCHAR(50) NULL DEFAULT '',
+    `bank_iban` VARCHAR(50) NULL DEFAULT '',
     `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1178,7 +1178,7 @@ Returns all bank accounts.
         "bankName": "Standard Chartered",
         "accountNumber": "1234567890",
         "branch": "Dubai",
-        "ifscSwift": "XYZ000012345",
+        "iban": "XYZ000012345",
         "accountHolderName": "THIS INTERIORS",
         "qrCodeUrl": "",
         "isDefault": true,
@@ -1205,7 +1205,7 @@ Creates a new bank account.
     "bankName": "Standard Chartered",
     "accountNumber": "1234567890",
     "branch": "Dubai",
-    "ifscSwift": "XYZ000012345",
+    "iban": "XYZ000012345",
     "accountHolderName": "THIS INTERIORS",
     "qrCodeUrl": "",
     "isDefault": true
@@ -1218,7 +1218,7 @@ Creates a new bank account.
 | `bankName`          | required, string, max:255 |
 | `accountNumber`     | required, string, max:100 |
 | `branch`            | nullable, string, max:255 |
-| `ifscSwift`         | nullable, string, max:50  |
+| `iban`              | nullable, string, max:50  |
 | `accountHolderName` | required, string, max:255 |
 | `qrCodeUrl`         | nullable, string, max:500 |
 | `isDefault`         | required, boolean         |
@@ -1279,7 +1279,7 @@ Returns the organization settings.
     "bankName": "Standard Chartered",
     "bankAccount": "1234567890",
     "bankBranch": "Dubai",
-    "bankIFSC": "XYZ000012345"
+    "bankIBAN": "XYZ000012345"
 }
 ```
 
@@ -1307,7 +1307,7 @@ Updates the organization settings.
     "bankName": "Standard Chartered",
     "bankAccount": "1234567890",
     "bankBranch": "Dubai",
-    "bankIFSC": "XYZ000012345"
+    "bankIBAN": "XYZ000012345"
 }
 ```
 
@@ -1330,7 +1330,7 @@ Updates the organization settings.
 | `bankName`           | nullable, string, max:255  |
 | `bankAccount`        | nullable, string, max:100  |
 | `bankBranch`         | nullable, string, max:255  |
-| `bankIFSC`           | nullable, string, max:50   |
+| `bankIBAN`           | nullable, string, max:50   |
 
 **Success Response (200):**
 Returns the updated organization settings object.
@@ -2497,7 +2497,7 @@ class OrganizationSettingSeeder extends Seeder
             'bank_name' => 'Standard Chartered',
             'bank_account' => '1234567890',
             'bank_branch' => 'Dubai',
-            'bank_ifsc' => 'XYZ000012345',
+            'bank_iban' => 'XYZ000012345',
         ]);
     }
 }
@@ -2582,7 +2582,7 @@ class BankAccountSeeder extends Seeder
             'bank_name' => 'Standard Chartered',
             'account_number' => '1234567890',
             'branch' => 'Dubai',
-            'ifsc_swift' => 'XYZ000012345',
+            'iban' => 'XYZ000012345',
             'account_holder_name' => 'THIS INTERIORS',
             'qr_code_url' => '',
             'is_default' => true,

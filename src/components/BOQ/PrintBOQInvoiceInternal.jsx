@@ -141,7 +141,7 @@ const PrintBOQInvoiceInternal = ({ invoice, client, organization, bankAccount })
           <strong>A/C No:</strong> ${bankAccount.accountNumber}<br>
           ${bankAccount.accountHolderName ? `<strong>A/C Holder:</strong> ${bankAccount.accountHolderName}<br>` : ""}
           ${bankAccount.branch ? `<strong>Branch:</strong> ${bankAccount.branch}<br>` : ""}
-          ${bankAccount.ifscSwift ? `<strong>IFSC/SWIFT:</strong> ${bankAccount.ifscSwift}<br>` : ""}
+          ${bankAccount.iban ? `<strong>IBAN:</strong> ${bankAccount.iban}<br>` : ""}
         </div>
       </div>` : ""}
     </div>

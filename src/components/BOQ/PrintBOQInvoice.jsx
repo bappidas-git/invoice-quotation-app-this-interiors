@@ -129,7 +129,7 @@ const PrintBOQInvoice = ({ invoice, client, organization, bankAccount }) => {
           <strong>A/C No:</strong> ${bankAccount.accountNumber}<br>
           ${bankAccount.accountHolderName ? `<strong>A/C Holder:</strong> ${bankAccount.accountHolderName}<br>` : ""}
           ${bankAccount.branch ? `<strong>Branch:</strong> ${bankAccount.branch}<br>` : ""}
-          ${bankAccount.ifscSwift ? `<strong>IFSC/SWIFT:</strong> ${bankAccount.ifscSwift}<br>` : ""}
+          ${bankAccount.iban ? `<strong>IBAN:</strong> ${bankAccount.iban}<br>` : ""}
           ${bankAccount.qrCodeUrl ? `<img src="${bankAccount.qrCodeUrl}" alt="QR" style="max-width:80px;max-height:80px;margin-top:5px;border:1px solid #e0e0e0;border-radius:4px;" />` : ""}
         </div>
       </div>` : ""}
