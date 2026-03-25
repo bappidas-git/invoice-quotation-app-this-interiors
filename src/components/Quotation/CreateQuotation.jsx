@@ -569,8 +569,12 @@ const CreateQuotation = () => {
 
     setLoading(true);
     try {
+      const draftCleanedNotes = quotation.notes
+        ? quotation.notes.split("\n").filter(Boolean).join("\n")
+        : "";
       const quotationData = {
         ...quotation,
+        notes: draftCleanedNotes,
         items: quotation.items.map((item) => ({
           ...item,
           amount: parseFloat(item.amount) || 0,
@@ -630,8 +634,12 @@ const CreateQuotation = () => {
 
     setLoading(true);
     try {
+      const cleanedNotes = quotation.notes
+        ? quotation.notes.split("\n").filter(Boolean).join("\n")
+        : "";
       const quotationData = {
         ...quotation,
+        notes: cleanedNotes,
         items: quotation.items.map((item) => ({
           ...item,
           amount: parseFloat(item.amount) || 0,
@@ -1102,16 +1110,117 @@ const CreateQuotation = () => {
             <Typography variant="h6" gutterBottom>
               Additional Details
             </Typography>
-            <TextField
-              label="Notes"
-              value={quotation.notes}
-              onChange={(e) =>
-                setQuotation((prev) => ({ ...prev, notes: e.target.value }))
-              }
-              multiline
-              rows={3}
-              fullWidth
-            />
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              {(quotation.notes
+                ? quotation.notes.split("\n").length > 0
+                  ? quotation.notes.split("\n")
+                  : [""]
+                : [""]
+              ).map((note, index) => {
+                const notes = quotation.notes ? quotation.notes.split("\n") : [""];
+                return (
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <Icon
+                      icon="mdi:circle-medium"
+                      style={{ fontSize: 24, color: "#c17f24", flexShrink: 0 }}
+                    />
+                    <TextField
+                      placeholder={`Add note ${index + 1}`}
+                      value={note}
+                      onChange={(e) => {
+                        const updatedNotes = [...notes];
+                        updatedNotes[index] = e.target.value;
+                        setQuotation((prev) => ({
+                          ...prev,
+                          notes: updatedNotes.join("\n"),
+                        }));
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const updatedNotes = [...notes];
+                          updatedNotes.splice(index + 1, 0, "");
+                          setQuotation((prev) => ({
+                            ...prev,
+                            notes: updatedNotes.join("\n"),
+                          }));
+                          setTimeout(() => {
+                            const inputs = e.target
+                              .closest('[class*="formSection"]')
+                              ?.querySelectorAll('input[type="text"]');
+                            if (inputs && inputs[index + 1]) {
+                              inputs[index + 1].focus();
+                            }
+                          }, 50);
+                        }
+                        if (
+                          e.key === "Backspace" &&
+                          note === "" &&
+                          notes.length > 1
+                        ) {
+                          e.preventDefault();
+                          const updatedNotes = [...notes];
+                          updatedNotes.splice(index, 1);
+                          setQuotation((prev) => ({
+                            ...prev,
+                            notes: updatedNotes.join("\n"),
+                          }));
+                          setTimeout(() => {
+                            const inputs = e.target
+                              .closest('[class*="formSection"]')
+                              ?.querySelectorAll('input[type="text"]');
+                            const focusIdx = Math.max(0, index - 1);
+                            if (inputs && inputs[focusIdx]) {
+                              inputs[focusIdx].focus();
+                            }
+                          }, 50);
+                        }
+                      }}
+                      fullWidth
+                      size="small"
+                    />
+                    {notes.length > 1 && (
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          const updatedNotes = [...notes];
+                          updatedNotes.splice(index, 1);
+                          setQuotation((prev) => ({
+                            ...prev,
+                            notes: updatedNotes.join("\n"),
+                          }));
+                        }}
+                        sx={{ color: "#d32f2f", flexShrink: 0 }}
+                      >
+                        <Icon icon="mdi:close-circle-outline" />
+                      </IconButton>
+                    )}
+                  </Box>
+                );
+              })}
+              <Button
+                variant="text"
+                startIcon={<Icon icon="mdi:plus-circle-outline" />}
+                onClick={() => {
+                  const notes = quotation.notes ? quotation.notes.split("\n") : [""];
+                  setQuotation((prev) => ({
+                    ...prev,
+                    notes: [...notes, ""].join("\n"),
+                  }));
+                }}
+                sx={{
+                  alignSelf: "flex-start",
+                  color: "#c17f24",
+                  textTransform: "none",
+                  mt: 0.5,
+                }}
+              >
+                Add Note
+              </Button>
+            </Box>
           </Box>
 
           <Box className={styles.actionButtons}>

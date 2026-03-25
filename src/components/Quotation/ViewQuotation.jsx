@@ -436,9 +436,15 @@ const ViewQuotation = () => {
                 <Typography variant="h6" gutterBottom>
                   Notes
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {quotation.notes}
-                </Typography>
+                <ul style={{ margin: 0, paddingLeft: 24, listStyleType: "disc" }}>
+                  {quotation.notes.split("\n").filter(Boolean).map((note, idx) => (
+                    <li key={idx} style={{ marginBottom: 4 }}>
+                      <Typography variant="body2" color="textSecondary" component="span">
+                        {note}
+                      </Typography>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
           </Grid>
