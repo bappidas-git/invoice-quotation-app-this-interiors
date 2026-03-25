@@ -23,7 +23,7 @@ const emptyBank = {
   bankName: "",
   accountNumber: "",
   branch: "",
-  ifscSwift: "",
+  iban: "",
   accountHolderName: "",
   qrCodeUrl: "",
   isDefault: false,
@@ -100,7 +100,7 @@ const BankingSettings = () => {
       bankName: bank.bankName,
       accountNumber: bank.accountNumber,
       branch: bank.branch,
-      ifscSwift: bank.ifscSwift,
+      iban: bank.iban,
       accountHolderName: bank.accountHolderName || "",
       qrCodeUrl: bank.qrCodeUrl || "",
       isDefault: bank.isDefault,
@@ -218,9 +218,9 @@ const BankingSettings = () => {
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <TextField
-                    label="IFSC/SWIFT Code"
-                    value={formData.ifscSwift}
-                    onChange={handleChange("ifscSwift")}
+                    label="IBAN"
+                    value={formData.iban}
+                    onChange={handleChange("iban")}
                     fullWidth
                   />
                 </Grid>
@@ -347,9 +347,9 @@ const BankingSettings = () => {
                               Branch: {bank.branch}
                             </Typography>
                           )}
-                          {bank.ifscSwift && (
+                          {bank.iban && (
                             <Typography variant="body2" color="text.secondary">
-                              IFSC/SWIFT: {bank.ifscSwift}
+                              IBAN: {bank.iban}
                             </Typography>
                           )}
                           {bank.qrCodeUrl && (
